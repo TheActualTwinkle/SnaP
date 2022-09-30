@@ -6,11 +6,11 @@ using UnityEngine;
 public class WinnerData
 {
     public readonly Player Winner;
-    public readonly uint Pot;
+    public readonly uint Chips;
 
-    public WinnerData(Player winner, uint pot)
+    public WinnerData(Player winner, uint chips)
     {
         Winner = winner;
-        Pot = pot;
+        Chips = chips;
     }
 }

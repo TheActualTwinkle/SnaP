@@ -6,14 +6,18 @@ using UnityEngine;
 
 public class PlayerBetUI : MonoBehaviour
 {
-    [SerializeField] 
-    private Game _game;
+    [ReadOnly]
+    [SerializeField] private Player _player;
+
+    [SerializeField] private Game _game;
+
     public float BetTime => _betTime;
     [SerializeField] private float _betTime;
 
     [ReadOnly]
     [SerializeField] private List<BetButton> _buttons;
 
+    public IEnumerator C_WaitForPlayerBetAction =>  c_WaitForPlayerBetAction;
     private IEnumerator c_WaitForPlayerBetAction;
 
     private void OnValidate()
@@ -37,6 +41,11 @@ public class PlayerBetUI : MonoBehaviour
         {
             button.OnClickEvent -= OnPlayerTurnOver;
         }
+    }
+
+    private void Start()
+    {
+        _player = FindObjectOfType<Player>();
     }
 
     private void OnPlayerTurnBegun(Player player)
@@ -65,7 +74,6 @@ public class PlayerBetUI : MonoBehaviour
 
     private IEnumerator WaitForPlayerBetAction()
     {
-        yield return new WaitForSecondsRealtime(_betTime);
-        
+        yield return new WaitForSecondsRealtime(_betTime);   
     }
 }

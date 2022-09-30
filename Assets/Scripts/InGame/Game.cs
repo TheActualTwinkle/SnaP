@@ -14,6 +14,10 @@ public class Game : MonoBehaviour
     [ReadOnly]
     [SerializeField] private bool _isPlaying;
 
+    public uint CallAmount => _callAmount;
+    [ReadOnly]
+    [SerializeField] private uint _callAmount;  
+
     [ReadOnly]
     [SerializeField] private uint _pot;
 
@@ -23,6 +27,7 @@ public class Game : MonoBehaviour
     [SerializeField] private uint _smallBlindValue;
 
     [SerializeField] private PlayerSeats _playerSeats;
+    [SerializeField] private PlayerBetUI _playerBetUI;
     private CardDeck _cardDeck;
     private Board _board;
 
@@ -89,11 +94,11 @@ public class Game : MonoBehaviour
     {
         _isPlaying = false;
 
-        WinnerData winnerData = new WinnerData(winner, _pot);
+        WinnerData winnerData = new WinnerData(winner, 0);
         EndDealEvent?.Invoke(winnerData);
     }
 
-    private void OnPlayerSit()
+    private void OnPlayerSit(PlayerSeatData data)
     {
         if (_isPlaying == false && _playerSeats?.CountOfFreeSeats >= 2)
         {
@@ -101,7 +106,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void OnPlayerLeave()
+    private void OnPlayerLeave(PlayerSeatData data)
     {
         if (_playerSeats?.CountOfFreeSeats == PlayerSeats.MAX_SEATS - 1)
         {
@@ -115,9 +120,9 @@ public class Game : MonoBehaviour
         {
             if (player != null)
             {
-                PlayerTurnBegunEvent?.Invoke(player);
+                PlayerTurnBegunEvent?.Invoke(player); 
+                yield return _playerBetUI.C_WaitForPlayerBetAction;
             }
         }
-        yield return null;
     }
 }

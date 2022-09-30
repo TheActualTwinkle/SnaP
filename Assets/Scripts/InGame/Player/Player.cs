@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-[System.Serializable]
+[RequireComponent(typeof(NetworkObject))]
 public class Player : NetworkBehaviour
 {
     public string NickName => _nickName;
@@ -23,7 +23,7 @@ public class Player : NetworkBehaviour
         {
             Destroy(this);
             return;
-        }                                               
+        }
     }
 
     public bool TryBet(uint amount)
@@ -41,10 +41,5 @@ public class Player : NetworkBehaviour
     public void TakePot(uint amount)
     {
         _stack += amount;
-    }
-
-    private IEnumerator Bet()
-    {
-        yield return new WaitForSeconds(_stack);
     }
 }

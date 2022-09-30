@@ -8,8 +8,11 @@ using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
 {
-    public event Action PlayerSitEvent;
-    public event Action PlayerLeaveEvent;
+    public static PlayerSeats Instance => _instance;
+    private static PlayerSeats _instance;
+
+    public event Action<PlayerSeatData> PlayerSitEvent;
+    public event Action<PlayerSeatData> PlayerLeaveEvent;
     
     public List<Player> Players => _players.ToList();
     [ReadOnly]
@@ -28,7 +31,20 @@ public class PlayerSeats : MonoBehaviour
         }
     }
 
-    public bool TryTake(Player player, int seatNumber)
+    private void Start()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public bool TryTake(PlayerSeatData playerSeatData)
     {
         if (CountOfFreeSeats == 0)
         {
@@ -36,20 +52,20 @@ public class PlayerSeats : MonoBehaviour
             return false;
         }
 
-        if (Players[seatNumber] != null)
+        if (Players[playerSeatData.SeatNumber] != null)
         {
-            Debug.LogError($"{player.NickName} can`t take the {seatNumber} seat, its already taken");
+            Debug.LogError($"{playerSeatData.Player.NickName} can`t take the {playerSeatData.SeatNumber} seat, its already taken");
             return false;
         }
 
-        _players[seatNumber] = player;
-        PlayerSitEvent?.Invoke();
+        _players[playerSeatData.SeatNumber] = playerSeatData.Player;
+        PlayerSitEvent?.Invoke(playerSeatData);
         return true;
     }
 
-    public void Leave(int seatNumber)
+    public void Leave(PlayerSeatData playerSeatData)
     {
-        _players[seatNumber] = null;
-        PlayerLeaveEvent?.Invoke();
+        _players[playerSeatData.SeatNumber] = null;
+        PlayerLeaveEvent?.Invoke(playerSeatData);
     }
 }

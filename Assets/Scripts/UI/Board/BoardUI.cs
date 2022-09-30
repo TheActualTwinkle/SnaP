@@ -9,12 +9,6 @@ public class BoardUI : NetworkBehaviour
     [SerializeField] private Game _game;
     [SerializeField] private Animator _animator;
 
-    public override void OnNetworkSpawn()
-    {
-        Debug.Log("Board spawned");
-        Debug.Log($"IsOwner: {IsOwner}, IsHost: {IsHost}, IsServer: {IsServer}, IsClient:{IsClient}");
-    }
-
     private void OnEnable()
     {
         if (_game == null)
@@ -29,12 +23,5 @@ public class BoardUI : NetworkBehaviour
         {
             return;
         }
-    }
-
-    // TODELETE!
-    // Button.
-    private void ActivateAniamtion(string name)
-    {
-        _animator.SetTrigger(name);
     }
 }
