@@ -10,7 +10,7 @@ public class PlayerSeatUI : NetworkBehaviour
     public event Action<PlayerSeatData> PlayerClickJoinButton;
 
     [SerializeField] private Game _game;
-    [SerializeField] private List<Transform> _seats;
+    [SerializeField] private List<SeatUI> _seats;
 
     private void OnEnable()
     {
@@ -25,7 +25,7 @@ public class PlayerSeatUI : NetworkBehaviour
     // Button.
     private void OnJoinButtonClick(int seatNumber)
     {
-        Player player = NetworkManager.LocalClient.PlayerObject.GetComponent<Player>();
+        Player player = NetworkManager?.LocalClient.PlayerObject?.GetComponent<Player>();
         PlayerSeatData data = new PlayerSeatData(player, seatNumber);
         PlayerClickJoinButton?.Invoke(data);
     }

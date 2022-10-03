@@ -8,12 +8,11 @@ using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
 {
-    public static PlayerSeats Instance => _instance;
-    private static PlayerSeats _instance;
-
     public event Action<PlayerSeatData> PlayerSitEvent;
     public event Action<PlayerSeatData> PlayerLeaveEvent;
-    
+
+    [SerializeField] private PlayerSeatUI _playerSeatUI;
+
     public List<Player> Players => _players.ToList();
     [ReadOnly]
     [SerializeField] private List<Player> _players;
@@ -31,20 +30,17 @@ public class PlayerSeats : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        _playerSeatUI.PlayerClickJoinButton += OnPlayerClickJoinButton;
     }
 
-    public bool TryTake(PlayerSeatData playerSeatData)
+    private void OnDisable()
+    {
+        _playerSeatUI.PlayerClickJoinButton -= OnPlayerClickJoinButton;
+    }
+
+    private bool TryTake(PlayerSeatData playerSeatData)
     {
         if (CountOfFreeSeats == 0)
         {
@@ -63,9 +59,14 @@ public class PlayerSeats : MonoBehaviour
         return true;
     }
 
-    public void Leave(PlayerSeatData playerSeatData)
+    private void Leave(PlayerSeatData playerSeatData)
     {
         _players[playerSeatData.SeatNumber] = null;
         PlayerLeaveEvent?.Invoke(playerSeatData);
+    }
+
+    private void OnPlayerClickJoinButton(PlayerSeatData data)
+    {
+        TryTake(data);
     }
 }

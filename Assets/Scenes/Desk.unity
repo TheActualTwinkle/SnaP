@@ -702,6 +702,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 482267166478154058, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
   m_PrefabInstance: {fileID: 940999422}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1485677410 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 482267166478154056, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+  m_PrefabInstance: {fileID: 940999422}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1485677408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc3a2e7c3f527ad4a8a188eafc170bb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &933267556189869866
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -818,5 +829,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerSeats
       objectReference: {fileID: 0}
+    - target: {fileID: 1629876883962402167, guid: ccede63d4deb885449498868fcd91041, type: 3}
+      propertyPath: _playerSeatUI
+      value: 
+      objectReference: {fileID: 1485677410}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ccede63d4deb885449498868fcd91041, type: 3}
