@@ -61,6 +61,7 @@ public class Player : NetworkBehaviour
     [ServerRpc]
     private void ChangeSeatServerRpc()
     {
+
     }
 
     // Refactor mb?
