@@ -6,12 +6,10 @@ using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
 
-public class PlayerSeats : MonoBehaviour
+public class PlayerSeats : NetworkBehaviour
 {
     public event Action<PlayerSeatData> PlayerSitEvent;
     public event Action<PlayerSeatData> PlayerLeaveEvent;
-
-    [SerializeField] private PlayerSeatUI _playerSeatUI;
 
     public List<Player> Players => _players.ToList();
     [ReadOnly]
@@ -30,43 +28,28 @@ public class PlayerSeats : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    public bool TryTake(PlayerSeatData data)
     {
-        _playerSeatUI.PlayerClickJoinButton += OnPlayerClickJoinButton;
-    }
-
-    private void OnDisable()
-    {
-        _playerSeatUI.PlayerClickJoinButton -= OnPlayerClickJoinButton;
-    }
-
-    private bool TryTake(PlayerSeatData playerSeatData)
-    {
-        if (CountOfFreeSeats == 0)
+        if (Players[data.SeatNumber] != null)
         {
-            Debug.LogError($"There is no free seats here");
+            Debug.LogError($"{data.Player.NickName} can`t take the {data.SeatNumber} seat, its already taken by {Players[data.SeatNumber].NickName}");
             return false;
         }
 
-        if (Players[playerSeatData.SeatNumber] != null)
+        if (_players.Contains(data.Player))
         {
-            Debug.LogError($"{playerSeatData.Player.NickName} can`t take the {playerSeatData.SeatNumber} seat, its already taken");
-            return false;
+            int oldSeatNumber = _players.IndexOf(data.Player);
+            Leave(new PlayerSeatData(data.Player, oldSeatNumber));
         }
 
-        _players[playerSeatData.SeatNumber] = playerSeatData.Player;
-        PlayerSitEvent?.Invoke(playerSeatData);
+        _players[data.SeatNumber] = data.Player;
+        PlayerSitEvent?.Invoke(data);
         return true;
     }
 
-    private void Leave(PlayerSeatData playerSeatData)
+    public void Leave(PlayerSeatData data)
     {
-        _players[playerSeatData.SeatNumber] = null;
-        PlayerLeaveEvent?.Invoke(playerSeatData);
-    }
-
-    private void OnPlayerClickJoinButton(PlayerSeatData data)
-    {
-        TryTake(data);
+        _players[data.SeatNumber] = null;
+        PlayerLeaveEvent?.Invoke(data);
     }
 }

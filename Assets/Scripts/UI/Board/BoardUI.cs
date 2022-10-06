@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator), typeof(NetworkObject))]
-public class BoardUI : NetworkBehaviour
+[RequireComponent(typeof(Animator))]
+public class BoardUI : MonoBehaviour
 {
     [SerializeField] private Game _game;
     [SerializeField] private Animator _animator;

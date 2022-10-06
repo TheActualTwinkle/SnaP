@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(NetworkObject))]
 public class Player : NetworkBehaviour
@@ -17,13 +19,31 @@ public class Player : NetworkBehaviour
     [ReadOnly]
     [SerializeField] private uint _stack;
 
+    public Sprite Avatar => _avatar;
+    [SerializeField] private Sprite _avatar;
+
+    private void OnEnable()
+    {
+        PlayerSeatUI.Instance.PlayerClickJoinButton += OnPlayerClickJoinButton;
+    }
+
+    private void OnDisable()
+    {
+        PlayerSeatUI.Instance.PlayerClickJoinButton -= OnPlayerClickJoinButton;
+    }
+
     public override void OnNetworkSpawn()
     {
         if (IsOwner == false)
         {
-            Destroy(this);
             return;
         }
+
+        PlayerData data = SaveLoadSystem.LoadPlayerData();
+        _nickName = data.Name;
+        _avatar = Resources.Load<Sprite>($"Sprites/{data.ImageID}");
+
+        DontDestroyOnLoad(gameObject);
     }
 
     public bool TryBet(uint amount)
@@ -38,8 +58,23 @@ public class Player : NetworkBehaviour
         return true;
     }
 
-    public void TakePot(uint amount)
+    [ServerRpc]
+    private void ChangeSeatServerRpc()
     {
-        _stack += amount;
+    }
+
+    // Refactor mb?
+    private void OnPlayerClickJoinButton(int seatNumber)
+    {
+        Debug.Log($"Player {OwnerClientId} sit on {seatNumber} seat. Is owner: {IsOwner}");
+
+        PlayerSeatData data = new PlayerSeatData(this, seatNumber);
+
+        if (IsOwner)
+        {
+            ChangeSeatServerRpc();
+        }
+
+        //PlayerSeats.(Instance).TryTake(data);
     }
 }

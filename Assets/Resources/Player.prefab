@@ -48,6 +48,7 @@ MonoBehaviour:
   _nickName: 
   _pocketCards: []
   _stack: 0
+  _avatar: {fileID: 0}
 --- !u!114 &2789658838808142452
 MonoBehaviour:
   m_ObjectHideFlags: 0

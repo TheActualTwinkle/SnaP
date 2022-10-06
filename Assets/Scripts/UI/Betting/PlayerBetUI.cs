@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class PlayerBetUI : MonoBehaviour
 {
-    [ReadOnly]
-    [SerializeField] private Player _player;
-
     [SerializeField] private Game _game;
 
     public float BetTime => _betTime;
@@ -41,11 +38,6 @@ public class PlayerBetUI : MonoBehaviour
         {
             button.OnClickEvent -= OnPlayerTurnOver;
         }
-    }
-
-    private void Start()
-    {
-        _player = FindObjectOfType<Player>();
     }
 
     private void OnPlayerTurnBegun(Player player)
