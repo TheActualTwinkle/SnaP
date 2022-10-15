@@ -5,12 +5,12 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerData
 {
-    public readonly string Name;
+    public readonly string NickName;
     public readonly string ImageID;
 
-    public PlayerData(string name, string imageID)
+    public PlayerData(string nickName, string imageID)
     {
-        Name = name;
+        NickName = nickName;
         ImageID = imageID;
     }
 }

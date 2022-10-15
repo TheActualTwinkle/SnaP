@@ -98,7 +98,7 @@ public class Game : MonoBehaviour
         EndDealEvent?.Invoke(winnerData);
     }
 
-    private void OnPlayerSit(PlayerSeatData data)
+    private void OnPlayerSit(Player player)
     {
         if (_isPlaying == false && _playerSeats?.CountOfFreeSeats >= 2)
         {
@@ -106,7 +106,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void OnPlayerLeave(PlayerSeatData data)
+    private void OnPlayerLeave(Player player)
     {
         if (_playerSeats?.CountOfFreeSeats == PlayerSeats.MAX_SEATS - 1)
         {

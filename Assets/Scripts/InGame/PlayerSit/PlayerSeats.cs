@@ -8,8 +8,11 @@ using UnityEngine;
 
 public class PlayerSeats : NetworkBehaviour
 {
-    public event Action<PlayerSeatData> PlayerSitEvent;
-    public event Action<PlayerSeatData> PlayerLeaveEvent;
+    public static PlayerSeats Instance => _instance;
+    private static PlayerSeats _instance;
+
+    public event Action<Player> PlayerSitEvent;
+    public event Action<Player> PlayerLeaveEvent;
 
     public List<Player> Players => _players.ToList();
     [ReadOnly]
@@ -28,28 +31,41 @@ public class PlayerSeats : NetworkBehaviour
         }
     }
 
-    public bool TryTake(PlayerSeatData data)
+    private void Awake()
     {
-        if (Players[data.SeatNumber] != null)
+        if (_instance == null)
         {
-            Debug.LogError($"{data.Player.NickName} can`t take the {data.SeatNumber} seat, its already taken by {Players[data.SeatNumber].NickName}");
+            _instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public bool TryTake(Player player)
+    {
+        int seatNumber = player.SeatNumber.Value;
+
+        if (_players[seatNumber] != null)
+        {
+            Debug.LogError($"{player.NickName} can`t take the {seatNumber} seat, its already taken by {Players[seatNumber].NickName}");
             return false;
         }
 
-        if (_players.Contains(data.Player))
-        {
-            int oldSeatNumber = _players.IndexOf(data.Player);
-            Leave(new PlayerSeatData(data.Player, oldSeatNumber));
-        }
+        Debug.Log($"Player '{player.NickName}' sit on {seatNumber} seat. Is owner: {IsOwner}");
 
-        _players[data.SeatNumber] = data.Player;
-        PlayerSitEvent?.Invoke(data);
+        _players[seatNumber] = player;
+        PlayerSitEvent?.Invoke(player);
+
         return true;
     }
 
-    public void Leave(PlayerSeatData data)
+    public void Leave(Player player)
     {
-        _players[data.SeatNumber] = null;
-        PlayerLeaveEvent?.Invoke(data);
+        int seatNumber = player.SeatNumber.Value;
+        _players[seatNumber] = null;
+
+        PlayerLeaveEvent?.Invoke(player);
     }
 }

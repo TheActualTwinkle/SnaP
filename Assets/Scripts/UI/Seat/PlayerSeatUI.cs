@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,22 +16,22 @@ public class PlayerSeatUI : MonoBehaviour
 
     public event Action<int> PlayerClickJoinButton;
 
-    [SerializeField] private PlayerSeats _playerSeats;
-
-    public List<SeatUI> Seats => _seats.ToList();
+    public List<SeatUI> Seats => _seatsUI.ToList();
     [ReadOnly]
-    [SerializeField] private List<SeatUI> _seats;
+    [SerializeField] private List<SeatUI> _seatsUI;
+
+    private List<Vector3> _defaultSeatPositions = new List<Vector3>(); 
 
     private void OnEnable()
     {
-        _playerSeats.PlayerSitEvent += OnPlayerSit;
-        _playerSeats.PlayerLeaveEvent += OnPlayerLeave;
+        PlayerSeats.Instance.PlayerSitEvent += OnPlayerSit;
+        PlayerSeats.Instance.PlayerLeaveEvent += OnPlayerLeave;
     }
 
     private void OnDisable()
     {
-        _playerSeats.PlayerSitEvent -= OnPlayerSit;
-        _playerSeats.PlayerLeaveEvent -= OnPlayerLeave;
+        PlayerSeats.Instance.PlayerSitEvent -= OnPlayerSit;
+        PlayerSeats.Instance.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
     private void Awake()
@@ -42,23 +45,62 @@ public class PlayerSeatUI : MonoBehaviour
             Destroy(gameObject);
         }
 
-        _seats = GetComponentsInChildren<SeatUI>().ToList();
+        _seatsUI = GetComponentsInChildren<SeatUI>().ToList();
     }
 
-    private void OnPlayerSit(PlayerSeatData data)
+    private void Start()
     {
-        Sprite avatar = data.Player.Avatar;
-        if (avatar == null)
+        _seatsUI = GetComponentsInChildren<SeatUI>().ToList();
+
+        foreach (var seatPosition in _seatsUI?.Select(x => x.transform.localPosition))
         {
-            avatar = Resources.Load<Sprite>("Sprites/Clown");
+            _defaultSeatPositions.Add(seatPosition);
+        }
+    }
+        
+    private void OnPlayerSit(Player player)
+    {
+        int seatNumber = player.SeatNumber.Value;   
+
+        _seatsUI[seatNumber].PlayerImage.sprite = player.Avatar;
+        _seatsUI[seatNumber].Text.text = player.NickName;
+
+        CenterPlayerSeat(seatNumber);
+    }
+
+    private void OnPlayerLeave(Player player)
+    {
+        int seatNumber = player.SeatNumber.Value;
+
+        _seatsUI[seatNumber].PlayerImage.sprite = Resources.Load<Sprite>("Sprites/Arrow");
+        _seatsUI[seatNumber].Text.text = string.Empty;
+    }
+
+    private void CenterPlayerSeat(int centralSeatNubmer)
+    {
+        Debug.Log($"Changed central view to {centralSeatNubmer}");
+
+        int[] centredIndexes = GetCentredIndexes(centralSeatNubmer);
+
+        for (int newIndex = 0; newIndex < centredIndexes.Length; newIndex++)
+        {
+            int preveousIndex = centredIndexes[newIndex];
+            _seatsUI[preveousIndex].transform.localPosition = _defaultSeatPositions[newIndex];
         }
 
-        _seats[data.SeatNumber].PlayerImage.sprite = avatar;
+
     }
 
-    private void OnPlayerLeave(PlayerSeatData data)
+    private int[] GetCentredIndexes(int centralSeatNubmer)
     {
-        _seats[data.SeatNumber].PlayerImage.sprite = Resources.Load<Sprite>("Sprites/Arrow");
+        List<int> centredIndexes = new List<int>();
+
+        for (int i = 0; i < PlayerSeats.MAX_SEATS; i++)
+        {
+            centredIndexes.Add((centralSeatNubmer + i) % PlayerSeats.MAX_SEATS);
+        }
+
+        return centredIndexes.ToArray();
     }
 
     // Button.

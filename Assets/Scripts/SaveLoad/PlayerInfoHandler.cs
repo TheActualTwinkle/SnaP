@@ -16,7 +16,7 @@ public class PlayerInfoHandler : MonoBehaviour
         {
             PlayerData playerData = SaveLoadSystem.LoadPlayerData();
 
-            _inputField.text = playerData.Name;
+            _inputField.text = playerData.NickName;
 
             Sprite avatar = Resources.Load<Sprite>($"Sprites/{playerData.ImageID}");
             if (avatar == null)

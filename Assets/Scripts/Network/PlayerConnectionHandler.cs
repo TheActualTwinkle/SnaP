@@ -59,7 +59,7 @@ public class PlayerConnectionHandler : NetworkBehaviour
         if (sceneName.Contains("Menu") == false && IsOwnedByServer == true)
         {
             Player player = NetworkObjectSpawner.SpawnNetworkObjectChangeOwnershipToClient(_playerPrefab.gameObject, Vector3.zero, clientId, true).GetComponent<Player>();
-            Debug.Log($"{player.OwnerClientId} joins server");
+            Debug.Log($"'{player.NickName}' joins server");
             _connectedPlayers.Add(player);
         }
     }

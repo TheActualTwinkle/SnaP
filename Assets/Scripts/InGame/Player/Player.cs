@@ -8,6 +8,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(NetworkObject))]
 public class Player : NetworkBehaviour
 {
+    public NetworkVariable<int> SeatNumber => _seatNumber;
+    [SerializeField] private NetworkVariable<int> _seatNumber = new NetworkVariable<int>(-1);
+
     public string NickName => _nickName;
     [ReadOnly]
     [SerializeField] private string _nickName;
@@ -25,11 +28,13 @@ public class Player : NetworkBehaviour
     private void OnEnable()
     {
         PlayerSeatUI.Instance.PlayerClickJoinButton += OnPlayerClickJoinButton;
+        _seatNumber.OnValueChanged += OnSeatNumberCanged;
     }
 
     private void OnDisable()
     {
         PlayerSeatUI.Instance.PlayerClickJoinButton -= OnPlayerClickJoinButton;
+        _seatNumber.OnValueChanged -= OnSeatNumberCanged;
     }
 
     public override void OnNetworkSpawn()
@@ -40,8 +45,8 @@ public class Player : NetworkBehaviour
         }
 
         PlayerData data = SaveLoadSystem.LoadPlayerData();
-        _nickName = data.Name;
-        _avatar = Resources.Load<Sprite>($"Sprites/{data.ImageID}");
+        _nickName = data?.NickName;
+        _avatar = Resources.Load<Sprite>($"Sprites/{data?.ImageID}"); // Add image from window and after save it on persistentPath
 
         DontDestroyOnLoad(gameObject);
     }
@@ -59,23 +64,31 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void ChangeSeatServerRpc()
+    private void ChangeSeatServerRpc(int seatNumber)
     {
-
+        _seatNumber.Value = seatNumber;
     }
 
-    // Refactor mb?
+    private void OnSeatNumberCanged(int oldValue, int newValue)
+    {
+        if (IsOwner == false && _seatNumber.Value != -1)
+        {
+                   
+        }
+    }
+
     private void OnPlayerClickJoinButton(int seatNumber)
     {
-        Debug.Log($"Player {OwnerClientId} sit on {seatNumber} seat. Is owner: {IsOwner}");
-
-        PlayerSeatData data = new PlayerSeatData(this, seatNumber);
-
         if (IsOwner)
         {
-            ChangeSeatServerRpc();
-        }
+            if (PlayerSeats.Instance.Players.Contains(this) == true)
+            {
+                PlayerSeats.Instance.Leave(this);
+            }
 
-        //PlayerSeats.(Instance).TryTake(data);
+            ChangeSeatServerRpc(seatNumber);
+
+            PlayerSeats.Instance.TryTake(this);
+        }
     }
 }
