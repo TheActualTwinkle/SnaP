@@ -6,13 +6,13 @@ using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
 
-public class PlayerSeats : NetworkBehaviour
+public class PlayerSeats : MonoBehaviour
 {
     public static PlayerSeats Instance => _instance;
     private static PlayerSeats _instance;
 
-    public event Action<Player> PlayerSitEvent;
-    public event Action<Player> PlayerLeaveEvent;
+    public event Action<Player, int> PlayerSitEvent;
+    public event Action<Player, int> PlayerLeaveEvent;
 
     public List<Player> Players => _players.ToList();
     [ReadOnly]
@@ -43,29 +43,35 @@ public class PlayerSeats : NetworkBehaviour
         }
     }
 
-    public bool TryTake(Player player)
+    public bool TryTake(Player player, int seatNumber)
     {
-        int seatNumber = player.SeatNumber.Value;
-
         if (_players[seatNumber] != null)
         {
-            Debug.LogError($"{player.NickName} can`t take the {seatNumber} seat, its already taken by {Players[seatNumber].NickName}");
+            Debug.LogError($"{player.NickName} can`t take the {seatNumber} seat, its already taken by '{Players[seatNumber].NickName}'");
             return false;
         }
 
-        Debug.Log($"Player '{player.NickName}' sit on {seatNumber} seat. Is owner: {IsOwner}");
+        Debug.Log($"Player '{player.NickName}' sit on {seatNumber} seat.");
 
         _players[seatNumber] = player;
-        PlayerSitEvent?.Invoke(player);
+        PlayerSitEvent?.Invoke(player, seatNumber);
 
         return true;
     }
 
-    public void Leave(Player player)
+    public bool TryLeave(Player player)
     {
-        int seatNumber = player.SeatNumber.Value;
+        if (_players.Contains(player) == false)
+        {
+            Debug.Log($"{player.NickName} not found. He cant leave");
+            return false;
+        }
+
+        int seatNumber = _players.IndexOf(player);
         _players[seatNumber] = null;
 
-        PlayerLeaveEvent?.Invoke(player);
+        PlayerLeaveEvent?.Invoke(player, seatNumber);
+
+        return true;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class WinnerData
+public struct WinnerData
 {
     public readonly Player Winner;
     public readonly uint Chips;

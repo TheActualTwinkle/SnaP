@@ -21,13 +21,13 @@ public class SaveLoadSystem
         fileStream.Close();
     }
 
-    public static PlayerData LoadPlayerData()
+    public static PlayerData? LoadPlayerData()
     {
         if (File.Exists(_playerSaveFile))
         {
             FileStream fileStream = new FileStream(_playerSaveFile, FileMode.Open);
 
-            PlayerData playerData = _binatyFormatter.Deserialize(fileStream) as PlayerData;
+            PlayerData? playerData = _binatyFormatter.Deserialize(fileStream) as PlayerData?;
 
             fileStream.Close();
 

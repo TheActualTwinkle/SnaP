@@ -226,8 +226,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7cc184903c370c409a673ffd781a4b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerImage: {fileID: 5681092452131566889}
-  Text: {fileID: 8076024403278709569}
+  _playerImage: {fileID: 5681092452131566889}
+  _nickName: {fileID: 8076024403278709569}
+  _pocketCards: {fileID: 6011500124517751241}
 --- !u!1 &6648614148782940300
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,6 +238,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1350340914142827439}
+  - component: {fileID: 6011500124517751241}
   m_Layer: 0
   m_Name: PocketCards
   m_TagString: Untagged
@@ -261,6 +263,18 @@ Transform:
   m_Father: {fileID: 5597228465117885304}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6011500124517751241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6648614148782940300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8176a1340bd5301498e62b615ea17d18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7187312505774085992
 GameObject:
   m_ObjectHideFlags: 0

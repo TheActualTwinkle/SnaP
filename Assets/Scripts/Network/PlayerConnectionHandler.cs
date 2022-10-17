@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,7 +39,7 @@ public class PlayerConnectionHandler : NetworkBehaviour
         if (IsServer)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
-        }   
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -59,7 +60,6 @@ public class PlayerConnectionHandler : NetworkBehaviour
         if (sceneName.Contains("Menu") == false && IsOwnedByServer == true)
         {
             Player player = NetworkObjectSpawner.SpawnNetworkObjectChangeOwnershipToClient(_playerPrefab.gameObject, Vector3.zero, clientId, true).GetComponent<Player>();
-            Debug.Log($"'{player.NickName}' joins server");
             _connectedPlayers.Add(player);
         }
     }

@@ -58,22 +58,22 @@ public class PlayerSeatUI : MonoBehaviour
         }
     }
         
-    private void OnPlayerSit(Player player)
+    private void OnPlayerSit(Player player, int seatNumber)
     {
-        int seatNumber = player.SeatNumber.Value;   
-
         _seatsUI[seatNumber].PlayerImage.sprite = player.Avatar;
-        _seatsUI[seatNumber].Text.text = player.NickName;
+        _seatsUI[seatNumber].NickName.text = player.NickName;
 
-        CenterPlayerSeat(seatNumber);
+        if (player.IsOwner == true)
+        {
+            CenterPlayerSeat(seatNumber);
+            SetupPocketCardsVisibility(seatNumber);
+        }
     }
 
-    private void OnPlayerLeave(Player player)
+    private void OnPlayerLeave(Player player, int seatNumber)
     {
-        int seatNumber = player.SeatNumber.Value;
-
         _seatsUI[seatNumber].PlayerImage.sprite = Resources.Load<Sprite>("Sprites/Arrow");
-        _seatsUI[seatNumber].Text.text = string.Empty;
+        _seatsUI[seatNumber].NickName.text = string.Empty;
     }
 
     private void CenterPlayerSeat(int centralSeatNubmer)
@@ -87,8 +87,6 @@ public class PlayerSeatUI : MonoBehaviour
             int preveousIndex = centredIndexes[newIndex];
             _seatsUI[preveousIndex].transform.localPosition = _defaultSeatPositions[newIndex];
         }
-
-
     }
 
     private int[] GetCentredIndexes(int centralSeatNubmer)
@@ -101,6 +99,15 @@ public class PlayerSeatUI : MonoBehaviour
         }
 
         return centredIndexes.ToArray();
+    }
+
+    private void SetupPocketCardsVisibility(int centralSeatNubmer)
+    {
+        for (int i = 0; i < _seatsUI.Count; i++)
+        {
+            _seatsUI[i].PocketCards.gameObject.SetActive(true);
+        }
+        _seatsUI[centralSeatNubmer].PocketCards.gameObject.SetActive(false);
     }
 
     // Button.

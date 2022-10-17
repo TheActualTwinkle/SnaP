@@ -7,34 +7,36 @@ using UnityEngine.UI;
 
 public class PlayerInfoHandler : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField _inputField;
+    [SerializeField] private TMP_InputField _nickNameInputField;
     [SerializeField] private Image _image;
 
     private void Start()
     {
         if (File.Exists(SaveLoadSystem.PlayerSaveFile) == true)
         {
-            PlayerData playerData = SaveLoadSystem.LoadPlayerData();
+            PlayerData? playerData = SaveLoadSystem.LoadPlayerData();
 
-            _inputField.text = playerData.NickName;
+            _nickNameInputField.text = playerData?.NickName;
 
-            Sprite avatar = Resources.Load<Sprite>($"Sprites/{playerData.ImageID}");
-            if (avatar == null)
-            {
-                avatar = Resources.Load<Sprite>("Sprites/Clown");
-            }
-
+            Sprite avatar = Resources.Load<Sprite>($"Sprites/{playerData?.ImageID}"); // Add image from browse window and after save it on persistentPath
             _image.sprite = avatar;
+        }
+        else
+        {
+            _nickNameInputField.text = "Player";
+            _image.sprite = Resources.Load<Sprite>("Sprites/Clown");
+
+            Save();
         }
     }
 
-    public void Save()
+    private void Save()
     {
         if (File.Exists(SaveLoadSystem.PlayerSaveFile) == false)
         {
             Directory.CreateDirectory(Application.persistentDataPath + "/saves");
         }
 
-        SaveLoadSystem.SavePlayerData(new PlayerData(_inputField.text, _image.sprite.name));
+        SaveLoadSystem.SavePlayerData(new PlayerData(_nickNameInputField.text, _image.sprite.name));
     }
 }
