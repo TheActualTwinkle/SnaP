@@ -14,7 +14,7 @@ public class PlayerSeatUI : MonoBehaviour
     public static PlayerSeatUI Instance => _instance;
     private static PlayerSeatUI _instance;
 
-    public event Action<int> PlayerClickJoinButton;
+    public event Action<int> PlayerClickTakeButton;
 
     public List<SeatUI> Seats => _seatsUI.ToList();
     [ReadOnly]
@@ -111,8 +111,8 @@ public class PlayerSeatUI : MonoBehaviour
     }
 
     // Button.
-    private void OnJoinButtonClick(int seatNumber)
+    private void OnPlayerClickTakeButton(int seatNumber)
     {
-        PlayerClickJoinButton?.Invoke(seatNumber);
+        PlayerClickTakeButton?.Invoke(seatNumber);
     }
 }

@@ -43,35 +43,46 @@ public class PlayerSeats : MonoBehaviour
         }
     }
 
-    public bool TryTake(Player player, int seatNumber)
+    public void Take(Player player, int seatNumber)
     {
         if (_players[seatNumber] != null)
         {
             Debug.LogError($"{player.NickName} can`t take the {seatNumber} seat, its already taken by '{Players[seatNumber].NickName}'");
-            return false;
+            return;
+        }
+
+        if (Players.Contains(player) == true)
+        {
+            Leave(player);
         }
 
         Debug.Log($"Player '{player.NickName}' sit on {seatNumber} seat.");
 
         _players[seatNumber] = player;
         PlayerSitEvent?.Invoke(player, seatNumber);
-
-        return true;
     }
 
-    public bool TryLeave(Player player)
+    public void Leave(Player player)
     {
         if (_players.Contains(player) == false)
         {
-            Debug.Log($"{player.NickName} not found. He cant leave");
-            return false;
+            Debug.LogError($"{player.NickName} not found. He cant leave");
+            return;
         }
 
         int seatNumber = _players.IndexOf(player);
         _players[seatNumber] = null;
 
         PlayerLeaveEvent?.Invoke(player, seatNumber);
+    }
 
-        return true;
+    public bool IsFree(int seatNumber)
+    {
+        if (_players[seatNumber] == null)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

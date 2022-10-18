@@ -26,18 +26,19 @@ public class Player : NetworkBehaviour
 
     private void OnEnable()
     {
-        PlayerSeatUI.Instance.PlayerClickJoinButton += OnPlayerClickJoinButton;
+        PlayerSeatUI.Instance.PlayerClickTakeButton += OnPlayerClickTakeButton;
         _seatNumber.OnValueChanged += OnSeatNumberCanged;
     }
 
     private void OnDisable()
     {
-        PlayerSeatUI.Instance.PlayerClickJoinButton -= OnPlayerClickJoinButton;
+        PlayerSeatUI.Instance.PlayerClickTakeButton -= OnPlayerClickTakeButton;
         _seatNumber.OnValueChanged -= OnSeatNumberCanged;
     }
 
     private void Start()
     {
+        // Set data and UI to non owner players.
         if (IsOwner == false && _seatNumber.Value != -1)
         {
             TakeSeat(_seatNumber.Value);
@@ -101,25 +102,19 @@ public class Player : NetworkBehaviour
         //NetworkManager.Singleton.SceneManager.LoadScene("Menu", LoadSceneMode.Single); Uncomment when create local scene transitions.
     }
 
-    private void TakeSeat(int seatNumber)
-    {
-        if (PlayerSeats.Instance.Players.Contains(this) == true)
-        {
-            PlayerSeats.Instance.TryLeave(this);
-        }
-        PlayerSeats.Instance.TryTake(this, seatNumber);
-    }
-
-    private void OnPlayerClickJoinButton(int seatNumber)
+    private void OnPlayerClickTakeButton(int seatNumber)
     {
         if (IsOwner == false)
         {
             return;
         }
 
-        ChangeSeatServerRpc(seatNumber);
+        if (PlayerSeats.Instance.IsFree(seatNumber) == true)
+        {
+            ChangeSeatServerRpc(seatNumber);
 
-        TakeSeat(seatNumber);
+            TakeSeat(seatNumber);
+        }
     }
 
     // Set data to non owner players.
@@ -129,6 +124,11 @@ public class Player : NetworkBehaviour
         {
             TakeSeat(newValue);
         }
+    }
+
+    private void TakeSeat(int seatNumber)
+    {
+        PlayerSeats.Instance.Take(this, seatNumber);
     }
 
     [ServerRpc]

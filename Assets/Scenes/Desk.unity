@@ -314,6 +314,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 120610235612410501, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnPlayerClickTakeButton
+      objectReference: {fileID: 0}
     - target: {fileID: 133486187680971018, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: text
       value: 
@@ -470,10 +474,18 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 2991305784336877786, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnPlayerClickTakeButton
+      objectReference: {fileID: 0}
     - target: {fileID: 3300968856190512244, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: m_TargetGraphic
       value: 
       objectReference: {fileID: 15804254}
+    - target: {fileID: 3300968856190512244, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnPlayerClickTakeButton
+      objectReference: {fileID: 0}
     - target: {fileID: 3923288959079677853, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -550,6 +562,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4328007356972392288, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnPlayerClickTakeButton
+      objectReference: {fileID: 0}
     - target: {fileID: 4698069731366955907, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.7071068
@@ -577,6 +593,10 @@ PrefabInstance:
     - target: {fileID: 5922148568245105040, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: _number
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211436725331466055, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 6458545753506979065, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: m_LocalPosition.x

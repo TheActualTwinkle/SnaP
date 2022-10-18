@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6431686066884076292}
   - component: {fileID: 7409379489497490210}
   m_Layer: 5
-  m_Name: JoinButton
+  m_Name: TakeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
