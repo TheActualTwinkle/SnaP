@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _gameStageText; // ToDelete.
+
     public event Action<Player> PlayerTurnBegunEvent;
     public event Action<WinnerData> EndDealEvent;
     public event Action<GameStages> GameStageChangedEvent;
@@ -28,6 +31,7 @@ public class Game : MonoBehaviour
 
     [SerializeField] private PlayerSeats _playerSeats;
     [SerializeField] private PlayerBetUI _playerBetUI;
+
     private CardDeck _cardDeck;
     private Board _board;
 
@@ -61,6 +65,9 @@ public class Game : MonoBehaviour
             boradCards.Add(_cardDeck.PullCard());
         }
         _board = new Board(boradCards);
+
+        _gameStageText.text = "StartDeal";
+        StartPreflop();
     }
 
     private void StartPreflop()
@@ -94,15 +101,20 @@ public class Game : MonoBehaviour
     {
         _isPlaying = false;
 
-        WinnerData winnerData = new WinnerData(winner, 0);
-        EndDealEvent?.Invoke(winnerData);
+        // Not pot but some chips based on bet.
+        EndDealEvent?.Invoke(new WinnerData(winner, _pot));
+        _gameStageText.text = "EndDeal";
     }
 
     private void OnPlayerSit(Player player, int seatNumber)
     {
-        if (_isPlaying == false && _playerSeats?.CountOfFreeSeats >= 2)
+        if (_isPlaying == false && _playerSeats?.CountOfFreeSeats <= 3)
         {
             StartDeal();
+        }
+        else if (_isPlaying == true)
+        {
+            StartCoroutine(StartDealWhenPreviousOver());
         }
     }
 
@@ -120,9 +132,15 @@ public class Game : MonoBehaviour
         {
             if (player != null)
             {
-                PlayerTurnBegunEvent?.Invoke(player); 
-                yield return _playerBetUI.C_WaitForPlayerBetAction;
+                PlayerTurnBegunEvent?.Invoke(player);
+                yield return _playerBetUI.C_WaitForPlayerBet;
             }
         }
+    }
+
+    private IEnumerator StartDealWhenPreviousOver()
+    {
+        yield return new WaitUntil(() => (_isPlaying == false && _playerSeats?.CountOfFreeSeats >= 2));
+        StartDeal();
     }
 }

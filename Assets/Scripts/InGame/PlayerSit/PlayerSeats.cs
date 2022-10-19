@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
 {
+    public const int MAX_SEATS = 5;
+
     public static PlayerSeats Instance => _instance;
     private static PlayerSeats _instance;
 
@@ -17,8 +19,6 @@ public class PlayerSeats : MonoBehaviour
     public List<Player> Players => _players.ToList();
     [ReadOnly]
     [SerializeField] private List<Player> _players;
-
-    public const int MAX_SEATS = 5;
 
     public int CountOfFreeSeats => Players.Where(x => x == null).Count();
 

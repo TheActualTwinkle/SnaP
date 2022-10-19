@@ -8,10 +8,9 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(NetworkObject))]
 public class Player : NetworkBehaviour
 {
-    [SerializeField] private NetworkVariable<int> _seatNumber = new NetworkVariable<int>(-1);
+    private const int NULL_SEAT_NUMBER = -1;
 
-    public string NickName => _nickName.Value.ToString();
-    private NetworkVariable<FixedString64Bytes> _nickName = new NetworkVariable<FixedString64Bytes>();
+    [SerializeField] private NetworkVariable<int> _seatNumber = new NetworkVariable<int>(NULL_SEAT_NUMBER);
 
     [ReadOnly]
     [SerializeField] private List<CardObject> _pocketCards = new List<CardObject>(2);
@@ -24,6 +23,9 @@ public class Player : NetworkBehaviour
     [ReadOnly]
     [SerializeField] private Sprite _avatar;
 
+    public string NickName => _nickName.Value.ToString();
+    private NetworkVariable<FixedString64Bytes> _nickName = new NetworkVariable<FixedString64Bytes>();
+
     private void OnEnable()
     {
         PlayerSeatUI.Instance.PlayerClickTakeButton += OnPlayerClickTakeButton;
@@ -32,7 +34,7 @@ public class Player : NetworkBehaviour
 
     private void OnDisable()
     {
-        PlayerSeatUI.Instance.PlayerClickTakeButton -= OnPlayerClickTakeButton;
+        PlayerSeatUI.Instance.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
         _seatNumber.OnValueChanged -= OnSeatNumberCanged;
     }
 
@@ -49,6 +51,14 @@ public class Player : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) && IsOwner == true)
         {
+            if (PlayerSeats.Instance.Players.Contains(this) == true)
+            {
+                ChangeSeatServerRpc(NULL_SEAT_NUMBER);
+
+                LeaveSeat();
+                return;
+            }
+
             if (IsServer)
             {
                 StartCoroutine(HostShutdown());
@@ -69,7 +79,7 @@ public class Player : NetworkBehaviour
 
         PlayerData? data = SaveLoadSystem.LoadPlayerData();
         _avatar = Resources.Load<Sprite>($"Sprites/{data?.ImageID}"); // Change somehow :)
-        InitializePlayerNickNameServerRpc(data?.NickName);
+        CangePlayerNickNameServerRpc(data?.NickName);
 
         Debug.Log($"Player '{data?.NickName}' is spawned");
     }
@@ -98,10 +108,11 @@ public class Player : NetworkBehaviour
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        Application.Quit(); // Remove this line when do line above.
+        Application.Quit(); // Remove this line when do next line.
         //NetworkManager.Singleton.SceneManager.LoadScene("Menu", LoadSceneMode.Single); Uncomment when create local scene transitions.
     }
 
+    // Set data to owner players.
     private void OnPlayerClickTakeButton(int seatNumber)
     {
         if (IsOwner == false)
@@ -117,18 +128,30 @@ public class Player : NetworkBehaviour
         }
     }
 
-    // Set data to non owner players.
+    // Set data to NON owner players.
     private void OnSeatNumberCanged(int oldValue, int newValue)
     {
-        if (IsOwner == false && _seatNumber.Value != -1)
+        if (IsOwner == false)
         {
-            TakeSeat(newValue);
+            if (newValue != NULL_SEAT_NUMBER)
+            {
+                TakeSeat(newValue);
+            }
+            else
+            {
+                LeaveSeat();
+            }
         }
     }
 
     private void TakeSeat(int seatNumber)
     {
         PlayerSeats.Instance.Take(this, seatNumber);
+    }
+
+    private void LeaveSeat()
+    {
+        PlayerSeats.Instance.Leave(this);
     }
 
     [ServerRpc]
@@ -138,7 +161,7 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void InitializePlayerNickNameServerRpc(string nickName)
+    private void CangePlayerNickNameServerRpc(string nickName)
     {
         _nickName.Value = nickName;
     }

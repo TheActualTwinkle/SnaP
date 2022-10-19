@@ -14,8 +14,8 @@ public class PlayerBetUI : MonoBehaviour
     [ReadOnly]
     [SerializeField] private List<BetButton> _buttons;
 
-    public IEnumerator C_WaitForPlayerBetAction =>  c_WaitForPlayerBetAction;
-    private IEnumerator c_WaitForPlayerBetAction;
+    public IEnumerator C_WaitForPlayerBet =>  c_WaitForPlayerBet;
+    private IEnumerator c_WaitForPlayerBet;
 
     private void OnValidate()
     {
@@ -43,19 +43,19 @@ public class PlayerBetUI : MonoBehaviour
     private void OnPlayerTurnBegun(Player player)
     {
         SetupButtons();
-        if (c_WaitForPlayerBetAction != null)
+        if (c_WaitForPlayerBet != null)
         {
-            StopCoroutine(c_WaitForPlayerBetAction);
+            StopCoroutine(c_WaitForPlayerBet);
         }
-        c_WaitForPlayerBetAction = WaitForPlayerBetAction();
-        StartCoroutine(c_WaitForPlayerBetAction);
+        c_WaitForPlayerBet = WaitForPlayerBetAction();
+        StartCoroutine(c_WaitForPlayerBet);
     }
 
     private void OnPlayerTurnOver(BetButtonActions action)
     {
-        if (c_WaitForPlayerBetAction != null)
+        if (c_WaitForPlayerBet != null)
         {
-            StopCoroutine(c_WaitForPlayerBetAction);
+            StopCoroutine(c_WaitForPlayerBet);
         }
     }
 
