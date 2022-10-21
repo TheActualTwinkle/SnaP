@@ -9,9 +9,8 @@ using UnityEngine;
 public class PlayerSeats : MonoBehaviour
 {
     public const int MAX_SEATS = 5;
-
-    public static PlayerSeats Instance => _instance;
-    private static PlayerSeats _instance;
+   
+    public static PlayerSeats Instance { get; private set; }
 
     public event Action<Player, int> PlayerSitEvent;
     public event Action<Player, int> PlayerLeaveEvent;
@@ -33,9 +32,9 @@ public class PlayerSeats : MonoBehaviour
 
     private void Awake()
     {
-        if (_instance == null)
+        if (Instance == null)
         {
-            _instance = this;
+            Instance = this;
         }
         else
         {

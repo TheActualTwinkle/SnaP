@@ -6,22 +6,5 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class BoardUI : MonoBehaviour
 {
-    [SerializeField] private Game _game;
     [SerializeField] private Animator _animator;
-
-    private void OnEnable()
-    {
-        if (_game == null)
-        {
-            _game = FindObjectOfType<Game>();
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (_game == null)
-        {
-            return;
-        }
-    }
 }

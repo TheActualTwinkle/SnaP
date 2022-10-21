@@ -13,5 +13,8 @@ Project for learn Unity multiplayer. Using Texas hold 'em as one of the most pop
     >Unity Transport provides the `com.unity.transport` package, used to add multiplayer and network features to your project.
   * [Unity Gaming Services (UGS)](https://unity.com/solutions/gaming-services)
     >These services make it easy for players to host and join games that are playable over the internet, without the need for port forwarding or out-of-game coordination.
+  * [ParrelSync](https://github.com/VeriorPies/ParrelSync)
+	>ParrelSync is a Unity editor extension that allows users to test multiplayer gameplay without building the project by having another Unity editor window opened and mirror the changes from the original project.
+
 ## **Play**
 For start playing go to `Poker/Build` and Run `Poker.exe`.

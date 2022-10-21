@@ -1,71 +1,80 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerBetUI : MonoBehaviour
 {
-    [SerializeField] private Game _game;
+    public static PlayerBetUI Instance { get; private set; }
+
+    public event Action<BetAction> BetActionEvent;
 
     public float BetTime => _betTime;
     [SerializeField] private float _betTime;
 
     [ReadOnly]
-    [SerializeField] private List<BetButton> _buttons;
+    [SerializeField] private List<Button> _buttons;
 
-    public IEnumerator C_WaitForPlayerBet =>  c_WaitForPlayerBet;
+    public IEnumerator C_WaitForPlayerBet => c_WaitForPlayerBet;
     private IEnumerator c_WaitForPlayerBet;
 
-    private void OnValidate()
-    {
-        _buttons = GetComponentsInChildren<BetButton>(true).ToList();
-    }
+    private Game _game => Game.Instance;
 
     private void OnEnable()
     {
         _game.PlayerTurnBegunEvent += OnPlayerTurnBegun;
-        foreach (var button in _buttons)
-        {
-            button.OnClickEvent += OnPlayerTurnOver;
-        }
     }
 
     private void OnDisable()
     {
         _game.PlayerTurnBegunEvent -= OnPlayerTurnBegun;
-        foreach (var button in _buttons)
+    }
+
+    private void Awake()
+    {
+        if (Instance == null)
         {
-            button.OnClickEvent -= OnPlayerTurnOver;
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 
     private void OnPlayerTurnBegun(Player player)
     {
         SetupButtons();
+        
         if (c_WaitForPlayerBet != null)
         {
             StopCoroutine(c_WaitForPlayerBet);
         }
-        c_WaitForPlayerBet = WaitForPlayerBetAction();
+        c_WaitForPlayerBet = MakeBet();
         StartCoroutine(c_WaitForPlayerBet);
     }
 
-    private void OnPlayerTurnOver(BetButtonActions action)
+    private void SetupButtons() // ToDo. mb create class to set the actions?
+    {
+
+    }
+
+    // Button.
+    private void MakeBetAction(BetAction action)
     {
         if (c_WaitForPlayerBet != null)
         {
             StopCoroutine(c_WaitForPlayerBet);
         }
+        BetActionEvent?.Invoke(action);
     }
 
-    private void SetupButtons()
+    private IEnumerator MakeBet()
     {
-
-    }
-
-    private IEnumerator WaitForPlayerBetAction()
-    {
-        yield return new WaitForSecondsRealtime(_betTime);   
+        yield return new WaitForSecondsRealtime(_betTime);
+        // exit with no action
     }
 }

@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _gameStageText; // ToDelete.
+    public static Game Instance { get; private set; }
 
     public event Action<Player> PlayerTurnBegunEvent;
     public event Action<WinnerData> EndDealEvent;
-    public event Action<GameStages> GameStageChangedEvent;
+    public event Action<GameStage> GameStageChangedEvent;
 
     public bool IsPlaying => _isPlaying;
     [ReadOnly]
@@ -26,11 +27,10 @@ public class Game : MonoBehaviour
 
     [ReadOnly]
     [SerializeField] private uint _bigBlindValue;
-
     [SerializeField] private uint _smallBlindValue;
 
-    [SerializeField] private PlayerSeats _playerSeats;
-    [SerializeField] private PlayerBetUI _playerBetUI;
+    private PlayerSeats _playerSeats => PlayerSeats.Instance;
+    private PlayerBetUI _playerBetUI => PlayerBetUI.Instance;
 
     private CardDeck _cardDeck;
     private Board _board;
@@ -52,6 +52,18 @@ public class Game : MonoBehaviour
         _bigBlindValue = _smallBlindValue * 2;
     }
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void StartDeal()
     {
         _isPlaying = true;
@@ -66,35 +78,34 @@ public class Game : MonoBehaviour
         }
         _board = new Board(boradCards);
 
-        _gameStageText.text = "StartDeal";
         StartPreflop();
     }
 
     private void StartPreflop()
     {
-        GameStageChangedEvent?.Invoke(GameStages.Preflop);
+        GameStageChangedEvent?.Invoke(GameStage.Preflop);
 
-        StartCoroutine(MakeBets());
+        StartCoroutine(MakeBetActions());
     }
 
     private void StartFlop()
     {
-        GameStageChangedEvent?.Invoke(GameStages.Flop);
+        GameStageChangedEvent?.Invoke(GameStage.Flop);
     }
 
     private void StartTrun()
     {
-        GameStageChangedEvent?.Invoke(GameStages.Turn);
+        GameStageChangedEvent?.Invoke(GameStage.Turn);
     }
 
     private void StartRiver()
     {
-        GameStageChangedEvent?.Invoke(GameStages.River);
+        GameStageChangedEvent?.Invoke(GameStage.River);
     }
 
     private void StartShowdown()
     {
-        GameStageChangedEvent?.Invoke(GameStages.Showdown);
+        GameStageChangedEvent?.Invoke(GameStage.Showdown);
     }
 
     private void EndDeal(Player winner)
@@ -103,7 +114,6 @@ public class Game : MonoBehaviour
 
         // Not pot but some chips based on bet.
         EndDealEvent?.Invoke(new WinnerData(winner, _pot));
-        _gameStageText.text = "EndDeal";
     }
 
     private void OnPlayerSit(Player player, int seatNumber)
@@ -126,7 +136,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private IEnumerator MakeBets()
+    private IEnumerator MakeBetActions()
     {
         foreach (var player in _playerSeats.Players)
         {

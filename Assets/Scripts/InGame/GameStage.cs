@@ -1,4 +1,4 @@
-public enum GameStages
+public enum GameStage
 {
     Preflop,
     Flop,

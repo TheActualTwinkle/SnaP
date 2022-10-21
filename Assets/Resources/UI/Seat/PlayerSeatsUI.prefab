@@ -55,7 +55,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _seatsUI: []
-  _defaultSeatPositions: []
 --- !u!1001 &926770445965006891
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -161,7 +160,7 @@ PrefabInstance:
       objectReference: {fileID: 7859571473029312708}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnJoinButtonClick
+      value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -291,7 +290,7 @@ PrefabInstance:
       objectReference: {fileID: 7859571473029312708}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnJoinButtonClick
+      value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -417,7 +416,7 @@ PrefabInstance:
       objectReference: {fileID: 7859571473029312708}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnJoinButtonClick
+      value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -543,7 +542,7 @@ PrefabInstance:
       objectReference: {fileID: 7859571473029312708}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnJoinButtonClick
+      value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -667,6 +666,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7859571473029312708}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnPlayerClickTakeButton
+      objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: 4

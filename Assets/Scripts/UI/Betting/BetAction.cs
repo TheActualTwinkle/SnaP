@@ -1,4 +1,4 @@
-public enum BetButtonActions
+public enum BetAction
 {
     CheckFold,
     Fold,

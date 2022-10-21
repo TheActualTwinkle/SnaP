@@ -11,10 +11,11 @@ using UnityEngine.UI;
 
 public class PlayerSeatUI : MonoBehaviour
 {
-    public static PlayerSeatUI Instance => _instance;
-    private static PlayerSeatUI _instance;
+    public static PlayerSeatUI Instance { get; private set; }
 
     public event Action<int> PlayerClickTakeButton;
+
+    private PlayerSeats _playerSeats => PlayerSeats.Instance;
 
     public List<SeatUI> Seats => _seatsUI.ToList();
     [ReadOnly]
@@ -24,28 +25,26 @@ public class PlayerSeatUI : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerSeats.Instance.PlayerSitEvent += OnPlayerSit;
-        PlayerSeats.Instance.PlayerLeaveEvent += OnPlayerLeave;
+        _playerSeats.PlayerSitEvent += OnPlayerSit;
+        _playerSeats.PlayerLeaveEvent += OnPlayerLeave;
     }
 
     private void OnDisable()
     {
-        PlayerSeats.Instance.PlayerSitEvent -= OnPlayerSit;
-        PlayerSeats.Instance.PlayerLeaveEvent -= OnPlayerLeave;
+        _playerSeats.PlayerSitEvent -= OnPlayerSit;
+        _playerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
     private void Awake()
     {
-        if (_instance == null)
+        if (Instance == null)
         {
-            _instance = this;
+            Instance = this;
         }
         else
         {
             Destroy(gameObject);
         }
-
-        _seatsUI = GetComponentsInChildren<SeatUI>().ToList();
     }
 
     private void Start()

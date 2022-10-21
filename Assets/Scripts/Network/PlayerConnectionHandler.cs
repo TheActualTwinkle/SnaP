@@ -9,8 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerConnectionHandler : NetworkBehaviour
 {
-    public static PlayerConnectionHandler Instance => _instance;
-    private static PlayerConnectionHandler _instance;
+    public static PlayerConnectionHandler Instance { get; private set; }
 
     [SerializeField] private Player _playerPrefab;
 
@@ -24,9 +23,9 @@ public class PlayerConnectionHandler : NetworkBehaviour
 
     private void Awake()
     {
-        if (_instance == null)
+        if (Instance == null)
         {
-            _instance = this;
+            Instance = this;
         }
         else
         {

@@ -23,6 +23,8 @@ public class Player : NetworkBehaviour
     [ReadOnly]
     [SerializeField] private Sprite _avatar;
 
+    private PlayerSeats _playerSeats => PlayerSeats.Instance;
+
     public string NickName => _nickName.Value.ToString();
     private NetworkVariable<FixedString64Bytes> _nickName = new NetworkVariable<FixedString64Bytes>();
 
@@ -51,7 +53,7 @@ public class Player : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) && IsOwner == true)
         {
-            if (PlayerSeats.Instance.Players.Contains(this) == true)
+            if (_playerSeats.Players.Contains(this) == true)
             {
                 ChangeSeatServerRpc(NULL_SEAT_NUMBER);
 
@@ -120,7 +122,7 @@ public class Player : NetworkBehaviour
             return;
         }
 
-        if (PlayerSeats.Instance.IsFree(seatNumber) == true)
+        if (_playerSeats.IsFree(seatNumber) == true)
         {
             ChangeSeatServerRpc(seatNumber);
 
@@ -146,12 +148,12 @@ public class Player : NetworkBehaviour
 
     private void TakeSeat(int seatNumber)
     {
-        PlayerSeats.Instance.Take(this, seatNumber);
+        _playerSeats.Take(this, seatNumber);
     }
 
     private void LeaveSeat()
     {
-        PlayerSeats.Instance.Leave(this);
+        _playerSeats.Leave(this);
     }
 
     [ServerRpc]
