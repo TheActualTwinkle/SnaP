@@ -15,7 +15,7 @@ public class Menu : MonoBehaviour
     private void StartHost()
     {
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        unityTransport.SetConnectionData(GetLocalIPAddress(), (ushort)Random.Range(11111, 100000));
+        unityTransport.SetConnectionData(GetLocalIPAddress(), 12345); // (ushort)Random.Range(ushort.MinValue + 10000, ushort.MaxValue)
 
         NetworkManager.Singleton.StartHost();
         NetworkManager.Singleton.SceneManager.LoadScene("Desk", LoadSceneMode.Single);

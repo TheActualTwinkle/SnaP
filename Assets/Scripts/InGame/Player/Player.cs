@@ -5,12 +5,14 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(NetworkObject))]
 public class Player : NetworkBehaviour
 {
     private const int NULL_SEAT_NUMBER = -1;
 
     [SerializeField] private NetworkVariable<int> _seatNumber = new NetworkVariable<int>(NULL_SEAT_NUMBER);
+
+    public string NickName => _nickName.Value.ToString();
+    private NetworkVariable<FixedString32Bytes> _nickName = new NetworkVariable<FixedString32Bytes>();
 
     [ReadOnly]
     [SerializeField] private List<CardObject> _pocketCards = new List<CardObject>(2);
@@ -24,19 +26,17 @@ public class Player : NetworkBehaviour
     [SerializeField] private Sprite _avatar;
 
     private PlayerSeats _playerSeats => PlayerSeats.Instance;
-
-    public string NickName => _nickName.Value.ToString();
-    private NetworkVariable<FixedString64Bytes> _nickName = new NetworkVariable<FixedString64Bytes>();
+    private PlayerSeatUI _çlayerSeatUI => PlayerSeatUI.Instance;
 
     private void OnEnable()
     {
-        PlayerSeatUI.Instance.PlayerClickTakeButton += OnPlayerClickTakeButton;
+        _çlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeButton;
         _seatNumber.OnValueChanged += OnSeatNumberCanged;
     }
 
     private void OnDisable()
     {
-        PlayerSeatUI.Instance.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
+        _çlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
         _seatNumber.OnValueChanged -= OnSeatNumberCanged;
     }
 
@@ -58,16 +58,18 @@ public class Player : NetworkBehaviour
                 ChangeSeatServerRpc(NULL_SEAT_NUMBER);
 
                 LeaveSeat();
-                return;
             }
 
-            if (IsServer)
-            {
-                StartCoroutine(HostShutdown());
-            }
             else
             {
-                Shutdown();
+                if (IsServer)
+                {
+                    StartCoroutine(HostShutdown());
+                }
+                else
+                {
+                    Shutdown();
+                }
             }
         }
     }

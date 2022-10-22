@@ -7,7 +7,7 @@ Project for learn Unity multiplayer. Using Texas hold 'em as one of the most pop
  - Unity Version [**2021.3**](https://unity3d.com/get-unity/download) or newer
 
 ## **Services implemented:**
-  * [Netcode for GameObjects](https://unity.com/products/netcode) :
+  * [Netcode for GameObjects](https://unity.com/products/netcode) 
     >This library is used to synchronize GameObject and game state data across all clients that connect in a networking session.
   * [UnityTransport](https://docs-multiplayer.unity3d.com/transport/current/about/index.html)
     >Unity Transport provides the `com.unity.transport` package, used to add multiplayer and network features to your project.
