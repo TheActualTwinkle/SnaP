@@ -56,7 +56,7 @@ public class PlayerConnectionHandler : NetworkBehaviour
 
     private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
     {
-        if (sceneName.Contains("Menu") == false && IsOwnedByServer == true)
+        if (sceneName.Contains("Desk") == true && IsOwnedByServer == true)
         {
             Player player = NetworkObjectSpawner.SpawnNetworkObjectChangeOwnershipToClient(_playerPrefab.gameObject, Vector3.zero, clientId, true).GetComponent<Player>();
             _connectedPlayers.Add(player);

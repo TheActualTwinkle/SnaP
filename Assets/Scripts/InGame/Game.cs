@@ -14,6 +14,9 @@ public class Game : MonoBehaviour
     public event Action<WinnerData> EndDealEvent;
     public event Action<GameStage> GameStageChangedEvent;
 
+    public PlayerSeats PlayerSeats => _playerSeats;
+    private PlayerSeats _playerSeats;
+
     public bool IsPlaying => _isPlaying;
     [ReadOnly]
     [SerializeField] private bool _isPlaying;
@@ -29,7 +32,6 @@ public class Game : MonoBehaviour
     [SerializeField] private uint _bigBlindValue;
     [SerializeField] private uint _smallBlindValue;
 
-    private PlayerSeats _playerSeats => PlayerSeats.Instance;
     private PlayerBetUI _playerBetUI => PlayerBetUI.Instance;
 
     private CardDeck _cardDeck;
@@ -62,6 +64,8 @@ public class Game : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        _playerSeats = new PlayerSeats();
     }
 
     private void StartDeal()
@@ -130,7 +134,7 @@ public class Game : MonoBehaviour
 
     private void OnPlayerLeave(Player player, int seatNumber)
     {
-        if (_playerSeats?.CountOfFreeSeats == PlayerSeats.MAX_SEATS - 1)
+        if (_playerSeats?.CountOfFreeSeats == PlayerSeats.MaxSeats - 1)
         {
             EndDeal(_playerSeats.Players.Where(x => x != null).FirstOrDefault());
         }

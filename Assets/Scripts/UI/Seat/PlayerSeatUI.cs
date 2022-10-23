@@ -15,7 +15,7 @@ public class PlayerSeatUI : MonoBehaviour
 
     public event Action<int> PlayerClickTakeButton;
 
-    private PlayerSeats _playerSeats => PlayerSeats.Instance;
+    private PlayerSeats _playerSeats => Game.Instance.PlayerSeats;
 
     public List<SeatUI> Seats => _seatsUI.ToList();
     [ReadOnly]
@@ -92,9 +92,9 @@ public class PlayerSeatUI : MonoBehaviour
     {
         List<int> centredIndexes = new List<int>();
 
-        for (int i = 0; i < PlayerSeats.MAX_SEATS; i++)
+        for (int i = 0; i < PlayerSeats.MaxSeats; i++)
         {
-            centredIndexes.Add((centralSeatNubmer + i) % PlayerSeats.MAX_SEATS);
+            centredIndexes.Add((centralSeatNubmer + i) % PlayerSeats.MaxSeats);
         }
 
         return centredIndexes.ToArray();

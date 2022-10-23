@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -25,18 +28,18 @@ public class Player : NetworkBehaviour
     [ReadOnly]
     [SerializeField] private Sprite _avatar;
 
-    private PlayerSeats _playerSeats => PlayerSeats.Instance;
-    private PlayerSeatUI _çlayerSeatUI => PlayerSeatUI.Instance;
+    private PlayerSeats _playerSeats => Game.Instance.PlayerSeats;
+    private PlayerSeatUI _playerSeatUI => PlayerSeatUI.Instance;
 
     private void OnEnable()
     {
-        _çlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeButton;
+        _playerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeButton;
         _seatNumber.OnValueChanged += OnSeatNumberCanged;
     }
 
     private void OnDisable()
     {
-        _çlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
+        _playerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
         _seatNumber.OnValueChanged -= OnSeatNumberCanged;
     }
 
@@ -100,6 +103,13 @@ public class Player : NetworkBehaviour
         return true;
     }
 
+    private void Shutdown()
+    {
+        NetworkManager.Singleton.Shutdown();
+        Application.Quit(); // Remove this line when do next line.
+        //NetworkManager.Singleton.SceneManager.LoadScene("Menu", LoadSceneMode.Single); Uncomment when create local scene transitions.
+    }
+
     private IEnumerator HostShutdown()
     {
         ShutdownClientRpc();
@@ -107,13 +117,6 @@ public class Player : NetworkBehaviour
         yield return new WaitForSeconds(0.5f);
 
         Shutdown();
-    }
-
-    private void Shutdown()
-    {
-        NetworkManager.Singleton.Shutdown();
-        Application.Quit(); // Remove this line when do next line.
-        //NetworkManager.Singleton.SceneManager.LoadScene("Menu", LoadSceneMode.Single); Uncomment when create local scene transitions.
     }
 
     // Set data to owner players.
