@@ -1,5 +1,6 @@
 public enum BetAction
 {
+    Empty,
     CheckFold,
     Fold,
     CallAny,

@@ -10,12 +10,14 @@ using UnityEngine.SceneManagement;
 
 public class Player : NetworkBehaviour
 {
-    private const int NULL_SEAT_NUMBER = -1;
+    private const int NullSeatNumber = -1;
 
-    [SerializeField] private NetworkVariable<int> _seatNumber = new NetworkVariable<int>(NULL_SEAT_NUMBER);
+    [SerializeField] private NetworkVariable<int> _seatNumber = new NetworkVariable<int>(NullSeatNumber);
 
     public string NickName => _nickName.Value.ToString();
     private NetworkVariable<FixedString32Bytes> _nickName = new NetworkVariable<FixedString32Bytes>();
+
+    public Sprite Avatar { get; private set; }
 
     [ReadOnly]
     [SerializeField] private List<CardObject> _pocketCards = new List<CardObject>(2);
@@ -24,12 +26,8 @@ public class Player : NetworkBehaviour
     [ReadOnly]
     [SerializeField] private uint _stack;
 
-    public Sprite Avatar => _avatar;
-    [ReadOnly]
-    [SerializeField] private Sprite _avatar;
-
-    private PlayerSeats _playerSeats => Game.Instance.PlayerSeats;
-    private PlayerSeatUI _playerSeatUI => PlayerSeatUI.Instance;
+    private PlayerSeats _playerSeats => PlayerSeats.Instance;
+    private PlayerSeatsUI _playerSeatUI => PlayerSeatsUI.Instance;
 
     private void OnEnable()
     {
@@ -58,7 +56,7 @@ public class Player : NetworkBehaviour
         {
             if (_playerSeats.Players.Contains(this) == true)
             {
-                ChangeSeatServerRpc(NULL_SEAT_NUMBER);
+                ChangeSeatServerRpc(NullSeatNumber);
 
                 LeaveSeat();
             }
@@ -84,18 +82,20 @@ public class Player : NetworkBehaviour
             return;
         }
 
-        PlayerData? data = SaveLoadSystem.LoadPlayerData();
-        _avatar = Resources.Load<Sprite>($"Sprites/{data?.ImageID}"); // Change somehow :)
-        CangePlayerNickNameServerRpc(data?.NickName);
+        PlayerData data = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
+        _nickName.Value = NickName;
+        Avatar = null; // Refactor.
 
-        Debug.Log($"Player '{data?.NickName}' is spawned");
+        CangePlayerNickNameServerRpc(data.NickName);
+
+        Log.WriteLine($"Player ('{data.NickName}') connected to {ConnectionHandler.ConnectionFullAdress}.");
     }
 
     public bool TryBet(uint amount)
     {
         if (_stack < amount)
         {
-            Debug.LogError($"{_nickName} is missing {amount - _stack} chiphs");
+            Log.WriteLine($"Player ('{_nickName}') is missing '{amount - _stack}' chiphs.");
             return false;
         }
 
@@ -106,7 +106,7 @@ public class Player : NetworkBehaviour
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        Application.Quit(); // Remove this line when do next line.
+        Application.Quit(); // Remove this when do next line.
         //NetworkManager.Singleton.SceneManager.LoadScene("Menu", LoadSceneMode.Single); Uncomment when create local scene transitions.
     }
 
@@ -140,7 +140,7 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner == false)
         {
-            if (newValue != NULL_SEAT_NUMBER)
+            if (newValue != NullSeatNumber)
             {
                 TakeSeat(newValue);
             }
@@ -153,14 +153,15 @@ public class Player : NetworkBehaviour
 
     private void TakeSeat(int seatNumber)
     {
-        _playerSeats.Take(this, seatNumber);
+        _playerSeats.TryTake(this, seatNumber);
     }
 
     private void LeaveSeat()
     {
-        _playerSeats.Leave(this);
+        _playerSeats.TryLeave(this);
     }
 
+    #region Rpc
     [ServerRpc]
     private void ChangeSeatServerRpc(int seatNumber)
     {
@@ -183,4 +184,5 @@ public class Player : NetworkBehaviour
 
         Shutdown();
     }
+    #endregion
 }

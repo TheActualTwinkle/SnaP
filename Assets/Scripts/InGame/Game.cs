@@ -10,12 +10,8 @@ public class Game : MonoBehaviour
 {
     public static Game Instance { get; private set; }
 
-    public event Action<Player> PlayerTurnBegunEvent;
     public event Action<WinnerData> EndDealEvent;
     public event Action<GameStage> GameStageChangedEvent;
-
-    public PlayerSeats PlayerSeats => _playerSeats;
-    private PlayerSeats _playerSeats;
 
     public bool IsPlaying => _isPlaying;
     [ReadOnly]
@@ -23,7 +19,7 @@ public class Game : MonoBehaviour
 
     public uint CallAmount => _callAmount;
     [ReadOnly]
-    [SerializeField] private uint _callAmount;  
+    [SerializeField] private uint _callAmount;
 
     [ReadOnly]
     [SerializeField] private uint _pot;
@@ -32,10 +28,17 @@ public class Game : MonoBehaviour
     [SerializeField] private uint _bigBlindValue;
     [SerializeField] private uint _smallBlindValue;
 
-    private PlayerBetUI _playerBetUI => PlayerBetUI.Instance;
+    private PlayerSeats _playerSeats => PlayerSeats.Instance;
 
     private CardDeck _cardDeck;
     private Board _board;
+
+    private bool _conditionToStartDeal => (_isPlaying == false) && (_playerSeats?.CountOfTakenSeats >= 2);
+
+    private void OnValidate()
+    {
+        _bigBlindValue = _smallBlindValue * 2;
+    }
 
     private void OnEnable()
     {
@@ -49,11 +52,6 @@ public class Game : MonoBehaviour
         _playerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
-    private void OnValidate()
-    {
-        _bigBlindValue = _smallBlindValue * 2;
-    }
-
     private void Awake()
     {
         if (Instance == null)
@@ -64,8 +62,6 @@ public class Game : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        _playerSeats = new PlayerSeats();
     }
 
     private void StartDeal()
@@ -82,34 +78,14 @@ public class Game : MonoBehaviour
         }
         _board = new Board(boradCards);
 
-        StartPreflop();
+        StartCoroutine(StartNextStage(GameStage.Preflop));
     }
 
-    private void StartPreflop()
+    private IEnumerator StartNextStage(GameStage gameStage)
     {
-        GameStageChangedEvent?.Invoke(GameStage.Preflop);
+        GameStageChangedEvent?.Invoke(gameStage);
 
-        StartCoroutine(MakeBetActions());
-    }
-
-    private void StartFlop()
-    {
-        GameStageChangedEvent?.Invoke(GameStage.Flop);
-    }
-
-    private void StartTrun()
-    {
-        GameStageChangedEvent?.Invoke(GameStage.Turn);
-    }
-
-    private void StartRiver()
-    {
-        GameStageChangedEvent?.Invoke(GameStage.River);
-    }
-
-    private void StartShowdown()
-    {
-        GameStageChangedEvent?.Invoke(GameStage.Showdown);
+        yield return null;
     }
 
     private void EndDeal(Player winner)
@@ -122,39 +98,27 @@ public class Game : MonoBehaviour
 
     private void OnPlayerSit(Player player, int seatNumber)
     {
-        if (_isPlaying == false && _playerSeats?.CountOfFreeSeats <= 3)
+        if (_conditionToStartDeal == true)
         {
             StartDeal();
         }
-        else if (_isPlaying == true)
+        else
         {
-            StartCoroutine(StartDealWhenPreviousOver());
+            StartCoroutine(StartDealWhenÑondition());
         }
     }
 
     private void OnPlayerLeave(Player player, int seatNumber)
     {
-        if (_playerSeats?.CountOfFreeSeats == PlayerSeats.MaxSeats - 1)
+        if (_playerSeats.CountOfTakenSeats == 1)
         {
             EndDeal(_playerSeats.Players.Where(x => x != null).FirstOrDefault());
         }
     }
 
-    private IEnumerator MakeBetActions()
+    private IEnumerator StartDealWhenÑondition()
     {
-        foreach (var player in _playerSeats.Players)
-        {
-            if (player != null)
-            {
-                PlayerTurnBegunEvent?.Invoke(player);
-                yield return _playerBetUI.C_WaitForPlayerBet;
-            }
-        }
-    }
-
-    private IEnumerator StartDealWhenPreviousOver()
-    {
-        yield return new WaitUntil(() => (_isPlaying == false && _playerSeats?.CountOfFreeSeats >= 2));
+        yield return new WaitUntil(() => _conditionToStartDeal == true);
         StartDeal();
     }
 }

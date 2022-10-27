@@ -9,19 +9,18 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerSeatUI : MonoBehaviour
+public class PlayerSeatsUI : MonoBehaviour
 {
-    public static PlayerSeatUI Instance { get; private set; }
+    public static PlayerSeatsUI Instance { get; private set; }
 
     public event Action<int> PlayerClickTakeButton;
-
-    private PlayerSeats _playerSeats => Game.Instance.PlayerSeats;
 
     public List<SeatUI> Seats => _seatsUI.ToList();
     [ReadOnly]
     [SerializeField] private List<SeatUI> _seatsUI;
 
     private List<Vector3> _defaultSeatPositions = new List<Vector3>(); 
+    private PlayerSeats _playerSeats => PlayerSeats.Instance;
 
     private void OnEnable()
     {
@@ -77,7 +76,7 @@ public class PlayerSeatUI : MonoBehaviour
 
     private void CenterPlayerSeat(int centralSeatNubmer)
     {
-        Debug.Log($"Changed central view to {centralSeatNubmer}");
+        Log.WriteLine($"Changed central view to {centralSeatNubmer}.");
 
         int[] centredIndexes = GetCentredIndexes(centralSeatNubmer);
 

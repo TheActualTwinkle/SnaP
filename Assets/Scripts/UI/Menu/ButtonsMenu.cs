@@ -6,7 +6,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Menu : MonoBehaviour
+public class ButtonsMenu : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _ipAddressInputField;
     [SerializeField] private TMP_InputField _portInputField;
@@ -15,7 +15,7 @@ public class Menu : MonoBehaviour
     private void StartHost()
     {
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        unityTransport.SetConnectionData(GetLocalIPAddress(), 12345); // (ushort)Random.Range(ushort.MinValue + 10000, ushort.MaxValue)
+        unityTransport.SetConnectionData(ConnectionHandler.LocalArdess, 12345); // (ushort)Random.Range(ushort.MinValue + 10000, ushort.MaxValue)
 
         NetworkManager.Singleton.StartHost();
         NetworkManager.Singleton.SceneManager.LoadScene("Desk", LoadSceneMode.Single);
@@ -34,21 +34,5 @@ public class Menu : MonoBehaviour
     private void Exit()
     {
         Application.Quit();
-    }
-
-    private string GetLocalIPAddress()
-    {
-        IPHostEntry host;
-        string localIP = "0.0.0.0";
-        host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (IPAddress ip in host.AddressList)
-        {
-            if (ip.AddressFamily == AddressFamily.InterNetwork)
-            {
-                localIP = ip.ToString();
-                break;
-            }
-        }
-        return localIP;
     }
 }

@@ -1,14 +1,16 @@
 using System;
+using System.Windows;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
+using System.IO;
+using Unity.Netcode;
 
-[System.Serializable]
-public class PlayerSeats
+public class PlayerSeats : MonoBehaviour
 {
+    public static PlayerSeats Instance { get; private set; }
+    
     public const int MaxSeats = 5;
    
     public event Action<Player, int> PlayerSitEvent;
@@ -18,9 +20,11 @@ public class PlayerSeats
     [ReadOnly]
     [SerializeField] private List<Player> _players;
 
-    public int CountOfFreeSeats => _players.Where(x => x == null).Count();
+    public int CountOfTakenSeats => _players.Where(x => x != null).Count();
 
-    public PlayerSeats()
+    [SerializeField] private float _conncetionLostCheckInterval;
+
+    private void OnValidate()
     {
         _players = new List<Player>(MaxSeats);
         for (int i = 0; i < MaxSeats; i++)
@@ -29,37 +33,55 @@ public class PlayerSeats
         }
     }
 
-    public void Take(Player player, int seatNumber)
+    private void OnEnable()
+    {
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+    }
+
+    public void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public bool TryTake(Player player, int seatNumber)
     {
         if (_players[seatNumber] != null)
         {
-            Debug.LogError($"{player.NickName} can`t take the {seatNumber} seat, its already taken by '{_players[seatNumber].NickName}'");
-            return;
+            Log.WriteLine($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by Player('{_players[seatNumber].NickName}).'");
+            return false;
         }
 
-        if (_players.Contains(player) == true)
-        {
-            Leave(player);
-        }
+        TryLeave(player);
 
         _players[seatNumber] = player;
-        Debug.Log($"Player '{player.NickName}' sit on {seatNumber} seat.");
+
+        Log.WriteLine($"Player ('{player.NickName}') sit on {seatNumber} seat.");
 
         PlayerSitEvent?.Invoke(player, seatNumber);
+        return true;
     }
 
-    public void Leave(Player player)
+    public bool TryLeave(Player player)
     {
         if (_players.Contains(player) == false)
         {
-            Debug.LogError($"{player.NickName} not found. He cant leave");
-            return;
+            return false;
         }
 
         int seatNumber = _players.IndexOf(player);
         _players[seatNumber] = null;
 
+        Log.WriteLine($"Player ('{player.NickName}') leave from {seatNumber} seat.");
+
         PlayerLeaveEvent?.Invoke(player, seatNumber);
+        return true;
     }
 
     public bool IsFree(int seatNumber)
@@ -70,5 +92,11 @@ public class PlayerSeats
         }
 
         return false;
+    }
+
+    private void OnClientDisconnect(ulong clientId)
+    {
+        Player player = ConnectionHandler.Instance.GetConnectedPlayer(clientId);
+        TryLeave(player);
     }
 }

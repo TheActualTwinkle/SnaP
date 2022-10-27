@@ -8,20 +8,20 @@ public class PlayerPocketCardsUI : MonoBehaviour
     [SerializeField] private Animator _animator;
 
     private Game _game => Game.Instance;
-    private PlayerBetUI _betUI => PlayerBetUI.Instance;
+    private PlayerBetting _playerBetting => PlayerBetting.Instance;
 
     private void OnEnable()
     {
         _game.GameStageChangedEvent += OnGameStageChanged;
         _game.EndDealEvent += OnEndDeal;
-        _betUI.BetActionEvent += OnBetAction;
+        _playerBetting.BetActionEvent += OnBetAction;
     }
 
     private void OnDisable()
     {
         _game.GameStageChangedEvent -= OnGameStageChanged;
         _game.EndDealEvent -= OnEndDeal;
-        _betUI.BetActionEvent -= OnBetAction;
+        _playerBetting.BetActionEvent -= OnBetAction;
     }
 
     private void OnGameStageChanged(GameStage stage)
