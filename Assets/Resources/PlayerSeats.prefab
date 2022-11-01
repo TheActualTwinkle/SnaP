@@ -50,4 +50,4 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  _conncetionLostCheckInterval: 0
+  _conncetionLostCheckInterval: 5

@@ -24,19 +24,21 @@ public class SaveLoadSystemFactory : MonoBehaviour
 
     public ISaveLoadSystem Get()
     {
-        if (_saveLoadSystem != null)
+        if (_saveLoadSystem == null)
         {
-            return _saveLoadSystem;
+            switch (_saveLoadSystemType)
+            {
+                case SaveLoadSystemType.Binary:
+                    _saveLoadSystem = new BinarySaveLoadSystem();
+                    break;
+                case SaveLoadSystemType.MySQL:
+                    _saveLoadSystem = new MySQLSaveLoadSystem();
+                    break;
+                default:
+                    return null;
+            }
         }
 
-        switch (_saveLoadSystemType)
-        {
-            case SaveLoadSystemType.Binary:
-                return new BinarySaveLoadSystem();
-            case SaveLoadSystemType.SQL:
-                return new MySQLSaveLoadSystem();
-            default:
-                return null;
-        }
+        return _saveLoadSystem;
     }
 }

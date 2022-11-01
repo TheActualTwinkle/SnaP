@@ -1,5 +1,5 @@
 # **PokerMultiplayer**
-![titleBanner](https://github.com/twink76/PokerMultiplayer/blob/main/PokerTite.png?raw=true)
+![titleBanner](PokerTitle.jpg)
 
 Project for learn Unity multiplayer. Using Texas hold 'em as one of the most popular variants of the card game of poker.
 <br>
@@ -15,6 +15,3 @@ Project for learn Unity multiplayer. Using Texas hold 'em as one of the most pop
     >These services make it easy for players to host and join games that are playable over the internet, without the need for port forwarding or out-of-game coordination.
   * [ParrelSync](https://github.com/VeriorPies/ParrelSync)
 	>ParrelSync is a Unity editor extension that allows users to test multiplayer gameplay without building the project by having another Unity editor window opened and mirror the changes from the original project.
-
-## **Play**
-For start playing go to `Poker/Build` and Run `Poker.exe`.

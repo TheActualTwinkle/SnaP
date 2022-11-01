@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player : NetworkBehaviour
 {
@@ -17,7 +15,8 @@ public class Player : NetworkBehaviour
     public string NickName => _nickName.Value.ToString();
     private NetworkVariable<FixedString32Bytes> _nickName = new NetworkVariable<FixedString32Bytes>();
 
-    public Sprite Avatar { get; private set; }
+    public string AvatarBase64String => _avatarBase64String.Value.ToString();
+    private NetworkVariable<FixedString4096Bytes> _avatarBase64String = new NetworkVariable<FixedString4096Bytes>();
 
     [ReadOnly]
     [SerializeField] private List<CardObject> _pocketCards = new List<CardObject>(2);
@@ -82,13 +81,8 @@ public class Player : NetworkBehaviour
             return;
         }
 
-        PlayerData data = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
-        _nickName.Value = NickName;
-        Avatar = null; // Refactor.
-
-        CangePlayerNickNameServerRpc(data.NickName);
-
-        Log.WriteLine($"Player ('{data.NickName}') connected to {ConnectionHandler.ConnectionFullAdress}.");
+        PlayerData playerData = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
+        CangePlayerDataServerRpc(playerData.NickName, playerData.AvatarBase64String);
     }
 
     public bool TryBet(uint amount)
@@ -106,8 +100,7 @@ public class Player : NetworkBehaviour
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        Application.Quit(); // Remove this when do next line.
-        //NetworkManager.Singleton.SceneManager.LoadScene("Menu", LoadSceneMode.Single); Uncomment when create local scene transitions.
+        SceneLoader.Instance.LoadScene(SceneName.Menu, false);
     }
 
     private IEnumerator HostShutdown()
@@ -169,9 +162,10 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void CangePlayerNickNameServerRpc(string nickName)
+    private void CangePlayerDataServerRpc(string NickName, string AvatarBase64String)
     {
-        _nickName.Value = nickName;
+        _nickName.Value = NickName;
+        _avatarBase64String.Value = AvatarBase64String;
     }
 
     [ClientRpc]

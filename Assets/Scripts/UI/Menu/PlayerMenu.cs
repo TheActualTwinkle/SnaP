@@ -1,8 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class PlayerMenu : MonoBehaviour
@@ -33,18 +39,54 @@ public class PlayerMenu : MonoBehaviour
         PlayerData playerData = _saveLoadSystem.Load<PlayerData>();
         _nickNameInputField.text = playerData.NickName;
 
-        Sprite avatar = Resources.Load<Sprite>($"Sprites/{playerData.ImageID}");
-        _image.sprite = avatar;
+        byte[] rawTexture = Convert.FromBase64String(playerData.AvatarBase64String);
+        _image.sprite = TextureConverter.GetSprite(rawTexture);
     }
 
     private void OnInputFiledEndEdit(string value)
     {
-        PlayerData playerData = new PlayerData(value, ""); // When create SetImage(): find path to img and paste it as 2nd parameter.
-        _saveLoadSystem.Save(playerData);
+        SavePlayerData();
+    }
+   
+    // Button.
+    private void OnChangeImageButtonClick()
+    {
+        StartCoroutine(ChangeImage());
     }
 
-    private void SetImage() // Add image from browse window and after save it on persistentPath
+    private IEnumerator ChangeImage()
     {
-        
+#if UNITY_EDITOR
+        string filePath = EditorUtility.OpenFilePanel("Select avatar", "", "jpg,png");
+        yield return StartCoroutine(SetImageFromLocalFIle(filePath));
+
+        SavePlayerData();
+#endif
+        yield return null;
+    }
+
+    private IEnumerator SetImageFromLocalFIle(string filePath)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(filePath))
+        {
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Log.WriteLine(webRequest.error);
+            }
+            else
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(webRequest);
+                _image.sprite = TextureConverter.GetSprite(texture);
+            }
+        }
+    }
+
+    private void SavePlayerData()
+    {
+        byte[] rawTexture = TextureConverter.GetRawTexture(_image.sprite.texture);
+        PlayerData playerData = new PlayerData(_nickNameInputField.text, Convert.ToBase64String(rawTexture));
+        _saveLoadSystem.Save(playerData);
     }
 }

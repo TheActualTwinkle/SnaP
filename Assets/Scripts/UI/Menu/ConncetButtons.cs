@@ -6,7 +6,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ButtonsMenu : MonoBehaviour
+public class ConncetButtons : MonoBehaviour // Rename class
 {
     [SerializeField] private TMP_InputField _ipAddressInputField;
     [SerializeField] private TMP_InputField _portInputField;
@@ -15,7 +15,7 @@ public class ButtonsMenu : MonoBehaviour
     private void StartHost()
     {
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        unityTransport.SetConnectionData(ConnectionHandler.LocalArdess, 12345); // (ushort)Random.Range(ushort.MinValue + 10000, ushort.MaxValue)
+        unityTransport.SetConnectionData(_ipAddressInputField.text, 12345); // ConnectionHandler.LocalArdess, (ushort)Random.Range(ushort.MinValue + 10000, ushort.MaxValue)
 
         NetworkManager.Singleton.StartHost();
         NetworkManager.Singleton.SceneManager.LoadScene("Desk", LoadSceneMode.Single);

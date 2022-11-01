@@ -189,7 +189,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &513601179
 PrefabInstance:
@@ -335,7 +335,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &519420033
 MonoBehaviour:
@@ -954,7 +954,7 @@ GameObject:
   - component: {fileID: 1649941411}
   - component: {fileID: 1649941412}
   m_Layer: 0
-  m_Name: ConnectionHandler
+  m_Name: PlayerSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -973,7 +973,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1649941411
 MonoBehaviour:
@@ -1068,10 +1068,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8156853580614782589, guid: 8e2d68f72d9076042a98c8d9bd30c763, type: 3}
-      propertyPath: _conncetionLostCheckInterval
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 8156853580614782590, guid: 8e2d68f72d9076042a98c8d9bd30c763, type: 3}
       propertyPath: m_RootOrder
       value: 2

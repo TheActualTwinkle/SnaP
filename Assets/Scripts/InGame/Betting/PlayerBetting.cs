@@ -49,7 +49,7 @@ public class PlayerBetting : MonoBehaviour
 
         if (C_StartBetCountdown != null)
         {
-            Debug.LogError("Bet coroutine is`t null. This should never happend");
+            Log.WriteLine("Bet coroutine is`t null. This should never happend.");
             StopCoroutine(C_StartBetCountdown);
         }
         C_StartBetCountdown = StartBetCountdown();

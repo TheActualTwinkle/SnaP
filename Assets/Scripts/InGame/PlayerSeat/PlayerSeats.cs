@@ -6,13 +6,15 @@ using System.Linq;
 using UnityEngine;
 using System.IO;
 using Unity.Netcode;
+using UnityEngine.UIElements;
+using System.Globalization;
 
 public class PlayerSeats : MonoBehaviour
 {
     public static PlayerSeats Instance { get; private set; }
-    
+
     public const int MaxSeats = 5;
-   
+
     public event Action<Player, int> PlayerSitEvent;
     public event Action<Player, int> PlayerLeaveEvent;
 
@@ -33,11 +35,6 @@ public class PlayerSeats : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
-    }
-
     public void Awake()
     {
         if (Instance == null)
@@ -48,6 +45,11 @@ public class PlayerSeats : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        StartCoroutine(CheckForConnectonLost());
     }
 
     public bool TryTake(Player player, int seatNumber)
@@ -94,9 +96,33 @@ public class PlayerSeats : MonoBehaviour
         return false;
     }
 
-    private void OnClientDisconnect(ulong clientId)
+    private IEnumerator CheckForConnectonLost()
     {
-        Player player = ConnectionHandler.Instance.GetConnectedPlayer(clientId);
-        TryLeave(player);
+        while (true)
+        {
+            Log.WriteLine($"CheckForConnectonLost cycle", $"{Application.persistentDataPath}\\CustomLog.log");
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                try
+                {
+                    bool nullReferences = _players[i].HasNetworkObject;
+                    Log.WriteLine($"Connection stable on '{_players[i].NickName}'", $"{Application.persistentDataPath}\\CustomLog.log");
+                }
+                catch (NullReferenceException)
+                {
+                    try
+                    {
+                        // Check for MissingReferenceException (Kolhoz becouse cant catch the real MissingReferenceException).
+                        string nick = _players[i].NickName;
+                        Log.WriteLine($"Conncetion lost on player ('{nick}') on {i} seat.", $"{Application.persistentDataPath}\\CustomLog.log");
+                        TryLeave(_players[i]);
+                    }
+                    catch { }
+                }
+            }
+
+            yield return new WaitForSeconds(_conncetionLostCheckInterval);
+        }
     }
 }

@@ -58,7 +58,8 @@ public class PlayerSeatsUI : MonoBehaviour
         
     private void OnPlayerSit(Player player, int seatNumber)
     {
-        _seatsUI[seatNumber].PlayerImage.sprite = player.Avatar;
+        byte[] rawData = Convert.FromBase64String(player.AvatarBase64String);
+        _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(rawData);
         _seatsUI[seatNumber].NickName.text = player.NickName;
 
         if (player.IsOwner == true)
