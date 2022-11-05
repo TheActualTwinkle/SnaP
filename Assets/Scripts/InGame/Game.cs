@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -26,12 +28,12 @@ public class Game : MonoBehaviour
     [SerializeField] private uint _bigBlindValue;
     [SerializeField] private uint _smallBlindValue;
 
-    private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
+    private PlayerSeats _playerSeats => PlayerSeats.Instance;
 
     private CardDeck _cardDeck;
     private Board _board;
 
-    private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.CountOfTakenSeats >= 2);
+    private bool _conditionToStartDeal => (_isPlaying == false) && (_playerSeats?.CountOfTakenSeats >= 2);
 
     private void OnValidate()
     {
@@ -40,14 +42,14 @@ public class Game : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerSeats.PlayerSitEvent += OnPlayerSit;
-        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
+        _playerSeats.PlayerSitEvent += OnPlayerSit;
+        _playerSeats.PlayerLeaveEvent += OnPlayerLeave;
     }
 
     private void OnDisable()
     {
-        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
-        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
+        _playerSeats.PlayerSitEvent -= OnPlayerSit;
+        _playerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
     private void Awake()
@@ -69,8 +71,8 @@ public class Game : MonoBehaviour
         _cardDeck = new CardDeck();
         _cardDeck.Initialize();
 
-        var boradCards = new List<CardObject>();
-        for (var i = 0; i < 5; i++)
+        List<CardObject> boradCards = new List<CardObject>();
+        for (int i = 0; i < 5; i++)
         {
             boradCards.Add(_cardDeck.PullCard());
         }
@@ -96,27 +98,27 @@ public class Game : MonoBehaviour
 
     private void OnPlayerSit(Player player, int seatNumber)
     {
-        if (ConditionToStartDeal == true)
+        if (_conditionToStartDeal == true)
         {
             StartDeal();
         }
         else
         {
-            StartCoroutine(StartDealWhenÐ¡ondition());
+            StartCoroutine(StartDealWhenÑondition());
         }
     }
 
     private void OnPlayerLeave(Player player, int seatNumber)
     {
-        if (PlayerSeats.CountOfTakenSeats == 1)
+        if (_playerSeats.CountOfTakenSeats == 1)
         {
-            EndDeal(PlayerSeats.Players.Where(x => x != null).FirstOrDefault());
+            EndDeal(_playerSeats.Players.Where(x => x != null).FirstOrDefault());
         }
     }
 
-    private IEnumerator StartDealWhenÐ¡ondition()
+    private IEnumerator StartDealWhenÑondition()
     {
-        yield return new WaitUntil(() => ConditionToStartDeal == true);
+        yield return new WaitUntil(() => _conditionToStartDeal == true);
         StartDeal();
     }
 }
