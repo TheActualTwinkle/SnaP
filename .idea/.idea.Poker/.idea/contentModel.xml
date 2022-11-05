@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Fedor\AppData\Local\JetBrains\Rider2020.2\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Fedor\AppData\Local\JetBrains\Rider2020.2\resharper-host\Local\Transient\Rider\v202\SolutionCaches\_Poker.-1282732588.00" t="ExcludeRecursive" />
+    <e p="D:\CSharp\Unity\Poker" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="Scripts" t="Include">
+          <e p="Card" t="Include">
+            <e p="Suit.cs" t="Include" />
+            <e p="Values.cs" t="Include" />
+          </e>
+          <e p="Converter" t="Include">
+            <e p="Texture" t="Include">
+              <e p="TextureConverter.cs" t="Include" />
+            </e>
+          </e>
+          <e p="Debug" t="Include">
+            <e p="Log.cs" t="Include" />
+          </e>
+          <e p="InGame" t="Include">
+            <e p="Betting" t="Include">
+              <e p="PlayerBetting.cs" t="Include" />
+            </e>
+            <e p="Board.cs" t="Include" />
+            <e p="CardDeck.cs" t="Include" />
+            <e p="Data" t="Include">
+              <e p="ISaveLoadData.cs" t="Include" />
+              <e p="PlayerData.cs" t="Include" />
+              <e p="WinnerData.cs" t="Include" />
+            </e>
+            <e p="Game.cs" t="Include" />
+            <e p="GameStage.cs" t="Include" />
+            <e p="Network" t="Include">
+              <e p="NetworkObjectSpawner.cs" t="Include" />
+              <e p="Notificator" t="Include">
+                <e p="ConncetionStatus.cs" t="Include" />
+                <e p="ConnectionNotificator.cs" t="Include" />
+              </e>
+              <e p="PlayerSpawner.cs" t="Include" />
+              <e p="SceneManagement" t="Include">
+                <e p="SceneLoader.cs" t="Include" />
+                <e p="SceneName.cs" t="Include" />
+              </e>
+            </e>
+            <e p="Player" t="Include">
+              <e p="Player.cs" t="Include" />
+            </e>
+            <e p="PlayerSeat" t="Include">
+              <e p="PlayerSeats.cs" t="Include" />
+            </e>
+          </e>
+          <e p="SaveLoad" t="Include">
+            <e p="System" t="Include">
+              <e p="BinarySaveLoadSystem.cs" t="Include" />
+              <e p="ISaveLoadSystem.cs" t="Include" />
+              <e p="MySQLSaveLoadSystem.cs" t="Include" />
+              <e p="SaveLoadSystemFactory.cs" t="Include" />
+              <e p="SaveLoadSystemType.cs" t="Include" />
+            </e>
+          </e>
+          <e p="ScriptableObjects" t="Include">
+            <e p="CardObject.cs" t="Include" />
+          </e>
+          <e p="UI" t="Include">
+            <e p="Betting" t="Include">
+              <e p="BetAction.cs" t="Include" />
+              <e p="PlayerBettingUI.cs" t="Include" />
+            </e>
+            <e p="Board" t="Include">
+              <e p="BoardUI.cs" t="Include" />
+            </e>
+            <e p="Menu" t="Include">
+              <e p="ConncetButtons.cs" t="Include" />
+              <e p="PlayerMenu.cs" t="Include" />
+            </e>
+            <e p="Seat" t="Include">
+              <e p="PlayerPocketCardsUI.cs" t="Include" />
+              <e p="PlayerSeatsUI.cs" t="Include" />
+              <e p="PocketCardsUI.cs" t="Include" />
+              <e p="SeatUI.cs" t="Include" />
+            </e>
+            <e p="Toggle" t="Include">
+              <e p="BetActionToggle.cs" t="Include" />
+              <e p="IToggle.cs" t="Include" />
+            </e>
+            <e p="UI.cs" t="Include" />
+          </e>
+          <e p="UNITY_EDITOR" t="Include">
+            <e p="Editor" t="Include">
+              <e p="ReadOnlyPropertyDrawer.cs" t="Include" />
+            </e>
+            <e p="ReadOnlyAtrribute" t="Include">
+              <e p="ReadOnlyAttribute.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="TextMesh Pro" t="Include">
+          <e p="Fonts" t="Include">
+            <e p="LiberationSans - OFL.txt" t="Include" />
+          </e>
+          <e p="Resources" t="Include">
+            <e p="LineBreaking Following Characters.txt" t="Include" />
+            <e p="LineBreaking Leading Characters.txt" t="Include" />
+          </e>
+          <e p="Shaders" t="Include">
+            <e p="TMP_Bitmap-Custom-Atlas.shader" t="Include" />
+            <e p="TMP_Bitmap-Mobile.shader" t="Include" />
+            <e p="TMP_Bitmap.shader" t="Include" />
+            <e p="TMP_SDF Overlay.shader" t="Include" />
+            <e p="TMP_SDF SSD.shader" t="Include" />
+            <e p="TMP_SDF-Mobile Masking.shader" t="Include" />
+            <e p="TMP_SDF-Mobile Overlay.shader" t="Include" />
+            <e p="TMP_SDF-Mobile SSD.shader" t="Include" />
+            <e p="TMP_SDF-Mobile.shader" t="Include" />
+            <e p="TMP_SDF-Surface-Mobile.shader" t="Include" />
+            <e p="TMP_SDF-Surface.shader" t="Include" />
+            <e p="TMP_SDF.shader" t="Include" />
+            <e p="TMP_Sprite.shader" t="Include" />
+            <e p="TMPro.cginc" t="Include" />
+            <e p="TMPro_Mobile.cginc" t="Include" />
+            <e p="TMPro_Properties.cginc" t="Include" />
+            <e p="TMPro_Surface.cginc" t="Include" />
+          </e>
+          <e p="Sprites" t="Include">
+            <e p="EmojiOne Attribution.txt" t="Include" />
+            <e p="EmojiOne.json" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Poker.sln" t="IncludeFlat" />
+      <e p="Temp\Bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
