@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class NetworkObjectSpawner
 {
-    public static GameObject SpawnNetworkObjectChangeOwnershipToClient(GameObject prefab, Vector3 position, ulong newClientOwnerId, bool destroyWithScene = true)
+    public static GameObject SpawnNetworkObjectChangeOwnershipToClient(GameObject prefab, Vector3 position, ulong newClientOwnerId, bool destroyWithScene)
     {
 #if UNITY_EDITOR
         if (NetworkManager.Singleton.IsServer == false)

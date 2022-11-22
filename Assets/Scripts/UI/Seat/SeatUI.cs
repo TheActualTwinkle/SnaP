@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Animator))]
 public class SeatUI : MonoBehaviour
 {
     public Image PlayerImage => _playerImage;
@@ -12,6 +11,6 @@ public class SeatUI : MonoBehaviour
     public TextMeshProUGUI NickName => _nickName;
     [SerializeField] private TextMeshProUGUI _nickName;
 
-    public PocketCardsUI PocketCards => _pocketCards;
-    [SerializeField] private PocketCardsUI _pocketCards;
+    public GameObject PocketCards => _pocketCards;
+    [SerializeField] private GameObject _pocketCards;
 }

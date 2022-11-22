@@ -1,39 +1,63 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 
-public class Button : NetworkBehaviour
+[System.Serializable]
+public class BoardButton
 {
-    private const int NullIndex = -1;
+    private const int EmptyPosition = -1;
+
+    public int[] TurnSequensce => GetTurnSequensce();
     
-    public int Index => _index.Value;
-    private NetworkVariable<int> _index = new(NullIndex);
+    public int Position => _position;
+    [SerializeField] private int _position = EmptyPosition;
 
-    private void OnEnable()
-    {
-        throw new NotImplementedException();
-    }
+    private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
-    private void OnDisable()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void OnGameStageChanged(GameStage gameStage)
-    {
-        if (gameStage == GameStage.Preflop)
+    public void Move()
+    {     
+        if (_position == EmptyPosition)
         {
-            if (_index.Value == PlayerSeats.MaxSeats - 1)
-            {
-                _index.Value = 0;
-            }
-            
-            
+            int[] activeIndexes = GetActivePlayerIndexes();
+            _position = activeIndexes[Random.Range(0, activeIndexes.Length)];
         }
+
+        int[] turnSequensce = GetTurnSequensce();
+
+        _position = turnSequensce[0];
+    }
+
+    private int[] GetTurnSequensce()
+    {
+        List<int> activeSeatIndexes = GetActivePlayerIndexes().ToList();
+
+        int pivot = activeSeatIndexes.IndexOf(_position);
+        List<int> turnSequensce = new();
+        for (int i = pivot + 1; i < activeSeatIndexes.Count; i++)
+        {
+            turnSequensce.Add(activeSeatIndexes[i]);
+        }
+
+        for (var i = 0; i <= pivot; i++)
+        {
+            turnSequensce.Add(activeSeatIndexes[i]);
+        }
+
+        return turnSequensce.ToArray();
     }
     
-    []
+    private int[] GetActivePlayerIndexes()
+    {
+        List<int> indexes = new();
+        List<Player> players = PlayerSeats.Players;
+        for (var i = 0; i < players.Count; i++)
+        {
+            if (players[i] != null)
+            {
+                indexes.Add(i);
+            }
+        }
+
+        return indexes.ToArray();
+    }
 }

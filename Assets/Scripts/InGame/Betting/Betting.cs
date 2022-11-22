@@ -1,21 +1,35 @@
 using System;
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerBetting : MonoBehaviour
+public class Betting : MonoBehaviour 
 {
-    public static PlayerBetting Instance { get; private set; }
-
+    public static Betting Instance { get; private set; }
+    
     public event Action<BetAction> BetActionEvent;
 
-    public IEnumerator StartBetCountdownCoroutine { get; private set; }
+    public NetworkObject CurrentBetter { get; private set; }
+    
+    public BetSituation BetSituation => GetBetSituation();
 
+    private IEnumerator _startBetCountdownCoroutine;
+        
+    [ReadOnly] [SerializeField] private uint _bigBlindValue;
+    [SerializeField] private uint _smallBlindValue;
     [SerializeField] private float _betTime;
-    private float _timePaased;
+    
+    private float _timePaasedSinceTurn;
+    private uint _callAmount;
 
     private static Game Game => Game.Instance;
-    private static PlayerBettingUI BettingUI => PlayerBettingUI.Instance;
-
+    private static BettingUI BettingUI => BettingUI.Instance;
+    
+    private void OnValidate()
+    {
+        _bigBlindValue = _smallBlindValue * 2;
+    }
+    
     private void OnEnable()
     {
         Game.GameStageChangedEvent += OnGameStageChanged;
@@ -37,7 +51,7 @@ public class PlayerBetting : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    
     private void OnGameStageChanged(GameStage gameStage)
     {
         if (gameStage == GameStage.Showdown)
@@ -45,22 +59,29 @@ public class PlayerBetting : MonoBehaviour
             return;
         }
 
-        if (StartBetCountdownCoroutine != null)
+        if (_startBetCountdownCoroutine != null)
         {
-            Log.WriteLine("Bet coroutine is`t null. This should never happens.");
-            StopCoroutine(StartBetCountdownCoroutine);
+            Log.WriteLine("Bet coroutine is`t null. This should never happens."); // Why?
+            StopCoroutine(_startBetCountdownCoroutine);
         }
-        StartBetCountdownCoroutine = StartBetCountdown();
-        StartCoroutine(StartBetCountdownCoroutine);
+        _startBetCountdownCoroutine = StartBetCountdown();
+        StartCoroutine(_startBetCountdownCoroutine);
     }
 
     private IEnumerator StartBetCountdown()
     {
-        while (BettingUI.ChoosenBetAction == 0 || _timePaased < _betTime)
+        CurrentBetter = NetworkManager.Singleton.LocalClient.PlayerObject;
+        while (BettingUI.ChoosenBetAction == BetAction.Empty || _timePaasedSinceTurn < _betTime)
         {
-            _timePaased += Time.deltaTime;
+            _timePaasedSinceTurn += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+        
         BetActionEvent?.Invoke(BettingUI.ChoosenBetAction);
+    }
+
+    private BetSituation GetBetSituation()
+    {
+        return Game.CallAmount <= _callAmount ? BetSituation.CallEqualsOrLessCheck : BetSituation.CallGreaterCheck;
     }
 }

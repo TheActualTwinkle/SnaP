@@ -45,10 +45,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa9b0e7f571cccd419d42f9e3b23f557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nickName: 
-  _pocketCards: []
+  _seatNumber:
+    m_InternalValue: -1
   _stack: 0
-  _avatar: {fileID: 0}
+  _pocketCard1:
+    _suit: 0
+    _value: 0
+  _pocketCard2:
+    _suit: 0
+    _value: 0
 --- !u!114 &2789658838808142452
 MonoBehaviour:
   m_ObjectHideFlags: 0

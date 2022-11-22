@@ -1,27 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 using UnityEngine;
 
-[System.Serializable]
 public class BinarySaveLoadSystem : ISaveLoadSystem
 {
-    private static readonly string _savePath = Application.persistentDataPath + "/saves";
-    private static readonly string _saveFileExtension = "df";
+    private static readonly string SavePath = Application.persistentDataPath + "/saves";
+    private const string SaveFileExtension = "df";
 
-    private static BinaryFormatter _binatyFormatter = new BinaryFormatter();
+    private static BinaryFormatter _binatyFormatter = new();
 
     public void Save(ISaveLoadData saveLoadData)
     {
-        if (Directory.Exists(_savePath) == false)
+        if (Directory.Exists(SavePath) == false)
         {
-            Directory.CreateDirectory(_savePath);
+            Directory.CreateDirectory(SavePath);
         }
 
-        string saveFileName = $"{_savePath}/{saveLoadData.GetType().Name}.{_saveFileExtension}";
-        FileStream fileStream = new FileStream(saveFileName, FileMode.Create);
+        var saveFileName = $"{SavePath}/{saveLoadData.GetType().Name}.{SaveFileExtension}";
+        FileStream fileStream = new(saveFileName, FileMode.Create);
 
         _binatyFormatter.Serialize(fileStream, saveLoadData);
 
@@ -30,10 +26,10 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
 
     public T Load<T>() where T : ISaveLoadData
     {
-        string saveFileName = $"{_savePath}/{typeof(T).Name}.{_saveFileExtension}";
+        var saveFileName = $"{SavePath}/{typeof(T).Name}.{SaveFileExtension}";
         if (File.Exists(saveFileName) == true)
         {
-            FileStream fileStream = new FileStream(saveFileName, FileMode.Open);
+            FileStream fileStream = new(saveFileName, FileMode.Open);
 
             ISaveLoadData data = _binatyFormatter.Deserialize(fileStream) as ISaveLoadData;
 

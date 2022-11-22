@@ -1,5 +1,3 @@
-using System.Net;
-using System.Net.Sockets;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -17,6 +15,8 @@ public class ConncetButtons : MonoBehaviour // Rename class
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
         unityTransport.SetConnectionData(_ipAddressInputField.text, 12345); // ConnectionHandler.LocalArdess, (ushort)Random.Range(ushort.MinValue + 10000, ushort.MaxValue)
 
+        NetworkManager.Singleton.Shutdown();
+        
         NetworkManager.Singleton.StartHost();
         NetworkManager.Singleton.SceneManager.LoadScene("Desk", LoadSceneMode.Single);
     }
@@ -27,6 +27,8 @@ public class ConncetButtons : MonoBehaviour // Rename class
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
         unityTransport.SetConnectionData(_ipAddressInputField.text, ushort.Parse(_portInputField.text));
 
+        NetworkManager.Singleton.Shutdown();
+        
         NetworkManager.Singleton.StartClient();
     }
 

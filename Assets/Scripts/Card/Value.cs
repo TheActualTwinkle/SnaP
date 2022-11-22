@@ -1,4 +1,4 @@
-public enum Values
+public enum Value
 {
     Two,
     Three,

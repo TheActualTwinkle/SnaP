@@ -1,42 +1,30 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class Game : NetworkBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    public static Game Instance { get; private set; }
 
-    public event Action<WinnerData> EndDealEvent;
     public event Action<GameStage> GameStageChangedEvent;
+    public event Action<WinnerData> EndDealEvent;
 
-    public bool IsPlaying => _isPlaying;
-    [ReadOnly]
-    [SerializeField] private bool _isPlaying;
+    [ReadOnly] [SerializeField] private bool _isPlaying;
 
     public uint CallAmount => _callAmount;
-    [ReadOnly]
-    [SerializeField] private uint _callAmount;
+    [ReadOnly] [SerializeField] private uint _callAmount;
 
-    [ReadOnly]
-    [SerializeField] private uint _pot;
-
-    [ReadOnly]
-    [SerializeField] private uint _bigBlindValue;
-    [SerializeField] private uint _smallBlindValue;
+    [ReadOnly] [SerializeField] private uint _pot;
 
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
+    [ReadOnly] [SerializeField] private Board _board;
+    [ReadOnly] [SerializeField] private BoardButton _boardButton;
     private CardDeck _cardDeck;
-    private Board _board;
-
-    private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.CountOfTakenSeats >= 2);
-
-    private void OnValidate()
-    {
-        _bigBlindValue = _smallBlindValue * 2;
-    }
+    
+    private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.TakenSeatsAmount >= 2);
 
     private void OnEnable()
     {
@@ -62,61 +50,99 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void StartDeal()
+    private void StartNextStage(GameStage gameStage)
     {
-        _isPlaying = true;
-
-        _cardDeck = new CardDeck();
-        _cardDeck.Initialize();
-
-        var boradCards = new List<CardObject>();
-        for (var i = 0; i < 5; i++)
+        switch (gameStage)
         {
-            boradCards.Add(_cardDeck.PullCard());
+            case GameStage.Preflop:
+                StartPreflop();
+                break;
+            case GameStage.Flop:
+                break;
+            case GameStage.Turn:
+                break;
+            case GameStage.River:
+                break;
+            case GameStage.Showdown:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(gameStage), gameStage, null);
         }
-        _board = new Board(boradCards);
-
-        StartCoroutine(StartNextStage(GameStage.Preflop));
-    }
-
-    private IEnumerator StartNextStage(GameStage gameStage)
-    {
+        
         GameStageChangedEvent?.Invoke(gameStage);
-
-        yield return null;
     }
 
-    private void EndDeal(Player winner)
+    private void StartPreflop()
     {
-        _isPlaying = false;
+        _board = new Board(_cardDeck.PullCards(5).ToList());
 
-        // Not pot but some chips based on bet.
-        EndDealEvent?.Invoke(new WinnerData(winner, _pot));
+        foreach (int index in _boardButton.TurnSequensce)
+        {
+            PlayerSeats.Players[index].SetPocketCards(_cardDeck.PullCard(), _cardDeck.PullCard());
+        }
     }
 
     private void OnPlayerSit(Player player, int seatNumber)
     {
+        if (IsServer == false)
+        {
+            return;
+        }
+
+        _cardDeck = new CardDeck();
         if (ConditionToStartDeal == true)
         {
-            StartDeal();
+            StartDealClientRpc(_cardDeck.GetCodedCards());
         }
         else
         {
-            StartCoroutine(StartDealWhenСondition());
+            StartCoroutine(StartDealWhenСonditionTrue());
         }
     }
 
     private void OnPlayerLeave(Player player, int seatNumber)
     {
-        if (PlayerSeats.CountOfTakenSeats == 1)
+        if (IsServer == false)
         {
-            EndDeal(PlayerSeats.Players.FirstOrDefault(x => x != null));
+            return;
+        }
+        
+        if (PlayerSeats.TakenSeatsAmount == 1)
+        {
+            ulong winnerId = PlayerSeats.Players.FirstOrDefault(x => x != null).OwnerClientId;
+            WinnerData winnerData = new(winnerId, _pot);
+            EndDealClientRpc(winnerData);
         }
     }
 
-    private IEnumerator StartDealWhenСondition()
+    private IEnumerator StartDealWhenСonditionTrue()
     {
         yield return new WaitUntil(() => ConditionToStartDeal == true);
-        StartDeal();
+        StartDealClientRpc(_cardDeck.GetCodedCards());
     }
+
+    #region RPC
+
+    [ClientRpc]
+    private void StartDealClientRpc(int[] cardDeck)
+    {
+        _isPlaying = true;
+
+        _cardDeck = new CardDeck(cardDeck);
+        _boardButton = new BoardButton();
+        _boardButton.Move();
+
+        StartNextStage(GameStage.Preflop);
+    }
+
+    [ClientRpc]
+    private void EndDealClientRpc(WinnerData winnerData)
+    {
+        _isPlaying = false;
+
+        // Not pot but some chips based on bet.
+        EndDealEvent?.Invoke(winnerData);
+    }
+    
+    #endregion
 }

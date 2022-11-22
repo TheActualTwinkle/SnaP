@@ -1843,7 +1843,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "77777\u200B"
+  m_text: "12345\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2890,7 +2890,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 77777
+  m_Text: 12345
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -3016,7 +3016,6 @@ GameObject:
   - component: {fileID: 1881286008}
   - component: {fileID: 1881286009}
   - component: {fileID: 1881286010}
-  - component: {fileID: 1881286011}
   m_Layer: 0
   m_Name: Network
   m_TagString: Untagged
@@ -3063,6 +3062,16 @@ MonoBehaviour:
       SourcePrefabToOverride: {fileID: 6248572251698012179, guid: 4a33bc118c560d7489b9b9e36332fe2e, type: 3}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 933267555281298529, guid: 002a0b5360a269744892b05625fb674c, type: 3}
+      SourcePrefabToOverride: {fileID: 6248572251698012179, guid: 4a33bc118c560d7489b9b9e36332fe2e, type: 3}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 2791923975036450247, guid: 1a77e65fe917bfd44bc4ab4d3034a36f, type: 3}
+      SourcePrefabToOverride: {fileID: 6248572251698012179, guid: 4a33bc118c560d7489b9b9e36332fe2e, type: 3}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -3093,7 +3102,6 @@ MonoBehaviour:
   m_ProtocolType: 0
   m_MaxPacketQueueSize: 128
   m_MaxPayloadSize: 6144
-  m_MaxSendQueueSize: 98304
   m_HeartbeatTimeoutMS: 500
   m_ConnectTimeoutMS: 1000
   m_MaxConnectAttempts: 60
@@ -3106,18 +3114,6 @@ MonoBehaviour:
     PacketDelayMS: 0
     PacketJitterMS: 0
     PacketDropRate: 0
---- !u!114 &1881286011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1881286007}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dda39bce09f0ee4b9a5205b782537ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1893635864
 GameObject:
   m_ObjectHideFlags: 0

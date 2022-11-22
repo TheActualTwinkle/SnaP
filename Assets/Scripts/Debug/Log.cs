@@ -1,25 +1,20 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-[System.Serializable]
 public static class Log
 {
-    private static DateTime _dateTime => DateTime.Now;
-    private static RuntimePlatform _platform => Application.platform;
+    private static DateTime DateTime => DateTime.Now;
+    private static RuntimePlatform Platform => Application.platform;
 
     public static void WriteLine(object message)
     {
-        Debug.Log($"[{_dateTime}] {message} Platform: {_platform}");
+        Debug.Log($"[{DateTime}] {message} Platform: {Platform}");
     }
 
-    public static void WriteLine(object message, string path)
+    public static void WriteToFile(object message, string path)
     {
-        using (StreamWriter sw = new StreamWriter(path, true))
-        {
-            sw.WriteLine($"[{_dateTime}] {message} Platform: {_platform}");
-        }
+        using StreamWriter sw = new(path, true);
+        sw.WriteLine($"[{DateTime}] {message} Platform: {Platform}");
     }
 }

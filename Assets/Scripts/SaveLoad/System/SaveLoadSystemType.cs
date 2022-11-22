@@ -1,5 +1,5 @@
 public enum SaveLoadSystemType
 {
     Binary,
-    MySQL,
+    MySql,
 }

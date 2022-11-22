@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveLoadSystemFactory : MonoBehaviour
@@ -31,8 +29,8 @@ public class SaveLoadSystemFactory : MonoBehaviour
                 case SaveLoadSystemType.Binary:
                     _saveLoadSystem = new BinarySaveLoadSystem();
                     break;
-                case SaveLoadSystemType.MySQL:
-                    _saveLoadSystem = new MySQLSaveLoadSystem();
+                case SaveLoadSystemType.MySql:
+                    _saveLoadSystem = new MySqlSaveLoadSystem();
                     break;
                 default:
                     return null;

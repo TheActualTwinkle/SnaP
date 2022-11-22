@@ -1,34 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public class CardObject
 {
-    public Values Value => _value;
-    private Values _value;
+    public Suit Suit => _suit;
+    [SerializeField] private Suit _suit;
 
-    public Suits Suit => _suit;
-    private Suits _suit;
+    public Value Value => _value;
+    [SerializeField] private Value _value;
 
-    public Sprite SpriteFront => _spriteFront;
-    private Sprite _spriteFront;
-
-    public Sprite SpriteBack => _spriteBack;
-    private Sprite _spriteBack;
-
-    public CardObject(Values value, Suits suit)
+    public CardObject(Suit suit, Value value)
     {
-        _value = value;
         _suit = suit;
-    }
-
-    public void Initialize()
-    {
-        string valueId = ((int)_value + 2).ToString();
-        string suitId = _suit.ToString();
-
-        _spriteFront = Resources.Load<Sprite>($"Sprites/{valueId}_{suitId}");
-        _spriteBack = Resources.Load<Sprite>($"Sprites/BlueCardBack");
+        _value = value;
     }
 }

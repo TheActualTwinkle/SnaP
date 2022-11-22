@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +6,7 @@ using UnityEngine;
 public class Board
 {
     public List<CardObject> Cards => _cards.ToList();
-    [ReadOnly] private List<CardObject> _cards = new List<CardObject>(5);
+    [SerializeField] private List<CardObject> _cards;
 
     public Board(List<CardObject> cards)
     {

@@ -1,24 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerBettingUI : MonoBehaviour
+public class BettingUI : MonoBehaviour
 {
-    public static PlayerBettingUI Instance { get; private set; }
+    public static BettingUI Instance { get; private set; }
 
     public BetAction ChoosenBetAction => _choosenBetAction;
     [ReadOnly]
     [SerializeField] private BetAction _choosenBetAction;
 
-    private List<IToggle<BetAction>> _toggles;
+    private List<BetActionToggle> _toggles;
 
     private static Game Game => Game.Instance; 
-
+    private static Betting Betting => Betting.Instance;
+    
     private void OnEnable()
     {
         Game.GameStageChangedEvent += OnGameStageChanged;
 
-        foreach (IToggle<BetAction> toggle in _toggles)
+        foreach (BetActionToggle toggle in _toggles)
         {
             toggle.ToggleOnEvent += OnBetActionToggleOn;
         }
@@ -28,7 +30,7 @@ public class PlayerBettingUI : MonoBehaviour
     {
         Game.GameStageChangedEvent -= OnGameStageChanged;
 
-        foreach (IToggle<BetAction> toggle in _toggles)
+        foreach (BetActionToggle toggle in _toggles)
         {
             toggle.ToggleOnEvent -= OnBetActionToggleOn;
         }
@@ -45,7 +47,7 @@ public class PlayerBettingUI : MonoBehaviour
             Destroy(gameObject);
         }
 
-        _toggles = GetComponentsInChildren<IToggle<BetAction>>().ToList();
+        _toggles = GetComponentsInChildren<BetActionToggle>().ToList();
     }
 
     private void OnGameStageChanged(GameStage gameStage)
@@ -56,7 +58,36 @@ public class PlayerBettingUI : MonoBehaviour
 
     private void SetupButtons()
     {
-        
+        if (Betting.CurrentBetter == NetworkManager.Singleton.LocalClient.PlayerObject)
+        {
+            if (Betting.BetSituation == BetSituation.CallEqualsOrLessCheck)
+            {
+                _toggles[0].SetToggleInfo(BetAction.Fold, "Fold");
+                _toggles[1].SetToggleInfo(BetAction.Check, "Check");
+                _toggles[2].SetToggleInfo(BetAction.Bet, "Bet");
+            }
+            else
+            {
+                _toggles[0].SetToggleInfo(BetAction.Fold, "Fold");
+                _toggles[1].SetToggleInfo(BetAction.Call, "Call");
+                _toggles[2].SetToggleInfo(BetAction.Raise, "Raise");
+            }
+        }
+        else
+        {
+            if (Betting.BetSituation == BetSituation.CallEqualsOrLessCheck)
+            {
+                _toggles[0].SetToggleInfo(BetAction.CheckFold, "Check/Fold");
+                _toggles[1].SetToggleInfo(BetAction.Check, "Check");
+                _toggles[2].SetToggleInfo(BetAction.CallAny, "Call Any");
+            }
+            else
+            {
+                _toggles[0].SetToggleInfo(BetAction.CheckFold, "Check/Fold");
+                _toggles[1].SetToggleInfo(BetAction.Call, "Call");
+                _toggles[2].SetToggleInfo(BetAction.CallAny, "Call Any");
+            }
+        }
     }
 
     private void OnBetActionToggleOn(BetAction betAction)

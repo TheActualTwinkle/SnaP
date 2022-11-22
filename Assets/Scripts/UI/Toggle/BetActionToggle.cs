@@ -1,27 +1,33 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BetActionToggle : MonoBehaviour, IToggle<BetAction>
+public class BetActionToggle : MonoBehaviour
 {
     public event Action<BetAction> ToggleOnEvent;
 
-    public BetAction EventArgument { get; set; }
+    private BetAction _betAction;
 
     [SerializeField] private Toggle _toggle;
+    [SerializeField] private TextMeshProUGUI _text;
 
     private void Awake()
     {
         _toggle.onValueChanged.AddListener(OnValueChanged);
     }
 
+    public void SetToggleInfo(BetAction betAction, string toggleText)
+    {
+        _betAction = betAction;
+        _text.text = toggleText;
+    }
+    
     private void OnValueChanged(bool value)
     {
         if (value == true)
         {
-            ToggleOnEvent?.Invoke(EventArgument);
+            ToggleOnEvent?.Invoke(_betAction);
         }
     }
 }

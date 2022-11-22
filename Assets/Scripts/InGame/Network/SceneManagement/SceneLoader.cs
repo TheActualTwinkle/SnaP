@@ -1,4 +1,3 @@
-using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,14 +17,6 @@ public class SceneLoader : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-    }
-
-    private IEnumerator Start()
-    {
-        yield return new WaitUntil(() => NetworkManager.Singleton.SceneManager != null);
-
-        NetworkManager.Singleton.SceneManager.OnLoadComplete -= OnLoadComplete;
-        NetworkManager.Singleton.SceneManager.OnLoadComplete += OnLoadComplete;
     }
 
     public void LoadScene(SceneName sceneToLoad, bool isNetworkSessionActive = true)
@@ -51,13 +42,5 @@ public class SceneLoader : MonoBehaviour
     private void LoadSceneNetwork(SceneName sceneToLoad)
     {
         NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad.ToString(), LoadSceneMode.Single);
-    }
-
-    private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
-    {
-        if (NetworkManager.Singleton.IsServer == false)
-        {
-            return;
-        }
     }
 }

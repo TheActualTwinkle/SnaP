@@ -1,17 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Player))]
 public class PocketCards : MonoBehaviour
 {
-    public List<CardObject> Cards => _cards.ToList();
-    [ReadOnly] [SerializeField] private List<CardObject> _cards;
+    public static PocketCards Instance { get; private set; }
 
-    public void SetPocketCards(CardObject card1, CardObject card2)
+    [ReadOnly] [SerializeField] private CardObject _card1;
+    [ReadOnly] [SerializeField] private CardObject _card2;
+    
+    private static Game Game => Game.Instance;
+    
+    private void Awake()
     {
-        _cards[0] = card1;
-        _cards[1] = card2;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnEnable()
+    {
+        Game.GameStageChangedEvent += OnGameStageChanged;
+    }
+
+    private void OnDisable()
+    {
+        Game.GameStageChangedEvent -= OnGameStageChanged;
+    }
+    
+    private void OnGameStageChanged(GameStage gameStage)
+    {
+        if (gameStage != GameStage.Preflop)
+        {
+            return;
+        }
+        
+        SetPocketCards(null, null);
+    }
+
+    private void SetPocketCards(CardObject card1, CardObject card2)
+    {
+        _card1 = card1;
+        _card2 = card2;
     }
 }

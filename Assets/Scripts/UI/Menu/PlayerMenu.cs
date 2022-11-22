@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using TMPro;
 #if UNITY_EDITOR
     using UnityEditor;
@@ -86,7 +83,7 @@ public class PlayerMenu : MonoBehaviour
     private void SavePlayerData()
     {
         byte[] rawTexture = TextureConverter.GetRawTexture(_image.sprite.texture);
-        PlayerData playerData = new PlayerData(_nickNameInputField.text, Convert.ToBase64String(rawTexture));
+        PlayerData playerData = new(_nickNameInputField.text, Convert.ToBase64String(rawTexture));
         _saveLoadSystem.Save(playerData);
     }
 }

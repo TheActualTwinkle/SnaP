@@ -1,17 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
-[System.Serializable]
-public class MySQLSaveLoadSystem : ISaveLoadSystem
-{
+public class MySqlSaveLoadSystem : ISaveLoadSystem
+{   
     public void Save(ISaveLoadData data)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public T Load<T>() where T : ISaveLoadData
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

@@ -174,7 +174,8 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6011500124517751241, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
 --- !u!224 &4715784950070995795 stripped
 RectTransform:
@@ -304,7 +305,12 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8909204005329319029, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_text
+      value: 3
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6011500124517751241, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
 --- !u!224 &7859571473356535202 stripped
 RectTransform:
@@ -430,7 +436,12 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8909204005329319029, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_text
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6011500124517751241, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
 --- !u!224 &7592765440671207692 stripped
 RectTransform:
@@ -556,7 +567,12 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8909204005329319029, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6011500124517751241, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
 --- !u!224 &8992985804082284214 stripped
 RectTransform:
@@ -674,7 +690,12 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: 4
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8909204005329319029, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_text
+      value: 4
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6011500124517751241, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
 --- !u!224 &1652504375137652369 stripped
 RectTransform:

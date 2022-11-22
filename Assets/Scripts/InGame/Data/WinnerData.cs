@@ -1,16 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using Unity.Netcode;
 
-[System.Serializable]
-public struct WinnerData
+public struct WinnerData : INetworkSerializeByMemcpy
 {
-    public readonly Player Winner;
+    public readonly ulong WinnerId;
     public readonly uint Chips;
 
-    public WinnerData(Player winner, uint chips)
+    public WinnerData(ulong winnerId, uint chips)
     {
-        Winner = winner;
+        WinnerId = winnerId;
         Chips = chips;
     }
 }

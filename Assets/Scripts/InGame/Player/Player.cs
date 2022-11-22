@@ -1,49 +1,48 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Player : NetworkBehaviour
 {
     private const int NullSeatNumber = -1;
 
-    [SerializeField] private NetworkVariable<int> _seatNumber = new NetworkVariable<int>(NullSeatNumber);
-
+    [SerializeField] private NetworkVariable<int> _seatNumber = new(NullSeatNumber);
+    
     public string NickName => _nickName.Value.ToString();
-    private NetworkVariable<FixedString32Bytes> _nickName = new NetworkVariable<FixedString32Bytes>();
+    private readonly NetworkVariable<FixedString32Bytes> _nickName = new();
 
     public string AvatarBase64String => _avatarBase64String.Value.ToString();
-    private NetworkVariable<FixedString4096Bytes> _avatarBase64String = new NetworkVariable<FixedString4096Bytes>();
-
-    [ReadOnly]
-    [SerializeField] private List<CardObject> _pocketCards = new List<CardObject>(2);
-
+    private readonly NetworkVariable<FixedString4096Bytes> _avatarBase64String = new();
+    
     public uint Stack => _stack;
-    [ReadOnly]
-    [SerializeField] private uint _stack;
+    [ReadOnly] [SerializeField] private uint _stack;
 
-    private PlayerSeats _playerSeats => PlayerSeats.Instance;
-    private PlayerSeatsUI _playerSeatUI => PlayerSeatsUI.Instance;
+    public CardObject PocketCard1 => _pocketCard1;
+    [ReadOnly] [SerializeField] private CardObject _pocketCard1;
+
+    public CardObject PocketCard2 => _pocketCard2;
+    [ReadOnly] [SerializeField] private CardObject _pocketCard2;
+    
+    private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
+    private static PlayerSeatsUI PlayerSeatUI => PlayerSeatsUI.Instance;
 
     private void OnEnable()
     {
-        _playerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeButton;
+        PlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeButton;
         _seatNumber.OnValueChanged += OnSeatNumberCanged;
     }
 
     private void OnDisable()
     {
-        _playerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
+        PlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
         _seatNumber.OnValueChanged -= OnSeatNumberCanged;
     }
 
     private void Start()
     {
         // Set data and UI to non owner players.
-        if (IsOwner == false && _seatNumber.Value != -1)
+        if (IsOwner == false && _seatNumber.Value != NullSeatNumber)
         {
             TakeSeat(_seatNumber.Value);
         }
@@ -51,15 +50,14 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && IsOwner == true)
+        if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
         {
-            if (_playerSeats.Players.Contains(this) == true)
+            if (PlayerSeats.Players.Contains(this) == true)
             {
                 ChangeSeatServerRpc(NullSeatNumber);
 
                 LeaveSeat();
             }
-
             else
             {
                 if (IsServer)
@@ -85,18 +83,12 @@ public class Player : NetworkBehaviour
         CangePlayerDataServerRpc(playerData.NickName, playerData.AvatarBase64String);
     }
 
-    public bool TryBet(uint amount)
+    public void SetPocketCards(CardObject card1, CardObject card2)
     {
-        if (_stack < amount)
-        {
-            Log.WriteLine($"Player ('{_nickName}') is missing '{amount - _stack}' chiphs.");
-            return false;
-        }
-
-        _stack -= amount;
-        return true;
+        _pocketCard1 = card1;
+        _pocketCard2 = card2;
     }
-
+    
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
@@ -120,41 +112,46 @@ public class Player : NetworkBehaviour
             return;
         }
 
-        if (_playerSeats.IsFree(seatNumber) == true)
+        if (PlayerSeats.IsFree(seatNumber) == false)
         {
-            ChangeSeatServerRpc(seatNumber);
-
-            TakeSeat(seatNumber);
+            return;
         }
+
+        ChangeSeatServerRpc(seatNumber);
+
+        TakeSeat(seatNumber);
     }
 
     // Set data to NON owner players.
     private void OnSeatNumberCanged(int oldValue, int newValue)
     {
-        if (IsOwner == false)
+        if (IsOwner == true)
         {
-            if (newValue != NullSeatNumber)
-            {
-                TakeSeat(newValue);
-            }
-            else
-            {
-                LeaveSeat();
-            }
+            return;
+        }
+
+        if (newValue != NullSeatNumber)
+        {
+            TakeSeat(newValue);
+        }
+        else
+        {
+            LeaveSeat();
         }
     }
 
     private void TakeSeat(int seatNumber)
     {
-        _playerSeats.TryTake(this, seatNumber);
+        PlayerSeats.TryTake(this, seatNumber);
     }
 
     private void LeaveSeat()
     {
-        _playerSeats.TryLeave(this);
+        PlayerSeats.TryLeave(this);
     }
 
-    #region Rpc
+    #region RPC
+    
     [ServerRpc]
     private void ChangeSeatServerRpc(int seatNumber)
     {
@@ -162,10 +159,10 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void CangePlayerDataServerRpc(string NickName, string AvatarBase64String)
+    private void CangePlayerDataServerRpc(string nickName, string avatarBase64String)
     {
-        _nickName.Value = NickName;
-        _avatarBase64String.Value = AvatarBase64String;
+        _nickName.Value = nickName;
+        _avatarBase64String.Value = avatarBase64String;
     }
 
     [ClientRpc]
@@ -178,5 +175,6 @@ public class Player : NetworkBehaviour
 
         Shutdown();
     }
+    
     #endregion
 }

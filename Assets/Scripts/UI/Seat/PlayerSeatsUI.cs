@@ -1,13 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Reflection;
-using Unity.Netcode;
-using Unity.VisualScripting;
+using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerSeatsUI : MonoBehaviour
 {
@@ -19,19 +14,19 @@ public class PlayerSeatsUI : MonoBehaviour
     [ReadOnly]
     [SerializeField] private List<SeatUI> _seatsUI;
 
-    private List<Vector3> _defaultSeatPositions = new List<Vector3>(); 
-    private PlayerSeats _playerSeats => PlayerSeats.Instance;
+    private readonly List<Vector3> _defaultSeatPositions = new(); 
+    private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
     private void OnEnable()
     {
-        _playerSeats.PlayerSitEvent += OnPlayerSit;
-        _playerSeats.PlayerLeaveEvent += OnPlayerLeave;
+        PlayerSeats.PlayerSitEvent += OnPlayerSit;
+        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
     }
 
     private void OnDisable()
     {
-        _playerSeats.PlayerSitEvent -= OnPlayerSit;
-        _playerSeats.PlayerLeaveEvent -= OnPlayerLeave;
+        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
+        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
     private void Awake()
@@ -50,7 +45,7 @@ public class PlayerSeatsUI : MonoBehaviour
     {
         _seatsUI = GetComponentsInChildren<SeatUI>().ToList();
 
-        foreach (var seatPosition in _seatsUI?.Select(x => x.transform.localPosition))
+        foreach (Vector3 seatPosition in _seatsUI.Select(x => x.transform.localPosition))
         {
             _defaultSeatPositions.Add(seatPosition);
         }
@@ -58,15 +53,22 @@ public class PlayerSeatsUI : MonoBehaviour
         
     private void OnPlayerSit(Player player, int seatNumber)
     {
-        byte[] rawData = Convert.FromBase64String(player.AvatarBase64String);
+        StringBuilder stringBuilderAvatar = new();
+        foreach (char symbol in player.AvatarBase64String)
+        {
+            stringBuilderAvatar.Append(symbol);
+        }
+        byte[] rawData = Convert.FromBase64String(stringBuilderAvatar.ToString());
         _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(rawData);
         _seatsUI[seatNumber].NickName.text = player.NickName;
 
-        if (player.IsOwner == true)
+        if (player.IsOwner == false)
         {
-            CenterPlayerSeat(seatNumber);
-            SetupPocketCardsVisibility(seatNumber);
+            return;
         }
+
+        CenterPlayerSeat(seatNumber);
+        SetupPocketCardsVisibility(seatNumber);
     }
 
     private void OnPlayerLeave(Player player, int seatNumber)
@@ -77,22 +79,22 @@ public class PlayerSeatsUI : MonoBehaviour
 
     private void CenterPlayerSeat(int centralSeatNubmer)
     {
-        Log.WriteLine($"Changed central view to {centralSeatNubmer}.");
-
         int[] centredIndexes = GetCentredIndexes(centralSeatNubmer);
 
-        for (int newIndex = 0; newIndex < centredIndexes.Length; newIndex++)
+        for (var newIndex = 0; newIndex < centredIndexes.Length; newIndex++)
         {
             int preveousIndex = centredIndexes[newIndex];
             _seatsUI[preveousIndex].transform.localPosition = _defaultSeatPositions[newIndex];
         }
+        
+        Log.WriteLine($"Changed central view to {centralSeatNubmer}.");
     }
 
     private int[] GetCentredIndexes(int centralSeatNubmer)
     {
-        List<int> centredIndexes = new List<int>();
+        List<int> centredIndexes = new();
 
-        for (int i = 0; i < PlayerSeats.MaxSeats; i++)
+        for (var i = 0; i < PlayerSeats.MaxSeats; i++)
         {
             centredIndexes.Add((centralSeatNubmer + i) % PlayerSeats.MaxSeats);
         }
@@ -102,10 +104,11 @@ public class PlayerSeatsUI : MonoBehaviour
 
     private void SetupPocketCardsVisibility(int centralSeatNubmer)
     {
-        for (int i = 0; i < _seatsUI.Count; i++)
+        foreach (SeatUI seatUI in _seatsUI)
         {
-            _seatsUI[i].PocketCards.gameObject.SetActive(true);
+            seatUI.PocketCards.gameObject.SetActive(true);
         }
+
         _seatsUI[centralSeatNubmer].PocketCards.gameObject.SetActive(false);
     }
 
