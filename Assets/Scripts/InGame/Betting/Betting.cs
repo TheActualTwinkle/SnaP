@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class PlayerBetting : MonoBehaviour
@@ -10,22 +8,22 @@ public class PlayerBetting : MonoBehaviour
 
     public event Action<BetAction> BetActionEvent;
 
-    public IEnumerator C_StartBetCountdown { get; private set; }
+    public IEnumerator StartBetCountdownCoroutine { get; private set; }
 
     [SerializeField] private float _betTime;
-    private float _timePaased = 0f;
+    private float _timePaased;
 
-    private Game _game => Game.Instance;
-    private PlayerBettingUI _bettingUI => PlayerBettingUI.Instance;
+    private static Game Game => Game.Instance;
+    private static PlayerBettingUI BettingUI => PlayerBettingUI.Instance;
 
     private void OnEnable()
     {
-        _game.GameStageChangedEvent += OnGameStageChanged;
+        Game.GameStageChangedEvent += OnGameStageChanged;
     }
 
     private void OnDisable()
     {
-        _game.GameStageChangedEvent -= OnGameStageChanged;
+        Game.GameStageChangedEvent -= OnGameStageChanged;
     }
 
     private void Awake()
@@ -47,22 +45,22 @@ public class PlayerBetting : MonoBehaviour
             return;
         }
 
-        if (C_StartBetCountdown != null)
+        if (StartBetCountdownCoroutine != null)
         {
-            Log.WriteLine("Bet coroutine is`t null. This should never happend.");
-            StopCoroutine(C_StartBetCountdown);
+            Log.WriteLine("Bet coroutine is`t null. This should never happens.");
+            StopCoroutine(StartBetCountdownCoroutine);
         }
-        C_StartBetCountdown = StartBetCountdown();
-        StartCoroutine(C_StartBetCountdown);
+        StartBetCountdownCoroutine = StartBetCountdown();
+        StartCoroutine(StartBetCountdownCoroutine);
     }
 
     private IEnumerator StartBetCountdown()
     {
-        while (_bettingUI.ChoosedBetAction == 0 || _timePaased < _betTime)
+        while (BettingUI.ChoosenBetAction == 0 || _timePaased < _betTime)
         {
             _timePaased += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        BetActionEvent?.Invoke(_bettingUI.ChoosedBetAction);
+        BetActionEvent?.Invoke(BettingUI.ChoosenBetAction);
     }
 }

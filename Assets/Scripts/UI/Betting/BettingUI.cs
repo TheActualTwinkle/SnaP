@@ -1,27 +1,24 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerBettingUI : MonoBehaviour
 {
     public static PlayerBettingUI Instance { get; private set; }
 
-    public BetAction ChoosedBetAction => _choosedBetAction;
+    public BetAction ChoosenBetAction => _choosenBetAction;
     [ReadOnly]
-    [SerializeField] private BetAction _choosedBetAction;
+    [SerializeField] private BetAction _choosenBetAction;
 
     private List<IToggle<BetAction>> _toggles;
 
-    private Game _game => Game.Instance; 
+    private static Game Game => Game.Instance; 
 
     private void OnEnable()
     {
-        _game.GameStageChangedEvent += OnGameStageChanged;
+        Game.GameStageChangedEvent += OnGameStageChanged;
 
-        foreach (var toggle in _toggles)
+        foreach (IToggle<BetAction> toggle in _toggles)
         {
             toggle.ToggleOnEvent += OnBetActionToggleOn;
         }
@@ -29,9 +26,9 @@ public class PlayerBettingUI : MonoBehaviour
 
     private void OnDisable()
     {
-        _game.GameStageChangedEvent -= OnGameStageChanged;
+        Game.GameStageChangedEvent -= OnGameStageChanged;
 
-        foreach (var toggle in _toggles)
+        foreach (IToggle<BetAction> toggle in _toggles)
         {
             toggle.ToggleOnEvent -= OnBetActionToggleOn;
         }
@@ -53,17 +50,17 @@ public class PlayerBettingUI : MonoBehaviour
 
     private void OnGameStageChanged(GameStage gameStage)
     {
-        _choosedBetAction = 0;
+        _choosenBetAction = 0;
         SetupButtons();
     }
 
     private void SetupButtons()
     {
-        // Setup buttons.
+        
     }
 
     private void OnBetActionToggleOn(BetAction betAction)
     {
-        _choosedBetAction = betAction;
+        _choosenBetAction = betAction;
     }
 }
