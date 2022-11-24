@@ -18,8 +18,7 @@ public class BoardButton
     {     
         if (_position == EmptyPosition)
         {
-            int[] activeIndexes = GetActivePlayerIndexes();
-            _position = activeIndexes[Random.Range(0, activeIndexes.Length)];
+            _position = GetActivePlayerIndexes().First();
         }
 
         int[] turnSequensce = GetTurnSequensce();

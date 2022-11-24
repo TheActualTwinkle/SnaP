@@ -1,10 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
-public class PocketCardsUI : MonoBehaviour
+public class OwnerPocketCardsUI : MonoBehaviour
 {
-    [SerializeField] private int _position;
     
     [SerializeField] private Animator _animator;
 
@@ -35,14 +37,15 @@ public class PocketCardsUI : MonoBehaviour
             return;
         }
 
-        Player player = PlayerSeats.Instance.Players[_position];
-        if (player == null || player.IsOwner == true)
+        Player player = PlayerSeats.Instance.Players.FirstOrDefault(x => x != null && x.IsOwner == true);
+        if (player == null)
         {
             return;
         }
         
-        _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
-        _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
+        _cardImage1.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value + 2}_{player.PocketCard1.Suit.ToString()}");
+        _cardImage2.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value + 2}_{player.PocketCard2.Suit.ToString()}");
+
         _animator.SetTrigger("GetCards");
     }
 
