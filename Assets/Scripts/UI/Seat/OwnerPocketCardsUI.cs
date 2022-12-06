@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,7 +24,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
     private void OnDisable()
     {
         Game.GameStageChangedEvent -= GameStageChangedEvent;
-        Game.EndDealEvent -= OnEndDeal;
+        Game.EndDealEvent -= OnEndDeal; 
         Betting.BetActionEvent -= OnBetAction;
     }
 
@@ -46,17 +44,19 @@ public class OwnerPocketCardsUI : MonoBehaviour
         _cardImage1.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value + 2}_{player.PocketCard1.Suit.ToString()}");
         _cardImage2.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value + 2}_{player.PocketCard2.Suit.ToString()}");
 
+        _animator.ResetTrigger("ThrowCards");
         _animator.SetTrigger("GetCards");
     }
 
     private void OnEndDeal(WinnerData winnerData)
     {
+        _animator.ResetTrigger("GetCards");
         _animator.SetTrigger("ThrowCards");
     }
 
-    private void OnBetAction(BetAction betAction)
+    private void OnBetAction(Player player, BetAction betAction)
     {
-        if (betAction != BetAction.Fold)
+        if (betAction != BetAction.Fold || player.IsOwner == false)
         {
             return;
         }

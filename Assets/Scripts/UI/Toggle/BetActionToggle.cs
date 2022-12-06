@@ -16,7 +16,17 @@ public class BetActionToggle : MonoBehaviour
     {
         _toggle.onValueChanged.AddListener(OnValueChanged);
     }
+    
+    private void OnEnable()
+    {
+        Game.Instance.GameStageChangedEvent += OnGameStageChanged;
+    }
 
+    private void OnDisable()
+    {
+        Game.Instance.GameStageChangedEvent -= OnGameStageChanged;
+    }
+    
     public void SetToggleInfo(BetAction betAction, string toggleText)
     {
         _betAction = betAction;
@@ -29,5 +39,10 @@ public class BetActionToggle : MonoBehaviour
         {
             ToggleOnEvent?.Invoke(_betAction);
         }
+    }
+
+    private void OnGameStageChanged(GameStage gameStage)
+    {
+        _toggle.isOn = false;
     }
 }

@@ -13,16 +13,16 @@ public class Game : NetworkBehaviour
 
     [ReadOnly] [SerializeField] private bool _isPlaying;
 
-    public uint CallAmount => _callAmount;
-    [ReadOnly] [SerializeField] private uint _callAmount;
-
     [ReadOnly] [SerializeField] private uint _pot;
 
+    private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
     [ReadOnly] [SerializeField] private Board _board;
     [ReadOnly] [SerializeField] private BoardButton _boardButton;
     private CardDeck _cardDeck;
+
+    private IEnumerator _startDealWhenСonditionTrueCoroutine;
     
     private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.TakenSeatsAmount >= 2);
 
@@ -55,7 +55,7 @@ public class Game : NetworkBehaviour
         switch (gameStage)
         {
             case GameStage.Preflop:
-                StartPreflop();
+                StartCoroutine(StartPreflop());
                 break;
             case GameStage.Flop:
                 break;
@@ -72,13 +72,26 @@ public class Game : NetworkBehaviour
         GameStageChangedEvent?.Invoke(gameStage);
     }
 
-    private void StartPreflop()
+    private IEnumerator StartPreflop()
     {
         _board = new Board(_cardDeck.PullCards(5).ToList());
 
-        foreach (int index in _boardButton.TurnSequensce)
+        int[] turnSequensce = _boardButton.GetTurnSequensce();
+        foreach (int index in turnSequensce)
         {
             PlayerSeats.Players[index].SetPocketCards(_cardDeck.PullCard(), _cardDeck.PullCard());
+        }
+        
+        PlayerSeats.Players[turnSequensce[0]].TryBet(Betting.SmallBlind);
+        PlayerSeats.Players[turnSequensce[1]].TryBet(Betting.BigBlind);
+
+        int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequensce();
+        foreach (int index in preflopTurnSequensce)
+        {
+            Player player = PlayerSeats.Players[index];
+            Debug.Log($"Ходит сиденье {index}");
+            yield return StartCoroutine(Betting.StartBetCountdown(player));
+            Debug.Log($"Завершил ход сиденье {index}");
         }
     }
 
@@ -88,16 +101,16 @@ public class Game : NetworkBehaviour
         {
             return;
         }
-
+        
+        if (_startDealWhenСonditionTrueCoroutine != null)   
+        {
+            return;
+        }
+        
         _cardDeck = new CardDeck();
-        if (ConditionToStartDeal == true)
-        {
-            StartDealClientRpc(_cardDeck.GetCodedCards());
-        }
-        else
-        {
-            StartCoroutine(StartDealWhenСonditionTrue());
-        }
+        
+        _startDealWhenСonditionTrueCoroutine = StartDealWhenСonditionTrue();
+        StartCoroutine(_startDealWhenСonditionTrueCoroutine);
     }
 
     private void OnPlayerLeave(Player player, int seatNumber)
@@ -109,7 +122,7 @@ public class Game : NetworkBehaviour
         
         if (PlayerSeats.TakenSeatsAmount == 1)
         {
-            ulong winnerId = PlayerSeats.Players.FirstOrDefault(x => x != null).OwnerClientId;
+            ulong winnerId = PlayerSeats.Players.FirstOrDefault(x => x != null)!.OwnerClientId;
             WinnerData winnerData = new(winnerId, _pot);
             EndDealClientRpc(winnerData);
         }
@@ -118,16 +131,20 @@ public class Game : NetworkBehaviour
     private IEnumerator StartDealWhenСonditionTrue()
     {
         yield return new WaitUntil(() => ConditionToStartDeal == true);
+        yield return new WaitForSeconds(0.05f);
         StartDealClientRpc(_cardDeck.GetCodedCards());
+
+        _startDealWhenСonditionTrueCoroutine = null;
     }
 
+    
     #region RPC
 
     [ClientRpc]
     private void StartDealClientRpc(int[] cardDeck)
     {
         _isPlaying = true;
-
+        
         _cardDeck = new CardDeck(cardDeck);
         _boardButton = new BoardButton();
         _boardButton.Move();

@@ -22,6 +22,11 @@ public class PlayerSeats : MonoBehaviour
 
     private void OnValidate()
     {
+        if (_players.Count == MaxSeats)
+        {
+            return;
+        }
+        
         _players = new List<Player>(MaxSeats);
         for (var i = 0; i < MaxSeats; i++)
         {
@@ -87,6 +92,7 @@ public class PlayerSeats : MonoBehaviour
 
     private IEnumerator CheckForConnectonLost()
     {
+        #if !UNITY_EDITOR
         while (true)
         {
             Log.WriteToFile($"CheckForConnectionLost cycle", $"{Application.persistentDataPath}\\CustomLog.log");
@@ -113,5 +119,8 @@ public class PlayerSeats : MonoBehaviour
 
             yield return new WaitForSeconds(_conncetionLostCheckInterval);
         }
+        #endif
+
+        yield return null;
     }
 }

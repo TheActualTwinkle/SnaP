@@ -42,6 +42,11 @@ public class PlayerMenu : MonoBehaviour
 
     private void OnInputFiledEndEdit(string value)
     {
+        if (string.IsNullOrEmpty(value) == true)
+        {
+            _nickNameInputField.text = "Player";
+        }
+        
         SavePlayerData();
     }
    
@@ -64,19 +69,18 @@ public class PlayerMenu : MonoBehaviour
 
     private IEnumerator SetImageFromLocalFIle(string filePath)
     {
-        using (UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(filePath))
-        {
-            yield return webRequest.SendWebRequest();
+        using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(filePath);
+        
+        yield return webRequest.SendWebRequest();
 
-            if (webRequest.result == UnityWebRequest.Result.ConnectionError)
-            {
-                Log.WriteLine(webRequest.error);
-            }
-            else
-            {
-                Texture2D texture = DownloadHandlerTexture.GetContent(webRequest);
-                _image.sprite = TextureConverter.GetSprite(texture);
-            }
+        if (webRequest.result == UnityWebRequest.Result.ConnectionError)
+        {
+            Log.WriteLine(webRequest.error);
+        }
+        else
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(webRequest);
+            _image.sprite = TextureConverter.GetSprite(texture);
         }
     }
 

@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _seatNumber:
     m_InternalValue: -1
-  _stack: 0
+  _stack: 1000
   _pocketCard1:
     _suit: 0
     _value: 0

@@ -43,17 +43,20 @@ public class PocketCardsUI : MonoBehaviour
         
         _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
         _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
+        
+        _animator.ResetTrigger("ThrowCards");
         _animator.SetTrigger("GetCards");
     }
 
     private void OnEndDeal(WinnerData winnerData)
     {
+        _animator.ResetTrigger("GetCards");
         _animator.SetTrigger("ThrowCards");
     }
 
-    private void OnBetAction(BetAction betAction)
+    private void OnBetAction(Player player, BetAction betAction)
     {
-        if (betAction != BetAction.Fold)
+        if (betAction != BetAction.Fold || player.IsOwner == true)
         {
             return;
         }

@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9844932435a808419763fc189fdc123, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bigBlindValue: 200
-  _smallBlindValue: 100
+  _bigBlind: 10
+  _smallBlind: 5
   _betTime: 10
+  _timePaasedSinceTurn: 0

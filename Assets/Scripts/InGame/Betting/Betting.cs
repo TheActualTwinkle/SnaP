@@ -1,43 +1,35 @@
 using System;
 using System.Collections;
-using Unity.Netcode;
+using System.Linq;
 using UnityEngine;
 
 public class Betting : MonoBehaviour 
 {
     public static Betting Instance { get; private set; }
     
-    public event Action<BetAction> BetActionEvent;
+    public event Action<Player, BetAction> BetActionEvent;
 
-    public NetworkObject CurrentBetter { get; private set; }
-    
-    public BetSituation BetSituation => GetBetSituation();
+    public Player CurrentBetter { get; private set; }
 
     private IEnumerator _startBetCountdownCoroutine;
-        
-    [ReadOnly] [SerializeField] private uint _bigBlindValue;
-    [SerializeField] private uint _smallBlindValue;
-    [SerializeField] private float _betTime;
-    
-    private float _timePaasedSinceTurn;
-    private uint _callAmount;
 
-    private static Game Game => Game.Instance;
-    private static BettingUI BettingUI => BettingUI.Instance;
+    private static uint CallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
+
+    public uint BigBlind => _bigBlind;
+    [ReadOnly] [SerializeField] private uint _bigBlind;
     
+    public uint SmallBlind => _smallBlind;
+    [SerializeField] private uint _smallBlind;
+    
+    
+    [SerializeField] private float _betTime;
+    [SerializeField] [ReadOnly] private float _timePaasedSinceTurn;
+    
+    private const float BetInterval = 1f;
+
     private void OnValidate()
     {
-        _bigBlindValue = _smallBlindValue * 2;
-    }
-    
-    private void OnEnable()
-    {
-        Game.GameStageChangedEvent += OnGameStageChanged;
-    }
-
-    private void OnDisable()
-    {
-        Game.GameStageChangedEvent -= OnGameStageChanged;
+        _bigBlind = _smallBlind * 2;    
     }
 
     private void Awake()
@@ -52,36 +44,24 @@ public class Betting : MonoBehaviour
         }
     }
     
-    private void OnGameStageChanged(GameStage gameStage)
+    public static BetSituation GetBetSituation(uint betAmount)
     {
-        if (gameStage == GameStage.Showdown)
-        {
-            return;
-        }
-
-        if (_startBetCountdownCoroutine != null)
-        {
-            Log.WriteLine("Bet coroutine is`t null. This should never happens."); // Why?
-            StopCoroutine(_startBetCountdownCoroutine);
-        }
-        _startBetCountdownCoroutine = StartBetCountdown();
-        StartCoroutine(_startBetCountdownCoroutine);
+        return betAmount <= CallAmount ? BetSituation.CallEqualsOrLessCheck : BetSituation.CallGreaterCheck;
     }
-
-    private IEnumerator StartBetCountdown()
+    
+    public IEnumerator StartBetCountdown(Player player)
     {
-        CurrentBetter = NetworkManager.Singleton.LocalClient.PlayerObject;
-        while (BettingUI.ChoosenBetAction == BetAction.Empty || _timePaasedSinceTurn < _betTime)
+        CurrentBetter = player;
+
+        yield return new WaitForSeconds(BetInterval);
+        
+        while (player.ChoosenBetAction == BetAction.Empty && _timePaasedSinceTurn < _betTime)
         {
             _timePaasedSinceTurn += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        
-        BetActionEvent?.Invoke(BettingUI.ChoosenBetAction);
-    }
 
-    private BetSituation GetBetSituation()
-    {
-        return Game.CallAmount <= _callAmount ? BetSituation.CallEqualsOrLessCheck : BetSituation.CallGreaterCheck;
+        _timePaasedSinceTurn = 0f;
+        BetActionEvent?.Invoke(player, player.ChoosenBetAction);
     }
 }

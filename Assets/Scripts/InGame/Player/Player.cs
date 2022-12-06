@@ -14,6 +14,12 @@ public class Player : NetworkBehaviour
 
     public string AvatarBase64String => _avatarBase64String.Value.ToString();
     private readonly NetworkVariable<FixedString4096Bytes> _avatarBase64String = new();
+
+    public BetAction ChoosenBetAction => _choosenBetAction.Value;
+    private readonly NetworkVariable<BetAction> _choosenBetAction = new();
+
+    public uint BetAmount => _betAmount.Value;
+    private readonly NetworkVariable<uint> _betAmount = new();
     
     public uint Stack => _stack;
     [ReadOnly] [SerializeField] private uint _stack;
@@ -24,19 +30,24 @@ public class Player : NetworkBehaviour
     public CardObject PocketCard2 => _pocketCard2;
     [ReadOnly] [SerializeField] private CardObject _pocketCard2;
     
+    private static OwnerBetUI OwnerBetUI => OwnerBetUI.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static PlayerSeatsUI PlayerSeatUI => PlayerSeatsUI.Instance;
 
     private void OnEnable()
     {
-        PlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeButton;
-        _seatNumber.OnValueChanged += OnSeatNumberCanged;
+        OwnerBetUI.OnBetActionChangedEvent += OnBetActionChanged;
+        PlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeSeatButton;
+        _seatNumber.OnValueChanged += OnSeatNumberChanged;
+        //_choosenBetAction.OnValueChanged += OnChoosenBetActioChanged;
     }
 
     private void OnDisable()
     {
-        PlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeButton; 
-        _seatNumber.OnValueChanged -= OnSeatNumberCanged;
+        OwnerBetUI.OnBetActionChangedEvent -= OnBetActionChanged;
+        PlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeSeatButton; 
+        _seatNumber.OnValueChanged -= OnSeatNumberChanged;
+        //_choosenBetAction.OnValueChanged -= OnChoosenBetActioChanged;
     }
 
     private void Start()
@@ -83,6 +94,23 @@ public class Player : NetworkBehaviour
         CangePlayerDataServerRpc(playerData.NickName, playerData.AvatarBase64String);
     }
 
+    public bool TryBet(uint value)
+    {
+        if (IsOwner == false)
+        {
+            return false;
+        }
+
+        if (value > _stack)
+        {            
+            LeaveSeat();
+            return false;
+        }
+        
+        ChangeBetAmountServerRpc(value);
+        return true;
+    }
+    
     public void SetPocketCards(CardObject card1, CardObject card2)
     {
         _pocketCard1 = card1;
@@ -105,7 +133,7 @@ public class Player : NetworkBehaviour
     }
 
     // Set data to owner players.
-    private void OnPlayerClickTakeButton(int seatNumber)
+    private void OnPlayerClickTakeSeatButton(int seatNumber)
     {
         if (IsOwner == false)
         {
@@ -123,7 +151,7 @@ public class Player : NetworkBehaviour
     }
 
     // Set data to NON owner players.
-    private void OnSeatNumberCanged(int oldValue, int newValue)
+    private void OnSeatNumberChanged(int oldValue, int newValue)
     {
         if (IsOwner == true)
         {
@@ -140,6 +168,17 @@ public class Player : NetworkBehaviour
         }
     }
 
+    // Set data to owner players.
+    private void OnBetActionChanged(BetAction betAction)
+    {
+        if (IsOwner == false)
+        {
+            return;
+        }
+        
+        ChangeChoosenBetActionServerRpc(betAction);
+    }
+    
     private void TakeSeat(int seatNumber)
     {
         PlayerSeats.TryTake(this, seatNumber);
@@ -165,6 +204,18 @@ public class Player : NetworkBehaviour
         _avatarBase64String.Value = avatarBase64String;
     }
 
+    [ServerRpc]
+    private void ChangeBetAmountServerRpc(uint value)
+    {
+        _betAmount.Value = value;
+    }
+
+    [ServerRpc]
+    private void ChangeChoosenBetActionServerRpc(BetAction betAction)
+    {
+        _choosenBetAction.Value = betAction;
+    }
+    
     [ClientRpc]
     private void ShutdownClientRpc()
     {
