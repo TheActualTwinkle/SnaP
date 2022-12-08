@@ -7,11 +7,10 @@ public class Betting : MonoBehaviour
 {
     public static Betting Instance { get; private set; }
     
-    public event Action<Player, BetAction> BetActionEvent;
+    public event Action<Player> PlayerStartBettingEvent;
+    public event Action<Player, BetAction> PlayerEndBettingEvent;
 
     public Player CurrentBetter { get; private set; }
-
-    private IEnumerator _startBetCountdownCoroutine;
 
     private static uint CallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
 
@@ -21,12 +20,14 @@ public class Betting : MonoBehaviour
     public uint SmallBlind => _smallBlind;
     [SerializeField] private uint _smallBlind;
     
-    
+    public float BetTime => _betTime;
     [SerializeField] private float _betTime;
-    [SerializeField] [ReadOnly] private float _timePaasedSinceTurn;
+    [SerializeField] [ReadOnly] private float _timePaasedSinceBetStart;
     
-    private const float BetInterval = 1f;
-
+    // private const float DelayBeforeStarBet = 1f;
+    
+    private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
+    
     private void OnValidate()
     {
         _bigBlind = _smallBlind * 2;    
@@ -43,7 +44,17 @@ public class Betting : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
+    private void OnEnable()
+    {
+        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
+    }
+
+    private void OnDisable()
+    {
+        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
+    }
+
     public static BetSituation GetBetSituation(uint betAmount)
     {
         return betAmount <= CallAmount ? BetSituation.CallEqualsOrLessCheck : BetSituation.CallGreaterCheck;
@@ -52,16 +63,28 @@ public class Betting : MonoBehaviour
     public IEnumerator StartBetCountdown(Player player)
     {
         CurrentBetter = player;
-
-        yield return new WaitForSeconds(BetInterval);
+        PlayerStartBettingEvent?.Invoke(player);
         
-        while (player.ChoosenBetAction == BetAction.Empty && _timePaasedSinceTurn < _betTime)
+        // yield return new WaitForSeconds(DelayBeforeStarBet);
+        
+        _timePaasedSinceBetStart = 0f;
+        while (player.ChoosenBetAction == BetAction.Empty && _timePaasedSinceBetStart < _betTime)
         {
-            _timePaasedSinceTurn += Time.deltaTime;
+            _timePaasedSinceBetStart += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+        
+        PlayerEndBettingEvent?.Invoke(player, player.ChoosenBetAction);
+    }
 
-        _timePaasedSinceTurn = 0f;
-        BetActionEvent?.Invoke(player, player.ChoosenBetAction);
+    private void OnPlayerLeave(Player player, int seatIndex)
+    {
+        if (player != CurrentBetter)
+        {
+            return;
+        }
+
+        _timePaasedSinceBetStart = _betTime;
+        PlayerEndBettingEvent?.Invoke(player, player.ChoosenBetAction);
     }
 }

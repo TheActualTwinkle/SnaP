@@ -178,6 +178,10 @@ PrefabInstance:
       propertyPath: _position
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7813752527383432478, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _position
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6011500124517751241, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
@@ -306,6 +310,10 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7718901892273406111, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _position
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7813752527383432478, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: _position
       value: 3
       objectReference: {fileID: 0}
@@ -441,6 +449,10 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7718901892273406111, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _position
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7813752527383432478, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: _position
       value: 2
       objectReference: {fileID: 0}
@@ -687,6 +699,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7718901892273406111, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _position
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7813752527383432478, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: _position
       value: 4
       objectReference: {fileID: 0}

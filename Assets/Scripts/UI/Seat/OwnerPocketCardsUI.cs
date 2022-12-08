@@ -18,14 +18,14 @@ public class OwnerPocketCardsUI : MonoBehaviour
     {
         Game.GameStageChangedEvent += GameStageChangedEvent;
         Game.EndDealEvent += OnEndDeal;
-        Betting.BetActionEvent += OnBetAction;
+        Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
     }
 
     private void OnDisable()
     {
         Game.GameStageChangedEvent -= GameStageChangedEvent;
         Game.EndDealEvent -= OnEndDeal; 
-        Betting.BetActionEvent -= OnBetAction;
+        Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
     }
 
     private void GameStageChangedEvent(GameStage gameStage)
@@ -54,7 +54,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
         _animator.SetTrigger("ThrowCards");
     }
 
-    private void OnBetAction(Player player, BetAction betAction)
+    private void OnPlayerEndBetting(Player player, BetAction betAction)
     {
         if (betAction != BetAction.Fold || player.IsOwner == false)
         {
