@@ -46,5 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bigBlind: 10
   _smallBlind: 5
-  _betTime: 15
+  _betTime: 120
   _timePaasedSinceBetStart: 0

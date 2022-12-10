@@ -11,6 +11,7 @@ public class Game : NetworkBehaviour
     public event Action<GameStage> GameStageChangedEvent;
     public event Action<WinnerData> EndDealEvent;
 
+    public bool IsPlaying => _isPlaying;
     [ReadOnly] [SerializeField] private bool _isPlaying;
 
     [ReadOnly] [SerializeField] private uint _pot;
@@ -22,6 +23,7 @@ public class Game : NetworkBehaviour
     [ReadOnly] [SerializeField] private BoardButton _boardButton;
     private CardDeck _cardDeck;
 
+    private IEnumerator _stageCoroutine;
     private IEnumerator _startDealWhenСonditionTrueCoroutine;
     
     private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.TakenSeatsAmount >= 2);
@@ -55,7 +57,7 @@ public class Game : NetworkBehaviour
         switch (gameStage)
         {
             case GameStage.Preflop:
-                StartCoroutine(StartPreflop());
+                _stageCoroutine = StartPreflop();
                 break;
             case GameStage.Flop:
                 break;
@@ -69,6 +71,7 @@ public class Game : NetworkBehaviour
                 throw new ArgumentOutOfRangeException(nameof(gameStage), gameStage, null);
         }
         
+        StartCoroutine(_stageCoroutine);
         GameStageChangedEvent?.Invoke(gameStage);
     }
 
@@ -89,9 +92,15 @@ public class Game : NetworkBehaviour
         foreach (int index in preflopTurnSequensce)
         {
             Player player = PlayerSeats.Players[index];
-            Debug.Log($"Ходит сиденье {index}");
-            yield return StartCoroutine(Betting.StartBetCountdown(player));
-            Debug.Log($"Завершил ход сиденье {index}");
+
+            if (player == null)
+            {
+                continue;
+            }
+            
+            Log.WriteLine($"Ходит сиденье №{index}");
+            yield return StartCoroutine(Betting.Bet(player));
+            Log.WriteLine($"Завершил ход сиденье №{index}");
         }
     }
 
@@ -120,12 +129,14 @@ public class Game : NetworkBehaviour
             return;
         }
         
-        if (PlayerSeats.TakenSeatsAmount == 1)
+        if (PlayerSeats.TakenSeatsAmount != 1)
         {
-            ulong winnerId = PlayerSeats.Players.FirstOrDefault(x => x != null)!.OwnerClientId;
-            WinnerData winnerData = new(winnerId, _pot);
-            EndDealClientRpc(winnerData);
+            return;
         }
+        
+        ulong winnerId = PlayerSeats.Players.FirstOrDefault(x => x != null)!.OwnerClientId;
+        WinnerData winnerData = new(winnerId, _pot);
+        EndDealClientRpc(winnerData);
     }
 
     private IEnumerator StartDealWhenСonditionTrue()
@@ -148,7 +159,7 @@ public class Game : NetworkBehaviour
         _cardDeck = new CardDeck(cardDeck);
         _boardButton = new BoardButton();
         _boardButton.Move();
-
+        
         StartNextStage(GameStage.Preflop);
     }
 
@@ -156,9 +167,13 @@ public class Game : NetworkBehaviour
     private void EndDealClientRpc(WinnerData winnerData)
     {
         _isPlaying = false;
+        StopCoroutine(_stageCoroutine);        
+        
+        PlayerSeats.SitEveryoneWaiting();
 
         // Not pot but some chips based on bet.
         EndDealEvent?.Invoke(winnerData);
+        Log.WriteLine($"End deal. Winner id: {winnerData.WinnerId}");
     }
     
     #endregion

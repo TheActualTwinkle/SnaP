@@ -4,14 +4,11 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class BoardButtonUI : MonoBehaviour
 {
-    private Image _image;
+    [SerializeField] private Image _image;
+
+    [SerializeField] private Vector2 _position;
     
     private static PlayerSeatsUI PlayerSeatsUI => PlayerSeatsUI.Instance;
-
-    private void Awake()
-    {
-        _image = GetComponent<Image>();
-    }
 
     private void OnEnable()
     {
@@ -26,6 +23,10 @@ public class BoardButtonUI : MonoBehaviour
     private void OnButtonMove(int position)
     {
         _image.enabled = true;
-        transform.position = PlayerSeatsUI.Seats[position].transform.position;
+
+        Transform seatTransform = PlayerSeatsUI.Seats[position].transform;
+        
+        transform.SetParent(seatTransform);
+        transform.localPosition = _position;
     }
 }

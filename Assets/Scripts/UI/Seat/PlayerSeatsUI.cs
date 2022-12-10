@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 public class PlayerSeatsUI : MonoBehaviour
@@ -11,21 +10,25 @@ public class PlayerSeatsUI : MonoBehaviour
     public event Action<int> PlayerClickTakeButton;
 
     public List<SeatUI> Seats => _seatsUI.ToList();
-    [ReadOnly]
-    [SerializeField] private List<SeatUI> _seatsUI;
+    [ReadOnly] [SerializeField] private List<SeatUI> _seatsUI;
 
-    private readonly List<Vector3> _defaultSeatPositions = new(); 
+    private readonly List<Vector3> _defaultSeatPositions = new();
+
+    [Range(0f, 1f)] [SerializeField] private float _waitingTransparecyAlpha;
+    
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
     private void OnEnable()
     {
         PlayerSeats.PlayerSitEvent += OnPlayerSit;
+        PlayerSeats.PlayerWaitForSitEvent += OnPlayerWaitForSit;
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
     }
 
     private void OnDisable()
     {
         PlayerSeats.PlayerSitEvent -= OnPlayerSit;
+        PlayerSeats.PlayerWaitForSitEvent -= OnPlayerWaitForSit;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
@@ -53,14 +56,11 @@ public class PlayerSeatsUI : MonoBehaviour
         
     private void OnPlayerSit(Player player, int seatNumber)
     {
-        StringBuilder stringBuilderAvatar = new();
-        foreach (char symbol in player.AvatarBase64String)
-        {
-            stringBuilderAvatar.Append(symbol);
-        }
-        byte[] rawData = Convert.FromBase64String(stringBuilderAvatar.ToString());
+        byte[] rawData = Convert.FromBase64String(player.AvatarBase64String);
         _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(rawData);
         _seatsUI[seatNumber].NickName.text = player.NickName;
+        
+        ChanageSeatImageTransparency(seatNumber, 1f);
 
         if (player.IsOwner == false)
         {
@@ -71,12 +71,25 @@ public class PlayerSeatsUI : MonoBehaviour
         SetupPocketCardsVisibility(seatNumber);
     }
 
+    private void OnPlayerWaitForSit(Player player, int seatNumber)
+    {
+        OnPlayerSit(player, seatNumber);
+        ChanageSeatImageTransparency(seatNumber, _waitingTransparecyAlpha);
+    }
+    
     private void OnPlayerLeave(Player player, int seatNumber)
     {
         _seatsUI[seatNumber].PlayerImage.sprite = Resources.Load<Sprite>("Sprites/Arrow");
         _seatsUI[seatNumber].NickName.text = string.Empty;
     }
 
+    private void ChanageSeatImageTransparency(int seatNumber, float alpha)
+    {
+        Color baseColor = _seatsUI[seatNumber].PlayerImage.color;
+        Color newColor = new(baseColor.r, baseColor.g, baseColor.b, alpha);
+        _seatsUI[seatNumber].PlayerImage.color = newColor;
+    }
+    
     private void CenterPlayerSeat(int centralSeatNubmer)
     {
         int[] centredIndexes = GetCentredIndexes(centralSeatNubmer);

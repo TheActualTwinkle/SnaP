@@ -11,26 +11,32 @@ public class PlayerSeats : MonoBehaviour
     public const int MaxSeats = 5;
 
     public event Action<Player, int> PlayerSitEvent;
+    public event Action<Player, int> PlayerWaitForSitEvent;
     public event Action<Player, int> PlayerLeaveEvent;
     
     public List<Player> Players => _players.ToList();
     [ReadOnly] [SerializeField] private List<Player> _players;
 
+    public List<Player> WaitingPlayers => _waitingPlayers.ToList();
+    [ReadOnly] [SerializeField] private List<Player> _waitingPlayers;
+    
     public int TakenSeatsAmount => _players.Count(x => x != null);
 
     [SerializeField] private float _conncetionLostCheckInterval;
 
     private void OnValidate()
     {
-        if (_players.Count == MaxSeats)
+        if (_players.Count == MaxSeats && _waitingPlayers.Count == MaxSeats)
         {
             return;
         }
-        
+
         _players = new List<Player>(MaxSeats);
+        _waitingPlayers = new List<Player>();
         for (var i = 0; i < MaxSeats; i++)
         {
             _players.Add(null);
+            _waitingPlayers.Add(null);
         }
     }
 
@@ -53,12 +59,19 @@ public class PlayerSeats : MonoBehaviour
 
     public bool TryTake(Player player, int seatNumber)
     {
-        if (_players[seatNumber] != null)
+        if (_players[seatNumber] != null || _waitingPlayers[seatNumber] != null)
         {
-            Log.WriteLine($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by Player('{_players[seatNumber].NickName}).'");
+            Log.WriteLine($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by some Player.'");
             return false;
         }
 
+        if (Game.Instance.IsPlaying == true && _players.Contains(player) == false)
+        {
+            _waitingPlayers[seatNumber] = player;
+            PlayerWaitForSitEvent?.Invoke(player, seatNumber);
+            return false;
+        }
+        
         TryLeave(player);
 
         _players[seatNumber] = player;
@@ -85,6 +98,28 @@ public class PlayerSeats : MonoBehaviour
         return true;
     }
 
+    public void SitEveryoneWaiting()
+    {
+        for (var i = 0; i < _waitingPlayers.Count; i++)
+        {
+            if (_waitingPlayers[i] == null)
+            {
+                continue;
+            }
+
+            if (_players.Contains(_waitingPlayers[i]) == true)
+            {
+                Log.WriteLine($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ('{_waitingPlayers[i].NickName}')");
+                continue;
+            }
+
+            _players[i] = _waitingPlayers[i];
+            _waitingPlayers[i] = null;
+            
+            PlayerSitEvent?.Invoke(_players[i], i);
+        }
+    }
+    
     public bool IsFree(int seatNumber)
     {
         return _players[seatNumber] == null;

@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +8,8 @@ public class BetTimerUI : MonoBehaviour
     [SerializeField] private int _position;
     [SerializeField] private Image _image;
 
+    private IEnumerator _startTimerCoroutine;
+    
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
 
@@ -33,14 +33,26 @@ public class BetTimerUI : MonoBehaviour
         }
 
         _image.enabled = true;
-        StartCoroutine(StartTimer());
+
+        if (_startTimerCoroutine != null)
+        {
+            StopCoroutine(_startTimerCoroutine);
+        }
+        _startTimerCoroutine = StartTimer();
+        StartCoroutine(_startTimerCoroutine);
     }
 
     private void OnPlayerEndBetting(Player player, BetAction betAction)
     {
-        if (_position != PlayerSeats.Players.IndexOf(player))
+        int playerIndex = PlayerSeats.Players.IndexOf(player);
+        if (_position != playerIndex && playerIndex != -1)
         {
             return;
+        }
+
+        if (_startTimerCoroutine != null)
+        {
+            StopCoroutine(_startTimerCoroutine);
         }
         
         _image.enabled = false;

@@ -59,7 +59,12 @@ public class OwnerBetUI : MonoBehaviour
     
     private void SetupButtons()
     {
-        Player player = PlayerSeats.Players.First(x => x != null && x.IsOwner == true);
+        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.IsOwner == true);
+        if (player == null || PlayerSeats.WaitingPlayers.Contains(player) == true)
+        {
+            return;
+        }
+        
         BetSituation betSituation = Betting.GetBetSituation(player.BetAmount);
 
         if (Betting.CurrentBetter == player)
