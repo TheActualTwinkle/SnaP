@@ -2,7 +2,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Animator))]
 public class SeatUI : MonoBehaviour
 {
     public Image PlayerImage => _playerImage;

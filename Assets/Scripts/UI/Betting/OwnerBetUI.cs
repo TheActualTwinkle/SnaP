@@ -34,6 +34,7 @@ public class OwnerBetUI : MonoBehaviour
     private void OnEnable()
     {
         Game.GameStageChangedEvent += OnGameStageChanged;
+        Betting.PlayerStartBettingEvent += OnPlayerStartBetting;
 
         foreach (BetActionToggle toggle in _toggles)
         {
@@ -44,6 +45,7 @@ public class OwnerBetUI : MonoBehaviour
     private void OnDisable()
     {
         Game.GameStageChangedEvent -= OnGameStageChanged;
+        Betting.PlayerStartBettingEvent -= OnPlayerStartBetting;
 
         foreach (BetActionToggle toggle in _toggles)
         {
@@ -54,6 +56,11 @@ public class OwnerBetUI : MonoBehaviour
     private void OnGameStageChanged(GameStage gameStage)
     {
         _choosenBetAction = BetAction.Empty;
+        SetupButtons();
+    }
+
+    private void OnPlayerStartBetting(Player player)
+    {
         SetupButtons();
     }
     

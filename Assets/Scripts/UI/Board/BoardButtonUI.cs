@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,16 +8,18 @@ public class BoardButtonUI : MonoBehaviour
     [SerializeField] private Image _image;
 
     [SerializeField] private Vector2 _position;
-    
-    private static PlayerSeatsUI PlayerSeatsUI => PlayerSeatsUI.Instance;
 
+    private static PlayerSeatsUI PlayerSeatsUI => PlayerSeatsUI.Instance;
+    
     private void OnEnable()
     {
+        Game.Instance.EndDealEvent += OnEndDeal;
         BoardButton.OnMove += OnButtonMove;
     }
 
     private void OnDisable()
     {
+        Game.Instance.EndDealEvent -= OnEndDeal;
         BoardButton.OnMove -= OnButtonMove;
     }
 
@@ -28,5 +31,10 @@ public class BoardButtonUI : MonoBehaviour
         
         transform.SetParent(seatTransform);
         transform.localPosition = _position;
+    }
+
+    private void OnEndDeal(WinnerData winnerData)
+    {
+        _image.enabled = false;
     }
 }

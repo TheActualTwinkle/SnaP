@@ -64,6 +64,8 @@ public class PlayerSeats : MonoBehaviour
             Log.WriteLine($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by some Player.'");
             return false;
         }
+        
+        TryLeave(player);
 
         if (Game.Instance.IsPlaying == true && _players.Contains(player) == false)
         {
@@ -72,8 +74,6 @@ public class PlayerSeats : MonoBehaviour
             return false;
         }
         
-        TryLeave(player);
-
         _players[seatNumber] = player;
 
         Log.WriteLine($"Player ('{player.NickName}') sit on {seatNumber} seat.");
@@ -84,20 +84,30 @@ public class PlayerSeats : MonoBehaviour
 
     public bool TryLeave(Player player)
     {
-        if (_players.Contains(player) == false)
+        if (_players.Contains(player) == false && _waitingPlayers.Contains(player) == false)
         {
             return false;
         }
 
-        int seatNumber = _players.IndexOf(player);
-        _players[seatNumber] = null;
+        int seatNumber = -1;
 
+        if (_players.Contains(player) == true)
+        {
+            seatNumber = _players.IndexOf(player);
+            _players[seatNumber] = null;
+        }
+        else
+        {
+            seatNumber = _waitingPlayers.IndexOf(player);
+            _waitingPlayers[seatNumber] = null;
+        }
+        
         Log.WriteLine($"Player ('{player.NickName}') leave from {seatNumber} seat.");
 
         PlayerLeaveEvent?.Invoke(player, seatNumber);
         return true;
     }
-
+    
     public void SitEveryoneWaiting()
     {
         for (var i = 0; i < _waitingPlayers.Count; i++)
@@ -130,8 +140,6 @@ public class PlayerSeats : MonoBehaviour
         #if !UNITY_EDITOR
         while (true)
         {
-            Log.WriteToFile($"CheckForConnectionLost cycle", $"{Application.persistentDataPath}\\CustomLog.log");
-
             for (var i = 0; i < _players.Count; i++)
             {
                 try

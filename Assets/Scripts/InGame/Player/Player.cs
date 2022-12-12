@@ -30,16 +30,17 @@ public class Player : NetworkBehaviour
     public CardObject PocketCard2 => _pocketCard2;
     [ReadOnly] [SerializeField] private CardObject _pocketCard2;
     
+    private static Game Game => Game.Instance;
     private static OwnerBetUI OwnerBetUI => OwnerBetUI.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static PlayerSeatsUI PlayerSeatUI => PlayerSeatsUI.Instance;
 
     private void OnEnable()
     {
+        Game.GameStageChangedEvent += OnGameStageChanged;
         OwnerBetUI.OnBetActionChangedEvent += OnBetActionChanged;
         PlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeSeatButton;
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
-        //_choosenBetAction.OnValueChanged += OnChoosenBetActioChanged;
     }
 
     private void OnDisable()
@@ -47,7 +48,6 @@ public class Player : NetworkBehaviour
         OwnerBetUI.OnBetActionChangedEvent -= OnBetActionChanged;
         PlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeSeatButton; 
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
-        //_choosenBetAction.OnValueChanged -= OnChoosenBetActioChanged;
     }
 
     private void Start()
@@ -168,7 +168,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    // Set data to owner players.
     private void OnBetActionChanged(BetAction betAction)
     {
         if (IsOwner == false)
@@ -177,6 +176,16 @@ public class Player : NetworkBehaviour
         }
         
         ChangeChoosenBetActionServerRpc(betAction);
+    }
+
+    private void OnGameStageChanged(GameStage gameStage)
+    {
+        if (IsOwner == false)
+        {
+            return;
+        }
+        
+        ChangeChoosenBetActionServerRpc(BetAction.Empty);
     }
     
     private void TakeSeat(int seatNumber)

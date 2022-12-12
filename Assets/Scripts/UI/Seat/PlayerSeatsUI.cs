@@ -81,6 +81,7 @@ public class PlayerSeatsUI : MonoBehaviour
     {
         _seatsUI[seatNumber].PlayerImage.sprite = Resources.Load<Sprite>("Sprites/Arrow");
         _seatsUI[seatNumber].NickName.text = string.Empty;
+        ChanageSeatImageTransparency(seatNumber, 1f);
     }
 
     private void ChanageSeatImageTransparency(int seatNumber, float alpha)
