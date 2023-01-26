@@ -12,4 +12,7 @@ public class SeatUI : MonoBehaviour
 
     public GameObject PocketCards => _pocketCards;
     [SerializeField] private GameObject _pocketCards;
+
+    public Image NickNameBackgroundImage => _nickNameBackgroundImage;
+    [SerializeField] private Image _nickNameBackgroundImage;
 }

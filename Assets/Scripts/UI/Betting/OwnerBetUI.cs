@@ -31,10 +31,21 @@ public class OwnerBetUI : MonoBehaviour
         _toggles = GetComponentsInChildren<BetActionToggle>().ToList();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            SetupToggles(); // todo
+        }
+    }
+
     private void OnEnable()
     {
-        Game.GameStageChangedEvent += OnGameStageChanged;
+        Game.GameStageBeganEvent += OnGameStageBegan;
+        Game.EndDealEvent += OnEndDeal;
+        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
         Betting.PlayerStartBettingEvent += OnPlayerStartBetting;
+        Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
 
         foreach (BetActionToggle toggle in _toggles)
         {
@@ -44,8 +55,11 @@ public class OwnerBetUI : MonoBehaviour
 
     private void OnDisable()
     {
-        Game.GameStageChangedEvent -= OnGameStageChanged;
+        Game.GameStageBeganEvent -= OnGameStageBegan;
+        Game.EndDealEvent -= OnEndDeal;
+        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
         Betting.PlayerStartBettingEvent -= OnPlayerStartBetting;
+        Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
 
         foreach (BetActionToggle toggle in _toggles)
         {
@@ -53,21 +67,43 @@ public class OwnerBetUI : MonoBehaviour
         }
     }
     
-    private void OnGameStageChanged(GameStage gameStage)
+    private void OnGameStageBegan(GameStage gameStage)
     {
         _choosenBetAction = BetAction.Empty;
-        SetupButtons();
+        OnBetActionChangedEvent?.Invoke(_choosenBetAction);
+    }
+
+    private void OnEndDeal(WinnerInfo winnerInfo)
+    {
+        _choosenBetAction = BetAction.Empty;
+        OnBetActionChangedEvent?.Invoke(_choosenBetAction);
+    }
+    
+    private void OnBetActionToggleOn(BetAction betAction)
+    {
+        _choosenBetAction = betAction;
+        OnBetActionChangedEvent?.Invoke(betAction);
     }
 
     private void OnPlayerStartBetting(Player player)
     {
-        SetupButtons();
+        SetupToggles();
     }
     
-    private void SetupButtons()
+    private void OnPlayerEndBetting(BetActionInfo betActionInfo)
+    {
+        SetupToggles();
+    }
+    
+    private void OnPlayerLeave(Player player, int seatIndex)
+    {
+        ClearToggles();
+    }
+    
+    private void SetupToggles() // todo НЕ обновлять тоглы когда выбран режим префаером 
     {
         Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.IsOwner == true);
-        if (player == null || PlayerSeats.WaitingPlayers.Contains(player) == true)
+        if (player == null)
         {
             return;
         }
@@ -76,7 +112,7 @@ public class OwnerBetUI : MonoBehaviour
 
         if (Betting.CurrentBetter == player)
         {
-            if (betSituation == BetSituation.CallEqualsOrLessCheck)
+            if (betSituation == BetSituation.CanCheck)
             {
                 _toggles[0].SetToggleInfo(BetAction.Fold, "Fold");
                 _toggles[1].SetToggleInfo(BetAction.Check, "Check");
@@ -91,7 +127,7 @@ public class OwnerBetUI : MonoBehaviour
         }
         else
         {
-            if (betSituation == BetSituation.CallEqualsOrLessCheck)
+            if (betSituation == BetSituation.CanCheck)
             {
                 _toggles[0].SetToggleInfo(BetAction.CheckFold, "Check/Fold");
                 _toggles[1].SetToggleInfo(BetAction.Check, "Check");
@@ -106,9 +142,11 @@ public class OwnerBetUI : MonoBehaviour
         }
     }
 
-    private void OnBetActionToggleOn(BetAction betAction)
+    private void ClearToggles()
     {
-        _choosenBetAction = betAction;
-        OnBetActionChangedEvent?.Invoke(betAction);
+        foreach (BetActionToggle toggle in _toggles)
+        {
+            toggle.SetToggleInfo(BetAction.Empty, string.Empty);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,13 +9,14 @@ public class Game : NetworkBehaviour
 {
     public static Game Instance { get; private set; }
 
-    public event Action<GameStage> GameStageChangedEvent;
-    public event Action<WinnerData> EndDealEvent;
+    public event Action<GameStage> GameStageBeganEvent;
+    public event Action<GameStage> GameStageOverEvent;
+    public event Action<WinnerInfo> EndDealEvent;
 
+    public List<CardObject> BoardCards => _board.Cards;
+    
     public bool IsPlaying => _isPlaying;
     [ReadOnly] [SerializeField] private bool _isPlaying;
-
-    [ReadOnly] [SerializeField] private uint _pot;
 
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
@@ -25,9 +27,13 @@ public class Game : NetworkBehaviour
 
     private IEnumerator _stageCoroutine;
     private IEnumerator _startDealWhenСonditionTrueCoroutine;
+
+    private GameStage _currentGameStage = (GameStage)(-1);
     
     private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.TakenSeatsAmount >= 2);
 
+    [SerializeField] private float _roundsInterval;
+    
     private void OnEnable()
     {
         PlayerSeats.PlayerSitEvent += OnPlayerSit;
@@ -52,27 +58,32 @@ public class Game : NetworkBehaviour
         }
     }
 
-    private void StartNextStage(GameStage gameStage)
+    private void StartNextStage()
     {
-        switch (gameStage)
+        _currentGameStage++; 
+        
+        Log.WriteLine($"Starting {_currentGameStage} stage.");
+        
+        switch (_currentGameStage)
         {
             case GameStage.Preflop:
                 _stageCoroutine = StartPreflop();
                 break;
+            
             case GameStage.Flop:
-                break;
             case GameStage.Turn:
-                break;
             case GameStage.River:
+                _stageCoroutine = StartMidgameStage();
                 break;
+            
             case GameStage.Showdown:
-                break;
+                throw new NotImplementedException("Showdown где?!");
             default:
-                throw new ArgumentOutOfRangeException(nameof(gameStage), gameStage, null);
+                throw new ArgumentOutOfRangeException(nameof(_currentGameStage), _currentGameStage, null);
         }
         
         StartCoroutine(_stageCoroutine);
-        GameStageChangedEvent?.Invoke(gameStage);
+        GameStageBeganEvent?.Invoke(_currentGameStage);
     }
 
     private IEnumerator StartPreflop()
@@ -85,11 +96,45 @@ public class Game : NetworkBehaviour
             PlayerSeats.Players[index].SetPocketCards(_cardDeck.PullCard(), _cardDeck.PullCard());
         }
         
-        PlayerSeats.Players[turnSequensce[0]].TryBet(Betting.SmallBlind);
-        PlayerSeats.Players[turnSequensce[1]].TryBet(Betting.BigBlind);
+        AutoBetBlinds();
 
         int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequensce();
-        foreach (int index in preflopTurnSequensce)
+        yield return Bet(preflopTurnSequensce);
+        
+        GameStageOverEvent?.Invoke(GameStage.Preflop);
+        
+        yield return new WaitForSeconds(_roundsInterval);
+
+        StartNextStage();
+    }
+
+    // Stage like Flop, Turn and River
+    private IEnumerator StartMidgameStage()
+    {
+        int[] turnSequensce = _boardButton.GetTurnSequensce();
+        yield return Bet(turnSequensce);
+        
+        GameStageOverEvent?.Invoke(_currentGameStage);
+
+        yield return new WaitForSeconds(_roundsInterval);
+        StartNextStage();
+    }
+
+    private IEnumerator StartShowdown()
+    {
+        throw new NotImplementedException("StartShowdown func.  ");
+    }
+
+    private void AutoBetBlinds()
+    {
+        int[] turnSequensce = _boardButton.GetTurnSequensce();
+        PlayerSeats.Players[turnSequensce[0]].TryBet(Betting.SmallBlind);
+        PlayerSeats.Players[turnSequensce[1]].TryBet(Betting.BigBlind);
+    }
+    
+    private IEnumerator Bet(IEnumerable<int> turnSequensce)
+    {
+        foreach (int index in turnSequensce)
         {
             Player player = PlayerSeats.Players[index];
 
@@ -97,13 +142,25 @@ public class Game : NetworkBehaviour
             {
                 continue;
             }
+
+            int foldPlayerAmount = PlayerSeats.Players.Count(x => x != null && x.ChoosenBetAction == BetAction.Fold);
             
-            Log.WriteLine($"Ходит сиденье №{index}");
+            if (PlayerSeats.TakenSeatsAmount - foldPlayerAmount == 1)
+            {
+                ulong winnerId = player.OwnerClientId;
+                WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(player));
+                EndDealClientRpc(winnerInfo);
+
+                StartCoroutine(StartDealAfterIntervalRounds());
+                yield break;
+            }
+
+            Log.WriteLine($"Start seat №{index}");
             yield return StartCoroutine(Betting.Bet(player));
-            Log.WriteLine($"Завершил ход сиденье №{index}");
+            Log.WriteLine($"End seat №{index}");
         }
     }
-
+        
     private void OnPlayerSit(Player player, int seatNumber)
     {
         if (IsServer == false)
@@ -115,8 +172,6 @@ public class Game : NetworkBehaviour
         {
             return;
         }
-        
-        _cardDeck = new CardDeck();
         
         _startDealWhenСonditionTrueCoroutine = StartDealWhenСonditionTrue();
         StartCoroutine(_startDealWhenСonditionTrueCoroutine);
@@ -133,47 +188,61 @@ public class Game : NetworkBehaviour
         {
             return;
         }
-        
-        ulong winnerId = PlayerSeats.Players.FirstOrDefault(x => x != null)!.OwnerClientId;
-        WinnerData winnerData = new(winnerId, _pot);
-        EndDealClientRpc(winnerData);
+
+        Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
+        ulong winnerId = winner!.OwnerClientId; 
+        WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(winner));
+        EndDealClientRpc(winnerInfo);
     }
 
+    private IEnumerator StartDealAfterIntervalRounds()
+    {
+        yield return new WaitForSeconds(_roundsInterval);
+        StartCoroutine(StartDealWhenСonditionTrue());
+    }
+    
     private IEnumerator StartDealWhenСonditionTrue()
     {
         yield return new WaitUntil(() => ConditionToStartDeal == true);
         yield return new WaitForSeconds(0.05f);
+
+        _cardDeck = new CardDeck();
         StartDealClientRpc(_cardDeck.GetCodedCards());
 
         _startDealWhenСonditionTrueCoroutine = null;
     }
 
-    
     #region RPC
 
     [ClientRpc]
     private void StartDealClientRpc(int[] cardDeck)
     {
         _isPlaying = true;
-        
         _cardDeck = new CardDeck(cardDeck);
-        _boardButton = new BoardButton();
+
+        _boardButton ??= new BoardButton();
         _boardButton.Move();
         
-        StartNextStage(GameStage.Preflop);
+        _currentGameStage = (GameStage)(-1);
+        
+        StartNextStage();
     }
 
     [ClientRpc]
-    private void EndDealClientRpc(WinnerData winnerData)
+    private void EndDealClientRpc(WinnerInfo winnerInfo)
     {
         _isPlaying = false;
-        StopCoroutine(_stageCoroutine);        
+
+        if (_stageCoroutine != null)
+        {
+            StopCoroutine(_stageCoroutine);
+        }
         
         PlayerSeats.SitEveryoneWaiting();
 
         // Not pot but some chips based on bet.
-        EndDealEvent?.Invoke(winnerData);
-        Log.WriteLine($"End deal. Winner id: {winnerData.WinnerId}");
+        EndDealEvent?.Invoke(winnerInfo);
+        Log.WriteLine($"End deal. Winner id: {winnerInfo.WinnerId}");
     }
     
     #endregion

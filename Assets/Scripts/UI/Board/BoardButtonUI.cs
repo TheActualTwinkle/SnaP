@@ -33,7 +33,7 @@ public class BoardButtonUI : MonoBehaviour
         transform.localPosition = _position;
     }
 
-    private void OnEndDeal(WinnerData winnerData)
+    private void OnEndDeal(WinnerInfo winnerInfo)
     {
         _image.enabled = false;
     }

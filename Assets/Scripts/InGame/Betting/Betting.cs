@@ -8,11 +8,11 @@ public class Betting : MonoBehaviour
     public static Betting Instance { get; private set; }
     
     public event Action<Player> PlayerStartBettingEvent;
-    public event Action<Player, BetAction> PlayerEndBettingEvent;
+    public event Action<BetActionInfo> PlayerEndBettingEvent;
 
     public Player CurrentBetter { get; private set; }
 
-    private static uint CallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
+    private static uint MaxCallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
 
     private IEnumerator _startBetCountdownCoroutine;
     
@@ -62,7 +62,7 @@ public class Betting : MonoBehaviour
 
     public static BetSituation GetBetSituation(uint betAmount)
     {
-        return betAmount <= CallAmount ? BetSituation.CallEqualsOrLessCheck : BetSituation.CallGreaterCheck;
+        return betAmount < MaxCallAmount ? BetSituation.CallOrFold : BetSituation.CanCheck;
     }
 
     public IEnumerator Bet(Player player)
@@ -88,25 +88,23 @@ public class Betting : MonoBehaviour
         }
 
         StopCoroutine(_startBetCountdownCoroutine);
-        PlayerEndBettingEvent?.Invoke(player, BetAction.Fold);
+        PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, BetAction.Fold, 0));
     }
 
-    private void OnEndDeal(WinnerData winnerData)
+    private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        if (_startBetCountdownCoroutine == null)
+        if (_startBetCountdownCoroutine != null)
         {
-            return;
+            StopCoroutine(_startBetCountdownCoroutine);
         }
 
-        StopCoroutine(_startBetCountdownCoroutine);
-
-        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == winnerData.WinnerId);
+        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == winnerInfo.WinnerId);
         if (player == null)
         {
             return;
         }
-        
-        PlayerEndBettingEvent?.Invoke(player, player.ChoosenBetAction);
+
+        PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, (BetAction)(-1), 0));
     }
     
     private IEnumerator StartBetCountdown(Player player)
@@ -123,7 +121,8 @@ public class Betting : MonoBehaviour
             _timePaasedSinceBetStart += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-            
-        PlayerEndBettingEvent?.Invoke(player, player.ChoosenBetAction);
+        
+        print("PlayerEndBettingEvent; " + player.ChoosenBetAction + "; " + player.BetAmount);
+        PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, player.ChoosenBetAction, player.BetAmount));
     }
 }

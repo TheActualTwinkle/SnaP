@@ -6,7 +6,9 @@ using UnityEngine;
 [System.Serializable]
 public class BoardButton
 {
-    public static event Action<int> OnMove; 
+    public static event Action<int> OnMove;
+
+    public static List<int> TurnSequensce { get; private set; }
 
     private const int EmptyPosition = -1;
 
@@ -45,6 +47,7 @@ public class BoardButton
             turnSequensce.Add(activeSeatIndexes[i]);
         }
 
+        TurnSequensce = turnSequensce.ToList();
         return turnSequensce.ToArray();
     }
 

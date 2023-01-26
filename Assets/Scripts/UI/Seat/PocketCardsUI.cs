@@ -11,24 +11,28 @@ public class PocketCardsUI : MonoBehaviour
     [SerializeField] private Image _cardImage1;
     [SerializeField] private Image _cardImage2;
     
+    private static readonly int GetCards = Animator.StringToHash("GetCards");
+    private static readonly int ThrowCards = Animator.StringToHash("ThrowCards");
+    private static readonly int Fold = Animator.StringToHash("Fold");
+
     private static Game Game => Game.Instance;
     private static Betting Betting => Betting.Instance;
 
     private void OnEnable()
     {
-        Game.GameStageChangedEvent += GameStageChangedEvent;
+        Game.GameStageBeganEvent += GameStageBeganEvent;
         Game.EndDealEvent += OnEndDeal;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
     }
 
     private void OnDisable()
     {
-        Game.GameStageChangedEvent -= GameStageChangedEvent;
+        Game.GameStageBeganEvent -= GameStageBeganEvent;
         Game.EndDealEvent -= OnEndDeal;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
     }
 
-    private void GameStageChangedEvent(GameStage gameStage)
+    private void GameStageBeganEvent(GameStage gameStage)
     {
         if (gameStage != GameStage.Preflop)
         {
@@ -44,23 +48,23 @@ public class PocketCardsUI : MonoBehaviour
         _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
         _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
         
-        _animator.ResetTrigger("ThrowCards");
-        _animator.SetTrigger("GetCards");
+        _animator.ResetTrigger(ThrowCards);
+        _animator.SetTrigger(GetCards);
     }
 
-    private void OnEndDeal(WinnerData winnerData)
+    private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        _animator.ResetTrigger("GetCards");
-        _animator.SetTrigger("ThrowCards");
+        _animator.ResetTrigger(GetCards);
+        _animator.SetTrigger(ThrowCards);
     }
 
-    private void OnPlayerEndBetting(Player player, BetAction betAction)
+    private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
-        if (betAction != BetAction.Fold || player.IsOwner == true)
+        if (betActionInfo.BetAction != BetAction.Fold || betActionInfo.Player.IsOwner == true)
         {
             return;
         }
 
-        _animator.SetTrigger("Fold");
+        _animator.SetTrigger(Fold);
     }
 }

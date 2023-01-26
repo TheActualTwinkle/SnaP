@@ -46,8 +46,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isPlaying: 0
-  _callAmount: 0
-  _pot: 0
+  _board:
+    _cards: []
+  _boardButton:
+    _position: -1
+  _roundsInterval: 2.5
 --- !u!114 &5515698721813201346
 MonoBehaviour:
   m_ObjectHideFlags: 0

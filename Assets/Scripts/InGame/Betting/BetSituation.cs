@@ -1,5 +1,5 @@
 public enum BetSituation
 {
-    CallEqualsOrLessCheck,
-    CallGreaterCheck,
+    CanCheck,
+    CallOrFold,
 }

@@ -7,7 +7,7 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
     private static readonly string SavePath = Application.persistentDataPath + "/saves";
     private const string SaveFileExtension = "df";
 
-    private static BinaryFormatter _binatyFormatter = new();
+    private static readonly BinaryFormatter _binatyFormatter = new();
 
     public void Save(ISaveLoadData saveLoadData)
     {

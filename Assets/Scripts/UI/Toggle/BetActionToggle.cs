@@ -19,12 +19,12 @@ public class BetActionToggle : MonoBehaviour
     
     private void OnEnable()
     {
-        Game.Instance.GameStageChangedEvent += OnGameStageChanged;
+        Game.Instance.GameStageBeganEvent += OnGameStageBegan;
     }
 
     private void OnDisable()
     {
-        Game.Instance.GameStageChangedEvent -= OnGameStageChanged;
+        Game.Instance.GameStageBeganEvent -= OnGameStageBegan;
     }
     
     public void SetToggleInfo(BetAction betAction, string toggleText)
@@ -41,7 +41,7 @@ public class BetActionToggle : MonoBehaviour
         }
     }
 
-    private void OnGameStageChanged(GameStage gameStage)
+    private void OnGameStageBegan(GameStage gameStage)
     {
         _toggle.isOn = false;
     }

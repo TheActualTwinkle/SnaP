@@ -81,7 +81,7 @@ public class PlayerSeats : MonoBehaviour
         PlayerSitEvent?.Invoke(player, seatNumber);
         return true;
     }
-
+    
     public bool TryLeave(Player player)
     {
         if (_players.Contains(player) == false && _waitingPlayers.Contains(player) == false)
@@ -135,9 +135,9 @@ public class PlayerSeats : MonoBehaviour
         return _players[seatNumber] == null;
     }
 
+
     private IEnumerator CheckForConnectonLost()
     {
-        #if !UNITY_EDITOR
         while (true)
         {
             for (var i = 0; i < _players.Count; i++)
@@ -162,8 +162,5 @@ public class PlayerSeats : MonoBehaviour
 
             yield return new WaitForSeconds(_conncetionLostCheckInterval);
         }
-        #endif
-
-        yield return null;
     }
 }

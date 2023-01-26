@@ -31,13 +31,16 @@ public class Player : NetworkBehaviour
     [ReadOnly] [SerializeField] private CardObject _pocketCard2;
     
     private static Game Game => Game.Instance;
+    private static Betting Betting => Betting.Instance;
     private static OwnerBetUI OwnerBetUI => OwnerBetUI.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static PlayerSeatsUI PlayerSeatUI => PlayerSeatsUI.Instance;
 
     private void OnEnable()
     {
-        Game.GameStageChangedEvent += OnGameStageChanged;
+        Game.GameStageOverEvent += OnGameStageOver;
+        Game.EndDealEvent += OnEndDeal;
+        Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
         OwnerBetUI.OnBetActionChangedEvent += OnBetActionChanged;
         PlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeSeatButton;
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
@@ -45,6 +48,9 @@ public class Player : NetworkBehaviour
 
     private void OnDisable()
     {
+        Game.GameStageOverEvent -= OnGameStageOver;
+        Game.EndDealEvent -= OnEndDeal;
+        Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
         OwnerBetUI.OnBetActionChangedEvent -= OnBetActionChanged;
         PlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeSeatButton; 
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
@@ -63,7 +69,7 @@ public class Player : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
         {
-            if (PlayerSeats.Players.Contains(this) == true)
+            if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
             {
                 ChangeSeatServerRpc(NullSeatNumber);
 
@@ -166,6 +172,23 @@ public class Player : NetworkBehaviour
         {
             LeaveSeat();
         }
+    }    
+    
+    private void OnPlayerEndBetting(BetActionInfo betActionInfo)
+    {
+        if (IsOwner == false)
+        {
+            return;
+        }
+        
+        if (betActionInfo.BetAction != BetAction.Empty || betActionInfo.Player != this)
+        {
+            return;
+        }
+        
+        ChangeSeatServerRpc(NullSeatNumber);
+
+        LeaveSeat();
     }
 
     private void OnBetActionChanged(BetAction betAction)
@@ -178,7 +201,7 @@ public class Player : NetworkBehaviour
         ChangeChoosenBetActionServerRpc(betAction);
     }
 
-    private void OnGameStageChanged(GameStage gameStage)
+    private void OnGameStageOver(GameStage gameStage)
     {
         if (IsOwner == false)
         {
@@ -186,7 +209,18 @@ public class Player : NetworkBehaviour
         }
         
         ChangeChoosenBetActionServerRpc(BetAction.Empty);
+        ChangeBetAmountServerRpc(0);
     }
+
+    private void OnEndDeal(WinnerInfo winnerInfo)
+    {
+        if (winnerInfo.WinnerId != OwnerClientId)
+        {
+            return;
+        }
+
+        _stack += winnerInfo.Chips;
+    } 
     
     private void TakeSeat(int seatNumber)
     {

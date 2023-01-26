@@ -59,6 +59,7 @@ public class PlayerSeatsUI : MonoBehaviour
         byte[] rawData = Convert.FromBase64String(player.AvatarBase64String);
         _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(rawData);
         _seatsUI[seatNumber].NickName.text = player.NickName;
+        _seatsUI[seatNumber].NickNameBackgroundImage.enabled = true;
         
         ChanageSeatImageTransparency(seatNumber, 1f);
 
@@ -81,6 +82,8 @@ public class PlayerSeatsUI : MonoBehaviour
     {
         _seatsUI[seatNumber].PlayerImage.sprite = Resources.Load<Sprite>("Sprites/Arrow");
         _seatsUI[seatNumber].NickName.text = string.Empty;
+        _seatsUI[seatNumber].NickNameBackgroundImage.enabled = false;
+
         ChanageSeatImageTransparency(seatNumber, 1f);
     }
 
