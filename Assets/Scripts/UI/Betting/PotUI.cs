@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,10 +24,8 @@ public class PotUI : MonoBehaviour
 
     private void OnGameStageOver(GameStage gameStage)
     {
-        List<int> values = Pot.Bets.Values.Select(x => (int)x).ToList();     
-        
         _chipsImage.enabled = true;
-        _valueText.text = values.Sum().ToString();
+        _valueText.text = Pot.Value.ToString();
     }
 
     private void OnEndDeal(WinnerInfo winnerInfo)

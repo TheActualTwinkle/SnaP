@@ -72,10 +72,12 @@ public class BoardButton
     private int[] GetActivePlayerIndexes()
     {
         List<int> indexes = new();
-        List<Player> players = PlayerSeats.Players;
-        for (var i = 0; i < players.Count; i++)
+        List<Player> players = PlayerSeats.Players.Where(x => x != null && x.BetAction != BetAction.Fold).ToList();
+
+        for (var i = 0; i < PlayerSeats.Players.Count; i++)
         {
-            if (players[i] != null)
+            Player player = PlayerSeats.Players[i];
+            if (player != null && player.BetAction != BetAction.Fold)
             {
                 indexes.Add(i);
             }

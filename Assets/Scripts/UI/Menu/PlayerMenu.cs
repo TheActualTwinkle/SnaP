@@ -75,7 +75,7 @@ public class PlayerMenu : MonoBehaviour
 
         if (webRequest.result == UnityWebRequest.Result.ConnectionError)
         {
-            Log.WriteLine(webRequest.error);
+            Log.WriteToFile(webRequest.error);
         }
         else
         {

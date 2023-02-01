@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,7 +38,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
             return;
         }
 
-        Player player = PlayerSeats.Instance.Players.FirstOrDefault(x => x != null && x.IsOwner == true);
+        Player player = PlayerSeats.Instance.LocalPlayer;
         if (player == null)
         {
             return;

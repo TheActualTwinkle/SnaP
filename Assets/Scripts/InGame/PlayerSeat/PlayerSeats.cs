@@ -19,6 +19,8 @@ public class PlayerSeats : MonoBehaviour
 
     public List<Player> WaitingPlayers => _waitingPlayers.ToList();
     [ReadOnly] [SerializeField] private List<Player> _waitingPlayers;
+
+    public Player LocalPlayer => GetLocalPlayer();
     
     public int TakenSeatsAmount => _players.Count(x => x != null);
 
@@ -56,12 +58,12 @@ public class PlayerSeats : MonoBehaviour
     {
         StartCoroutine(CheckForConnectonLost());
     }
-
+    
     public bool TryTake(Player player, int seatNumber)
     {
         if (_players[seatNumber] != null || _waitingPlayers[seatNumber] != null)
         {
-            Log.WriteLine($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by some Player.'");
+            Log.WriteToFile($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by some Player.'");
             return false;
         }
         
@@ -76,7 +78,7 @@ public class PlayerSeats : MonoBehaviour
         
         _players[seatNumber] = player;
 
-        Log.WriteLine($"Player ('{player.NickName}') sit on {seatNumber} seat.");
+        Log.WriteToFile($"Player ('{player.NickName}') sit on {seatNumber} seat.");
 
         PlayerSitEvent?.Invoke(player, seatNumber);
         return true;
@@ -102,7 +104,7 @@ public class PlayerSeats : MonoBehaviour
             _waitingPlayers[seatNumber] = null;
         }
         
-        Log.WriteLine($"Player ('{player.NickName}') leave from {seatNumber} seat.");
+        Log.WriteToFile($"Player ('{player.NickName}') leave from {seatNumber} seat.");
 
         PlayerLeaveEvent?.Invoke(player, seatNumber);
         return true;
@@ -119,7 +121,7 @@ public class PlayerSeats : MonoBehaviour
 
             if (_players.Contains(_waitingPlayers[i]) == true)
             {
-                Log.WriteLine($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ('{_waitingPlayers[i].NickName}')");
+                Log.WriteToFile($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ('{_waitingPlayers[i].NickName}')");
                 continue;
             }
 
@@ -132,9 +134,20 @@ public class PlayerSeats : MonoBehaviour
     
     public bool IsFree(int seatNumber)
     {
-        return _players[seatNumber] == null;
+        return _players[seatNumber] == null && _waitingPlayers[seatNumber] == null;
     }
 
+
+    private Player GetLocalPlayer()
+    {
+        Player localPlayer = _players.FirstOrDefault(x => x != null && x.IsOwner == true);
+        if (localPlayer == null)
+        {
+            localPlayer = _waitingPlayers.FirstOrDefault(x => x != null && x.IsOwner == true);
+        }
+
+        return localPlayer;
+    }
 
     private IEnumerator CheckForConnectonLost()
     {
@@ -145,7 +158,7 @@ public class PlayerSeats : MonoBehaviour
                 try
                 {
                     GameObject gameObjectName = _players[i].gameObject;
-                    Log.WriteToFile($"Connection stable on '{_players[i].NickName}'. GameObject name '{gameObjectName}'", $"{Application.persistentDataPath}\\CustomLog.log");
+                    //Log.WriteToFile($"Connection stable on '{_players[i].NickName}'. GameObject name '{gameObjectName}'");
                 }
                 catch (NullReferenceException)
                 {
@@ -153,7 +166,7 @@ public class PlayerSeats : MonoBehaviour
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _players[i].NickName;
-                        Log.WriteToFile($"Connection lost on player ('{nick}') on {i} seat.", $"{Application.persistentDataPath}\\CustomLog.log");
+                        Log.WriteToFile($"Connection lost on player ('{nick}') on {i} seat.");
                         TryLeave(_players[i]);
                     }
                     catch (NullReferenceException) { }

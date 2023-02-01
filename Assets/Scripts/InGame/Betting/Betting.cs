@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Betting : MonoBehaviour 
+public class Betting : NetworkBehaviour 
 {
     public static Betting Instance { get; private set; }
     
@@ -26,10 +27,14 @@ public class Betting : MonoBehaviour
     [SerializeField] private float _betTime;
     [SerializeField] [ReadOnly] private float _timePaasedSinceBetStart;
     
-    private const float DelayBeforeStarBet = 1.75f;
+    private const float DelayBeforeStartBet = 1f;
+    private const float DelayBeforeEndBet = 0.7f;
     
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
+    
+    // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCountdownClientRpc' so when it`s called sets true and routine ends. 
+    [ReadOnly] [SerializeField] private bool _isCountdownCoroutineOver; 
     
     private void OnValidate()
     {
@@ -66,7 +71,7 @@ public class Betting : MonoBehaviour
     }
 
     public IEnumerator Bet(Player player)
-    {        
+    {
         if (_startBetCountdownCoroutine != null)
         {
             StopCoroutine(_startBetCountdownCoroutine);
@@ -109,20 +114,81 @@ public class Betting : MonoBehaviour
     
     private IEnumerator StartBetCountdown(Player player)
     {
-        CurrentBetter = player;
-        _timePaasedSinceBetStart = 0f;
-
-        yield return new WaitForSeconds(DelayBeforeStarBet);
-
-        PlayerStartBettingEvent?.Invoke(player);
+        _isCountdownCoroutineOver = false;
+        if (IsServer == false)
+        {
+            yield return new WaitWhile(() => _isCountdownCoroutineOver == false);
+            yield break;
+        }
         
-        while (player.ChoosenBetAction == BetAction.Empty && _timePaasedSinceBetStart < _betTime)
+        yield return new WaitForSeconds(DelayBeforeStartBet);
+
+        StartBetCountdownClientRpc(player.OwnerClientId);
+
+        while (player.BetAction == BetAction.Empty && _timePaasedSinceBetStart < _betTime)
         {
             _timePaasedSinceBetStart += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+
+        uint betAmount = 0;
+        switch (player.BetAction)
+        {
+            case BetAction.Call:
+                betAmount = MaxCallAmount - player.BetAmount;
+                break;
+            case BetAction.Raise:
+                // TODO: Print 'Raise' slider. And setup betAmount.
+                betAmount = 20;
+                break;
+            case BetAction.Bet:
+                // TODO: Print 'Raise' slider. And setup betAmount.
+                betAmount = 50;
+                break;
+        }
+
+        BetClientRpc(player.OwnerClientId, betAmount);
         
-        print("PlayerEndBettingEvent; " + player.ChoosenBetAction + "; " + player.BetAmount);
-        PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, player.ChoosenBetAction, player.BetAmount));
+        yield return new WaitForSeconds(DelayBeforeEndBet);
+
+        EndBetCountdownClientRpc(player.OwnerClientId, player.BetAction, player.BetAmount);
     }
+
+    #region RPC
+
+    [ClientRpc]
+    private void StartBetCountdownClientRpc(ulong playerId)
+    {
+        Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
+        
+        CurrentBetter = player;
+        _timePaasedSinceBetStart = 0f;
+        
+        PlayerStartBettingEvent?.Invoke(player);
+    }
+
+    [ClientRpc]
+    private void EndBetCountdownClientRpc(ulong playerId, BetAction betAction, uint betAmount)
+    {
+        _isCountdownCoroutineOver = true;
+        
+        Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
+        BetActionInfo betActionInfo = new(player, betAction, betAmount);
+        
+        Log.WriteToFile($"Player ('{player.NickName}'); {betActionInfo.BetAction}; {betAmount}");
+        PlayerEndBettingEvent?.Invoke(betActionInfo);
+    }
+
+    [ClientRpc]
+    private void BetClientRpc(ulong playerId, uint betAmount)
+    {
+        Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
+        
+        if (betAmount > 0)
+        {
+            player.TryBet(betAmount);
+        }
+    }
+    
+    #endregion
 }

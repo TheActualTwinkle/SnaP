@@ -15,14 +15,14 @@ public class Player : NetworkBehaviour
     public string AvatarBase64String => _avatarBase64String.Value.ToString();
     private readonly NetworkVariable<FixedString4096Bytes> _avatarBase64String = new();
 
-    public BetAction ChoosenBetAction => _choosenBetAction.Value;
+    public BetAction BetAction => _choosenBetAction.Value;
     private readonly NetworkVariable<BetAction> _choosenBetAction = new();
 
     public uint BetAmount => _betAmount.Value;
     private readonly NetworkVariable<uint> _betAmount = new();
     
-    public uint Stack => _stack;
-    [ReadOnly] [SerializeField] private uint _stack;
+    public uint Stack => _stack.Value;
+    private readonly NetworkVariable<uint> _stack = new(100); // todo НЕ 100, а в меню фрибеты всем!!!
 
     public CardObject PocketCard1 => _pocketCard1;
     [ReadOnly] [SerializeField] private CardObject _pocketCard1;
@@ -32,7 +32,6 @@ public class Player : NetworkBehaviour
     
     private static Game Game => Game.Instance;
     private static Betting Betting => Betting.Instance;
-    private static OwnerBetUI OwnerBetUI => OwnerBetUI.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static PlayerSeatsUI PlayerSeatUI => PlayerSeatsUI.Instance;
 
@@ -41,7 +40,6 @@ public class Player : NetworkBehaviour
         Game.GameStageOverEvent += OnGameStageOver;
         Game.EndDealEvent += OnEndDeal;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
-        OwnerBetUI.OnBetActionChangedEvent += OnBetActionChanged;
         PlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeSeatButton;
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
     }
@@ -51,7 +49,6 @@ public class Player : NetworkBehaviour
         Game.GameStageOverEvent -= OnGameStageOver;
         Game.EndDealEvent -= OnEndDeal;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
-        OwnerBetUI.OnBetActionChangedEvent -= OnBetActionChanged;
         PlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeSeatButton; 
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
     }
@@ -67,6 +64,11 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            print(_betAmount.Value);
+        }
+        
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
         {
             if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
@@ -99,6 +101,17 @@ public class Player : NetworkBehaviour
         PlayerData playerData = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
         CangePlayerDataServerRpc(playerData.NickName, playerData.AvatarBase64String);
     }
+    
+    public bool ChangeBetAction(BetAction betAction)
+    {
+        if (IsOwner == false)
+        {
+            return false;
+        }
+        
+        ChangeChoosenBetActionServerRpc(betAction);
+        return true;
+    }
 
     public bool TryBet(uint value)
     {
@@ -107,13 +120,14 @@ public class Player : NetworkBehaviour
             return false;
         }
 
-        if (value > _stack)
-        {            
+        if (value > _stack.Value)
+        {
             LeaveSeat();
             return false;
         }
         
-        ChangeBetAmountServerRpc(value);
+        //ChangeStackAmountServerRpc(_stack.Value - value); todo Сейчас работает не правильно.
+        ChangeBetAmountServerRpc(value + _betAmount.Value);
         return true;
     }
     
@@ -191,16 +205,6 @@ public class Player : NetworkBehaviour
         LeaveSeat();
     }
 
-    private void OnBetActionChanged(BetAction betAction)
-    {
-        if (IsOwner == false)
-        {
-            return;
-        }
-        
-        ChangeChoosenBetActionServerRpc(betAction);
-    }
-
     private void OnGameStageOver(GameStage gameStage)
     {
         if (IsOwner == false)
@@ -208,18 +212,22 @@ public class Player : NetworkBehaviour
             return;
         }
         
-        ChangeChoosenBetActionServerRpc(BetAction.Empty);
         ChangeBetAmountServerRpc(0);
     }
 
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        if (winnerInfo.WinnerId != OwnerClientId)
+        if (IsOwner == false)
         {
             return;
         }
+        
+        if (winnerInfo.WinnerId == OwnerClientId)
+        { 
+            ChangeStackAmountServerRpc(_stack.Value + winnerInfo.Chips);
+        }
 
-        _stack += winnerInfo.Chips;
+        ChangeBetAmountServerRpc(0);
     } 
     
     private void TakeSeat(int seatNumber)
@@ -247,6 +255,12 @@ public class Player : NetworkBehaviour
         _avatarBase64String.Value = avatarBase64String;
     }
 
+    [ServerRpc]
+    private void ChangeStackAmountServerRpc(uint value)
+    {
+        _stack.Value = value;
+    }
+    
     [ServerRpc]
     private void ChangeBetAmountServerRpc(uint value)
     {

@@ -1,17 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class OwnerBetUI : MonoBehaviour
 {
-    public static OwnerBetUI Instance { get; private set; }
-
-    public event Action<BetAction> OnBetActionChangedEvent;
-
-    [ReadOnly] [SerializeField] private BetAction _choosenBetAction;
-
+    private BetAction ChoosenBetAction => GetChoosenBetAction();
+    
     private List<BetActionToggle> _toggles;
+    
+    private static Player LocalPlayer => PlayerSeats.LocalPlayer;
 
     private static Game Game => Game.Instance; 
     private static Betting Betting => Betting.Instance;
@@ -19,29 +16,14 @@ public class OwnerBetUI : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         _toggles = GetComponentsInChildren<BetActionToggle>().ToList();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            SetupToggles(); // todo
-        }
+        DisableToggles();
     }
 
     private void OnEnable()
     {
         Game.GameStageBeganEvent += OnGameStageBegan;
+        Game.GameStageOverEvent += OnGameStageOver;
         Game.EndDealEvent += OnEndDeal;
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
         Betting.PlayerStartBettingEvent += OnPlayerStartBetting;
@@ -49,42 +31,54 @@ public class OwnerBetUI : MonoBehaviour
 
         foreach (BetActionToggle toggle in _toggles)
         {
-            toggle.ToggleOnEvent += OnBetActionToggleOn;
+            toggle.Toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
     }
 
     private void OnDisable()
     {
         Game.GameStageBeganEvent -= OnGameStageBegan;
+        Game.GameStageOverEvent -= OnGameStageOver;
         Game.EndDealEvent -= OnEndDeal;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
         Betting.PlayerStartBettingEvent -= OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
-
+        
         foreach (BetActionToggle toggle in _toggles)
         {
-            toggle.ToggleOnEvent -= OnBetActionToggleOn;
+            toggle.Toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
         }
+    }
+
+    private void OnToggleValueChanged(bool value)
+    {
+        if (value == true && Betting.CurrentBetter == LocalPlayer)
+        {
+            DisableToggles();
+        }
+        
+        LocalPlayer.ChangeBetAction(ChoosenBetAction);
     }
     
     private void OnGameStageBegan(GameStage gameStage)
-    {
-        _choosenBetAction = BetAction.Empty;
-        OnBetActionChangedEvent?.Invoke(_choosenBetAction);
+    { 
+        EnableToggles();
+        PushBackToggles();
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnGameStageOver(GameStage gameStage)
     {
-        _choosenBetAction = BetAction.Empty;
-        OnBetActionChangedEvent?.Invoke(_choosenBetAction);
+        DisableToggles();
+        PushBackToggles();
     }
     
-    private void OnBetActionToggleOn(BetAction betAction)
+    private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        _choosenBetAction = betAction;
-        OnBetActionChangedEvent?.Invoke(betAction);
+        DisableToggles();
+        PushBackToggles();
+        ClearToggles();
     }
-
+    
     private void OnPlayerStartBetting(Player player)
     {
         SetupToggles();
@@ -92,17 +86,45 @@ public class OwnerBetUI : MonoBehaviour
     
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
+        if (betActionInfo.Player.IsOwner == true)
+        {
+            EnableToggles();
+            
+            if (betActionInfo.BetAction == BetAction.Fold)
+            {
+                ClearToggles();
+                return;
+            }
+
+            PushBackToggles();
+        }
+        
         SetupToggles();
     }
     
     private void OnPlayerLeave(Player player, int seatIndex)
     {
+        if (player.IsOwner == false)
+        {
+            return;
+        }
+        
         ClearToggles();
+    }
+
+    private BetAction GetChoosenBetAction()
+    {
+        if (_toggles.Count(x => x.Toggle.isOn == true) == 0)
+        {
+            return BetAction.Empty;
+        }
+
+        return _toggles.First(x => x.Toggle.isOn == true).BetAction;
     }
     
     private void SetupToggles() // todo НЕ обновлять тоглы когда выбран режим префаером 
     {
-        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.IsOwner == true);
+        Player player = LocalPlayer;
         if (player == null)
         {
             return;
@@ -147,6 +169,30 @@ public class OwnerBetUI : MonoBehaviour
         foreach (BetActionToggle toggle in _toggles)
         {
             toggle.SetToggleInfo(BetAction.Empty, string.Empty);
+        }
+    }
+
+    private void PushBackToggles()
+    {
+        foreach (BetActionToggle toggle in _toggles)
+        {
+            toggle.Toggle.isOn = false;
+        }
+    }
+
+    private void EnableToggles()
+    {
+        foreach (BetActionToggle toggle in _toggles)
+        {
+            toggle.Toggle.enabled = true;
+        }
+    }
+
+    private void DisableToggles()
+    {
+        foreach (BetActionToggle toggle in _toggles)
+        {
+            toggle.Toggle.enabled = false;
         }
     }
 }

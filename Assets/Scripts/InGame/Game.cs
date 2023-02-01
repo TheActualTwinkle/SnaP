@@ -33,7 +33,10 @@ public class Game : NetworkBehaviour
     private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.TakenSeatsAmount >= 2);
 
     [SerializeField] private float _roundsInterval;
-    
+
+    // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCoroutineClientRpc' so when it`s called sets true and routine ends. 
+    [ReadOnly] [SerializeField] private bool _isBetCoroutineOver;
+
     private void OnEnable()
     {
         PlayerSeats.PlayerSitEvent += OnPlayerSit;
@@ -58,34 +61,6 @@ public class Game : NetworkBehaviour
         }
     }
 
-    private void StartNextStage()
-    {
-        _currentGameStage++; 
-        
-        Log.WriteLine($"Starting {_currentGameStage} stage.");
-        
-        switch (_currentGameStage)
-        {
-            case GameStage.Preflop:
-                _stageCoroutine = StartPreflop();
-                break;
-            
-            case GameStage.Flop:
-            case GameStage.Turn:
-            case GameStage.River:
-                _stageCoroutine = StartMidgameStage();
-                break;
-            
-            case GameStage.Showdown:
-                throw new NotImplementedException("Showdown где?!");
-            default:
-                throw new ArgumentOutOfRangeException(nameof(_currentGameStage), _currentGameStage, null);
-        }
-        
-        StartCoroutine(_stageCoroutine);
-        GameStageBeganEvent?.Invoke(_currentGameStage);
-    }
-
     private IEnumerator StartPreflop()
     {
         _board = new Board(_cardDeck.PullCards(5).ToList());
@@ -99,13 +74,14 @@ public class Game : NetworkBehaviour
         AutoBetBlinds();
 
         int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequensce();
+
         yield return Bet(preflopTurnSequensce);
-        
+
         GameStageOverEvent?.Invoke(GameStage.Preflop);
         
         yield return new WaitForSeconds(_roundsInterval);
 
-        StartNextStage();
+        StartNextStageClientRpc();
     }
 
     // Stage like Flop, Turn and River
@@ -117,7 +93,8 @@ public class Game : NetworkBehaviour
         GameStageOverEvent?.Invoke(_currentGameStage);
 
         yield return new WaitForSeconds(_roundsInterval);
-        StartNextStage();
+        
+        StartNextStageClientRpc();
     }
 
     private IEnumerator StartShowdown()
@@ -132,32 +109,57 @@ public class Game : NetworkBehaviour
         PlayerSeats.Players[turnSequensce[1]].TryBet(Betting.BigBlind);
     }
     
-    private IEnumerator Bet(IEnumerable<int> turnSequensce)
+    private IEnumerator Bet(int[] turnSequensce)
     {
-        foreach (int index in turnSequensce)
+        _isBetCoroutineOver = false;
+        if (IsServer == false)
         {
-            Player player = PlayerSeats.Players[index];
+            yield return new WaitWhile(() => _isBetCoroutineOver == false);
+            yield break;
+        }
 
-            if (player == null)
+        for (var i = 0;; i++)
+        {
+            foreach (int index in turnSequensce)
+            {
+                Player player = PlayerSeats.Players[index];
+
+                if (player == null)
+                {
+                    continue;
+                }
+
+                Log.WriteToFile($"Seat №{index} start turn");
+                yield return StartCoroutine(Betting.Bet(player));
+            
+                int foldPlayerAmount = PlayerSeats.Players.Count(x => x != null && x.BetAction == BetAction.Fold);
+                
+                if (PlayerSeats.TakenSeatsAmount - foldPlayerAmount == 1)
+                {
+                    ulong winnerId = player.OwnerClientId;
+                    WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(player));
+                    EndDealClientRpc(winnerInfo);
+
+                    StartCoroutine(StartDealAfterIntervalRounds());
+                    yield break;
+                }
+
+                if (i == 0 || IsBetsEquals() == false)
+                {
+                    continue;
+                }
+
+                EndBetCoroutineClientRpc();
+                yield break;
+            }
+
+            if (i != 0 || IsBetsEquals() == false)
             {
                 continue;
             }
 
-            int foldPlayerAmount = PlayerSeats.Players.Count(x => x != null && x.ChoosenBetAction == BetAction.Fold);
-            
-            if (PlayerSeats.TakenSeatsAmount - foldPlayerAmount == 1)
-            {
-                ulong winnerId = player.OwnerClientId;
-                WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(player));
-                EndDealClientRpc(winnerInfo);
-
-                StartCoroutine(StartDealAfterIntervalRounds());
-                yield break;
-            }
-
-            Log.WriteLine($"Start seat №{index}");
-            yield return StartCoroutine(Betting.Bet(player));
-            Log.WriteLine($"End seat №{index}");
+            EndBetCoroutineClientRpc();
+            yield break;
         }
     }
         
@@ -197,6 +199,11 @@ public class Game : NetworkBehaviour
 
     private IEnumerator StartDealAfterIntervalRounds()
     {
+        if (IsServer == false)
+        {
+            yield break;
+        }
+        
         yield return new WaitForSeconds(_roundsInterval);
         StartCoroutine(StartDealWhenСonditionTrue());
     }
@@ -212,6 +219,34 @@ public class Game : NetworkBehaviour
         _startDealWhenСonditionTrueCoroutine = null;
     }
 
+    private void SetStageCoroutine()
+    {
+        switch (_currentGameStage)
+        {
+            case GameStage.Preflop:
+                _stageCoroutine = StartPreflop();
+                break;
+            
+            case GameStage.Flop:
+            case GameStage.Turn:
+            case GameStage.River:
+                _stageCoroutine = StartMidgameStage();
+                break;
+            
+            case GameStage.Showdown:
+                _stageCoroutine = StartShowdown();
+                break;
+            
+            default:
+                throw new ArgumentOutOfRangeException(nameof(_currentGameStage), _currentGameStage, null);
+        }
+    }
+    
+    private static bool IsBetsEquals()
+    {
+        return PlayerSeats.Players.Where(x => x != null).Select(x => x.BetAmount).Distinct().Skip(1).Any() == false;
+    }
+    
     #region RPC
 
     [ClientRpc]
@@ -225,7 +260,7 @@ public class Game : NetworkBehaviour
         
         _currentGameStage = (GameStage)(-1);
         
-        StartNextStage();
+        StartNextStageClientRpc();
     }
 
     [ClientRpc]
@@ -242,7 +277,26 @@ public class Game : NetworkBehaviour
 
         // Not pot but some chips based on bet.
         EndDealEvent?.Invoke(winnerInfo);
-        Log.WriteLine($"End deal. Winner id: {winnerInfo.WinnerId}");
+        Log.WriteToFile($"End deal. Winner id: {winnerInfo.WinnerId}");
+    }
+
+    [ClientRpc]
+    private void StartNextStageClientRpc()
+    {        
+        _currentGameStage++; 
+        
+        Log.WriteToFile($"Starting {_currentGameStage} stage.");
+
+        SetStageCoroutine();
+        
+        StartCoroutine(_stageCoroutine);
+        GameStageBeganEvent?.Invoke(_currentGameStage);
+    }
+
+    [ClientRpc]
+    private void EndBetCoroutineClientRpc()
+    {
+        _isBetCoroutineOver = true;
     }
     
     #endregion
