@@ -85,8 +85,10 @@ public class BoardUI : MonoBehaviour
         _cardSprites.Clear();
         for (var i = 0; i < _cardImages.Count; i++)
         {
-            var id = $"Sprites/{(int)Game.BoardCards[i].Value + 2}_{Game.BoardCards[i].Suit}";
-            _cardSprites.Add(Resources.Load<Sprite>(id));
+            var id = $"Sprites/{(int)Game.BoardCards[i].Value}_{Game.BoardCards[i].Suit}";
+
+            Sprite sprite = Resources.Load<Sprite>(id);
+            _cardSprites.Add(sprite);
         }
     }
     

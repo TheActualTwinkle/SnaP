@@ -78,7 +78,7 @@ public class PlayerSeats : MonoBehaviour
         
         _players[seatNumber] = player;
 
-        Log.WriteToFile($"Player ('{player.NickName}') sit on {seatNumber} seat.");
+        Log.WriteToFile($"Player ('{player.NickName}') sit on №{seatNumber} seat.");
 
         PlayerSitEvent?.Invoke(player, seatNumber);
         return true;

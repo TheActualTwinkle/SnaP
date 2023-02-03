@@ -68,6 +68,11 @@ public class Hand
         return _hand.Count;
     }
 
+    public void SortByRank()
+    {
+        _hand = QuickSortRank(_hand);
+    }
+    
     private List<CardObject> QuickSortRank(List<CardObject> myCards)
     {
         Random ran = new();
@@ -83,7 +88,7 @@ public class Hand
         List<CardObject> less = new();
         List<CardObject> greater = new();
         // Assign values to less or greater list
-	    foreach (CardObject i in myCards)
+        foreach (CardObject i in myCards)
         {
             if (i > pivot)
             {
@@ -94,7 +99,7 @@ public class Hand
                 less.Add(i);
             }
         }
-	    // Recurse for less and greaterlists
+        // Recurse for less and greaterlists
         List<CardObject> list = new();
         list.AddRange(QuickSortRank(greater));
         list.Add(pivot);
@@ -136,11 +141,6 @@ public class Hand
         list.AddRange(QuickSortSuit(greater));
         return list;
     }
-    
-    public void SortByRank()
-    {
-        _hand = QuickSortRank(_hand);
-    }
 
     #region Overrides
 
@@ -168,13 +168,6 @@ public class Hand
     
     public static bool operator ==(Hand a, Hand b)
     {
-        if (a == null | b == null)
-        {
-            throw new NullReferenceException();
-        }
-        
-        if (a._combinationId.Count == 0 || b._combinationId.Count == 0)
-            throw new NullReferenceException();
         for (var i = 0; i < a._combinationId.Count(); i++)
         {
             if (a._combinationId[i] != b._combinationId[i])

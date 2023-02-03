@@ -3016,6 +3016,7 @@ GameObject:
   - component: {fileID: 1881286008}
   - component: {fileID: 1881286009}
   - component: {fileID: 1881286010}
+  - component: {fileID: 1881286011}
   m_Layer: 0
   m_Name: Network
   m_TagString: Untagged
@@ -3119,6 +3120,23 @@ MonoBehaviour:
     PacketDelayMS: 50
     PacketJitterMS: 50
     PacketDropRate: 3
+--- !u!114 &1881286011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881286007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 707dc67075c3016458e3e38dc6a89939, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enabled: 0
+  _chatIDs:
+  - 605982672
+  - 624014721
+  _token: 6141610253:AAHDh8uDkBdvKzs_CrP-XMuCRpSu1wfRwVg
 --- !u!1 &1893635864
 GameObject:
   m_ObjectHideFlags: 0

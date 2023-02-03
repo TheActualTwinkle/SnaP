@@ -28,26 +28,15 @@ public class Game : NetworkBehaviour
     private IEnumerator _stageCoroutine;
     private IEnumerator _startDealWhenСonditionTrueCoroutine;
 
+    public GameStage CurrentGameStage => _currentGameStage;
     private GameStage _currentGameStage = (GameStage)(-1);
     
-    private bool ConditionToStartDeal => (_isPlaying == false) && (PlayerSeats.TakenSeatsAmount >= 2);
+    private bool ConditionToStartDeal => _isPlaying == false && PlayerSeats.TakenSeatsAmount >= 2;
 
     [SerializeField] private float _roundsInterval;
 
     // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCoroutineClientRpc' so when it`s called sets true and routine ends. 
     [ReadOnly] [SerializeField] private bool _isBetCoroutineOver;
-
-    private void OnEnable()
-    {
-        PlayerSeats.PlayerSitEvent += OnPlayerSit;
-        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
-    }
-
-    private void OnDisable()
-    {
-        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
-        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
-    }
 
     private void Awake()
     {
@@ -60,12 +49,24 @@ public class Game : NetworkBehaviour
             Destroy(gameObject);
         }
     }
+    
+    private void OnEnable()
+    {
+        PlayerSeats.PlayerSitEvent += OnPlayerSit;
+        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
+    }
+
+    private void OnDisable()
+    {
+        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
+        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
+    }
 
     private IEnumerator StartPreflop()
     {
         _board = new Board(_cardDeck.PullCards(5).ToList());
 
-        int[] turnSequensce = _boardButton.GetTurnSequensce();
+        int[] turnSequensce = _boardButton.GetTurnSequence();
         foreach (int index in turnSequensce)
         {
             PlayerSeats.Players[index].SetPocketCards(_cardDeck.PullCard(), _cardDeck.PullCard());
@@ -73,7 +74,7 @@ public class Game : NetworkBehaviour
         
         AutoBetBlinds();
 
-        int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequensce();
+        int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequence();
 
         yield return Bet(preflopTurnSequensce);
 
@@ -87,7 +88,7 @@ public class Game : NetworkBehaviour
     // Stage like Flop, Turn and River
     private IEnumerator StartMidgameStage()
     {
-        int[] turnSequensce = _boardButton.GetTurnSequensce();
+        int[] turnSequensce = _boardButton.GetTurnSequence();
         yield return Bet(turnSequensce);
         
         GameStageOverEvent?.Invoke(_currentGameStage);
@@ -97,14 +98,49 @@ public class Game : NetworkBehaviour
         StartNextStageClientRpc();
     }
 
-    private IEnumerator StartShowdown()
+    private IEnumerator StartShowdown() // todo MB not IEnumerator?
     {
-        throw new NotImplementedException("StartShowdown func.  ");
+        int[] turnSequensce = _boardButton.GetShowdownTurnSequence();
+        
+        Player winner = null;
+        Hand winnerHand = new();
+        for (var i = 0; i < turnSequensce.Length; i++)
+        {
+            Player player = PlayerSeats.Players[turnSequensce[i]];
+            List<CardObject> completeCards = _board.Cards.ToList();
+            completeCards.Add(player.PocketCard1); completeCards.Add(player.PocketCard2);
+
+            Hand bestHand = CombinationСalculator.GetBestHand(new Hand(completeCards));
+
+            if (i == 0 || bestHand > winnerHand)
+            {
+                winner = player;
+                winnerHand = bestHand;
+            }
+            else if (bestHand == winnerHand)
+            {
+                print("TIE!");
+                print(bestHand + " vs " + winnerHand);
+                yield break;
+                // todo Force Tie.
+            }
+        }
+
+        if (winner == null)
+        {
+            throw new NullReferenceException();
+        }
+        
+        yield return new WaitForSeconds(3f); // todo Hardcode.
+        
+        WinnerInfo winnerInfo = new(winner.OwnerClientId, Pot.Instance.GetWinValue(winner));
+        EndDealClientRpc(winnerInfo);
+        print(winnerHand);
     }
 
     private void AutoBetBlinds()
     {
-        int[] turnSequensce = _boardButton.GetTurnSequensce();
+        int[] turnSequensce = _boardButton.GetTurnSequence();
         PlayerSeats.Players[turnSequensce[0]].TryBet(Betting.SmallBlind);
         PlayerSeats.Players[turnSequensce[1]].TryBet(Betting.BigBlind);
     }
@@ -129,7 +165,7 @@ public class Game : NetworkBehaviour
                     continue;
                 }
 
-                Log.WriteToFile($"Seat №{index} start turn");
+                Log.WriteToFile($"Player ('{player.NickName}'). Seat №{index} start betting");
                 yield return StartCoroutine(Betting.Bet(player));
             
                 int foldPlayerAmount = PlayerSeats.Players.Count(x => x != null && x.BetAction == BetAction.Fold);
@@ -139,8 +175,6 @@ public class Game : NetworkBehaviour
                     ulong winnerId = player.OwnerClientId;
                     WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(player));
                     EndDealClientRpc(winnerInfo);
-
-                    StartCoroutine(StartDealAfterIntervalRounds());
                     yield break;
                 }
 
@@ -278,12 +312,14 @@ public class Game : NetworkBehaviour
         // Not pot but some chips based on bet.
         EndDealEvent?.Invoke(winnerInfo);
         Log.WriteToFile($"End deal. Winner id: {winnerInfo.WinnerId}");
+
+        StartCoroutine(StartDealAfterIntervalRounds());
     }
 
     [ClientRpc]
     private void StartNextStageClientRpc()
     {        
-        _currentGameStage++; 
+        _currentGameStage++;
         
         Log.WriteToFile($"Starting {_currentGameStage} stage.");
 

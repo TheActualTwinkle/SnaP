@@ -1,16 +1,14 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class TelegramCallbacks : MonoBehaviour
+public class TelegramBot : MonoBehaviour
 {
-    public static TelegramCallbacks Instance { get; private set; }
+    public static TelegramBot Instance { get; private set; }
     
+    [SerializeField] private bool _enabled;
     [SerializeField] private List<string> _chatIDs;
     [SerializeField] private string _token;
     
@@ -18,7 +16,7 @@ public class TelegramCallbacks : MonoBehaviour
 
     private readonly Queue<UnityWebRequest> _sendRequests = new();
 
-    private IEnumerator _sendRequestCoroutine;
+    private IEnumerator _sendRequestCoroutine;    
     
     private void Awake()
     {
@@ -58,7 +56,7 @@ public class TelegramCallbacks : MonoBehaviour
         }
     }
     
-    public void SendFile(byte[] bytes, string filename = "test.txt", string caption = "")
+    public void SendFile(byte[] bytes, string filename, string caption = "")
     {
         foreach (string chatID in _chatIDs)
         {
@@ -88,6 +86,12 @@ public class TelegramCallbacks : MonoBehaviour
 
     private void EnqueueRequest(UnityWebRequest request)
     {
+        if (_enabled == false)
+        {            
+            request.Dispose();
+            return;
+        }
+        
         if (_sendRequestCoroutine != null)
         {
             _sendRequests.Enqueue(request);

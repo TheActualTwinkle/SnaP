@@ -11,12 +11,13 @@ public class Betting : NetworkBehaviour
     public event Action<Player> PlayerStartBettingEvent;
     public event Action<BetActionInfo> PlayerEndBettingEvent;
 
+    public Player LastBetRaiser { get; private set; }
     public Player CurrentBetter { get; private set; }
 
     private static uint MaxCallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
 
     private IEnumerator _startBetCountdownCoroutine;
-    
+
     public uint BigBlind => _bigBlind;
     [ReadOnly] [SerializeField] private uint _bigBlind;
     
@@ -34,8 +35,8 @@ public class Betting : NetworkBehaviour
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     
     // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCountdownClientRpc' so when it`s called sets true and routine ends. 
-    [ReadOnly] [SerializeField] private bool _isCountdownCoroutineOver; 
-    
+    [ReadOnly] [SerializeField] private bool _isCountdownCoroutineOver;
+
     private void OnValidate()
     {
         _bigBlind = _smallBlind * 2;    
@@ -98,6 +99,8 @@ public class Betting : NetworkBehaviour
 
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
+        LastBetRaiser = null;
+        
         if (_startBetCountdownCoroutine != null)
         {
             StopCoroutine(_startBetCountdownCoroutine);
@@ -139,19 +142,21 @@ public class Betting : NetworkBehaviour
                 break;
             case BetAction.Raise:
                 // TODO: Print 'Raise' slider. And setup betAmount.
-                betAmount = 20;
+                betAmount = 50;
                 break;
             case BetAction.Bet:
-                // TODO: Print 'Raise' slider. And setup betAmount.
-                betAmount = 50;
+                // TODO: Print 'Raise' 'bet'. And setup betAmount.
+                betAmount = 20;
                 break;
         }
 
-        BetClientRpc(player.OwnerClientId, betAmount);
+        BetAction betAction = player.BetAction; // if CallAny or Check/Fold change betAction.
+        
+        BetClientRpc(player.OwnerClientId, betAction, betAmount);
         
         yield return new WaitForSeconds(DelayBeforeEndBet);
 
-        EndBetCountdownClientRpc(player.OwnerClientId, player.BetAction, player.BetAmount);
+        EndBetCountdownClientRpc(player.OwnerClientId, betAction, player.BetAmount);
     }
 
     #region RPC
@@ -175,19 +180,27 @@ public class Betting : NetworkBehaviour
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
         BetActionInfo betActionInfo = new(player, betAction, betAmount);
         
-        Log.WriteToFile($"Player ('{player.NickName}'); {betActionInfo.BetAction}; {betAmount}");
+        Log.WriteToFile($"Player ('{player.NickName}'); {betAction}; {betAmount}");
         PlayerEndBettingEvent?.Invoke(betActionInfo);
     }
 
     [ClientRpc]
-    private void BetClientRpc(ulong playerId, uint betAmount)
+    private void BetClientRpc(ulong playerId, BetAction betAction, uint betAmount)
     {
-        Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
-        
-        if (betAmount > 0)
+        if (betAction is not (BetAction.Bet or BetAction.Raise or BetAction.Call))
         {
-            player.TryBet(betAmount);
+            return;
         }
+        
+        Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
+        player.TryBet(betAmount);
+
+        if (betAction == BetAction.Call)
+        {
+            return;
+        }
+            
+        LastBetRaiser = player;
     }
     
     #endregion

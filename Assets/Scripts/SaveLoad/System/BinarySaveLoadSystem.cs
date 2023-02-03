@@ -7,7 +7,7 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
     private static readonly string SavePath = Application.persistentDataPath + "/saves";
     private const string SaveFileExtension = "df";
 
-    private static readonly BinaryFormatter _binatyFormatter = new();
+    private static readonly BinaryFormatter BinatyFormatter = new();
 
     public void Save(ISaveLoadData saveLoadData)
     {
@@ -19,7 +19,7 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
         var saveFileName = $"{SavePath}/{saveLoadData.GetType().Name}.{SaveFileExtension}";
         FileStream fileStream = new(saveFileName, FileMode.Create);
 
-        _binatyFormatter.Serialize(fileStream, saveLoadData);
+        BinatyFormatter.Serialize(fileStream, saveLoadData);
 
         fileStream.Close();
     }
@@ -31,15 +31,13 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
         {
             FileStream fileStream = new(saveFileName, FileMode.Open);
 
-            ISaveLoadData data = _binatyFormatter.Deserialize(fileStream) as ISaveLoadData;
+            ISaveLoadData data = BinatyFormatter.Deserialize(fileStream) as ISaveLoadData;
 
             fileStream.Close();
 
             return (T)data;
         }
-        else
-        {
-            return default;
-        }
+
+        return default;
     }
 }

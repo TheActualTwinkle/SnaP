@@ -169,7 +169,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56d145d6fc2c14f4ab10f0c4b8170f38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _choosenBetAction: 0
 --- !u!1 &3410940448387817349
 GameObject:
   m_ObjectHideFlags: 0
@@ -694,6 +693,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _toggle: {fileID: 1879380202573443085}
+  _betAction: 0
   _text: {fileID: 2751428986057481078}
 --- !u!1 &5109909509738171446
 GameObject:
@@ -1025,6 +1025,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _toggle: {fileID: 30786157930276736}
+  _betAction: 0
   _text: {fileID: 7146340997938563144}
 --- !u!1 &9103701606774171274
 GameObject:
@@ -1263,4 +1264,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _toggle: {fileID: 1617014219228627427}
+  _betAction: 0
   _text: {fileID: 5502118122945547064}

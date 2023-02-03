@@ -1,26 +1,39 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Net;
 using UnityEngine;
 
 public static class Log
 {
+    public static readonly string LogFilePath = $"{Application.persistentDataPath}\\CustomLog.log";
+
+    private static TelegramBot TelegramBot => TelegramBot.Instance;
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
 
-    private static readonly string LOGFilePath = $"{Application.persistentDataPath}\\CustomLog.log";
+    private static bool _appendLogFile;
     
     public static void WriteToFile(object message)
     {
-        using StreamWriter sw = new(LOGFilePath, true);
-        sw.WriteLine($"[{DateTime}] {message} Platform: {Platform}");
+        using StreamWriter sw = new(LogFilePath, _appendLogFile);
+        _appendLogFile = true;
 
+        message = $"[{DateTime}] {message} Platform: {Platform}. IP: {GetIp()}";
+        sw.WriteLine(message);
+
+        if (TelegramBot != null)
+        {
+            TelegramBot.SendMessage(message.ToString());
+        }
+        
         #if UNITY_EDITOR
-        WriteLine(message);
+        Debug.Log(message);
         #endif
-    }    
-    
-    private static void WriteLine(object message)
+    }
+
+    private static string GetIp()
     {
-        Debug.Log($"[{DateTime}] {message} Platform: {Platform}");
+        return Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToString();
     }
 }

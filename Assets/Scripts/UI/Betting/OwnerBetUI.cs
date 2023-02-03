@@ -22,7 +22,6 @@ public class OwnerBetUI : MonoBehaviour
 
     private void OnEnable()
     {
-        Game.GameStageBeganEvent += OnGameStageBegan;
         Game.GameStageOverEvent += OnGameStageOver;
         Game.EndDealEvent += OnEndDeal;
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
@@ -37,7 +36,6 @@ public class OwnerBetUI : MonoBehaviour
 
     private void OnDisable()
     {
-        Game.GameStageBeganEvent -= OnGameStageBegan;
         Game.GameStageOverEvent -= OnGameStageOver;
         Game.EndDealEvent -= OnEndDeal;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
@@ -56,19 +54,19 @@ public class OwnerBetUI : MonoBehaviour
         {
             DisableToggles();
         }
-        
+
         LocalPlayer.ChangeBetAction(ChoosenBetAction);
-    }
-    
-    private void OnGameStageBegan(GameStage gameStage)
-    { 
-        EnableToggles();
-        PushBackToggles();
     }
 
     private void OnGameStageOver(GameStage gameStage)
     {
         DisableToggles();
+
+        if (gameStage == GameStage.River)
+        {
+            return;
+        }
+        
         PushBackToggles();
     }
     
@@ -81,6 +79,12 @@ public class OwnerBetUI : MonoBehaviour
     
     private void OnPlayerStartBetting(Player player)
     {
+        if (player.IsOwner == true)
+        {
+            PushBackToggles();
+        }
+
+        EnableToggles();
         SetupToggles();
     }
     
@@ -88,14 +92,13 @@ public class OwnerBetUI : MonoBehaviour
     {
         if (betActionInfo.Player.IsOwner == true)
         {
-            EnableToggles();
-            
             if (betActionInfo.BetAction == BetAction.Fold)
             {
                 ClearToggles();
                 return;
             }
-
+            
+            EnableToggles();
             PushBackToggles();
         }
         
@@ -121,7 +124,7 @@ public class OwnerBetUI : MonoBehaviour
 
         return _toggles.First(x => x.Toggle.isOn == true).BetAction;
     }
-    
+
     private void SetupToggles() // todo НЕ обновлять тоглы когда выбран режим префаером 
     {
         Player player = LocalPlayer;
@@ -129,7 +132,7 @@ public class OwnerBetUI : MonoBehaviour
         {
             return;
         }
-        
+
         BetSituation betSituation = Betting.GetBetSituation(player.BetAmount);
 
         if (Betting.CurrentBetter == player)

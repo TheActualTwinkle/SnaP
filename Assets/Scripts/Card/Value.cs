@@ -1,6 +1,6 @@
 public enum Value
 {
-    Two,
+    Two = 2,
     Three,
     Four,
     Five,

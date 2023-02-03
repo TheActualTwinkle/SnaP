@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Random = System.Random;
 
-[System.Serializable]
+[Serializable]
 public class CardDeck
 {
     private Queue<CardObject> _cards;
@@ -25,7 +25,7 @@ public class CardDeck
         }
     }
 
-    public int[] GetCodedCards() // e.g. 209 means Suit = 2, Value = 9 that`s mean Jack of Spades. 
+    public int[] GetCodedCards() // e.g. 211 means Suit = 2, Value = 11 that`s mean Jack of Spades. 
     {
         List<int> codedCards = new();
         foreach (CardObject card in _cards)
@@ -59,7 +59,7 @@ public class CardDeck
         _cards = new Queue<CardObject>();
         for (var i = 0; i < Enum.GetValues(typeof(Suit)).Length; i++)
         {
-            for (var j = 0; j < Enum.GetValues(typeof(Value)).Length; j++)
+            for (var j = 2; j < Enum.GetValues(typeof(Value)).Length + 2; j++)
             {
                 CardObject cardObject = new((Suit)i, (Value)j);
 
@@ -70,7 +70,7 @@ public class CardDeck
     
     private void Shuffle()
     {
-        IOrderedEnumerable<CardObject> newCards = (_cards.OrderBy(x => new Random().Next(0, _cards.Count)));
+        IOrderedEnumerable<CardObject> newCards = _cards.OrderBy(x => new Random().Next(0, _cards.Count));
         _cards = new Queue<CardObject>(newCards);
     }
 }

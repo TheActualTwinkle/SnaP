@@ -24,12 +24,9 @@ public class Player : NetworkBehaviour
     public uint Stack => _stack.Value;
     private readonly NetworkVariable<uint> _stack = new(100); // todo НЕ 100, а в меню фрибеты всем!!!
 
-    public CardObject PocketCard1 => _pocketCard1;
-    [ReadOnly] [SerializeField] private CardObject _pocketCard1;
+    public CardObject PocketCard1 { get; private set; }
+    public CardObject PocketCard2 { get; private set; }
 
-    public CardObject PocketCard2 => _pocketCard2;
-    [ReadOnly] [SerializeField] private CardObject _pocketCard2;
-    
     private static Game Game => Game.Instance;
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
@@ -64,11 +61,6 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            print(_betAmount.Value);
-        }
-        
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
         {
             if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
@@ -133,8 +125,8 @@ public class Player : NetworkBehaviour
     
     public void SetPocketCards(CardObject card1, CardObject card2)
     {
-        _pocketCard1 = card1;
-        _pocketCard2 = card2;
+        PocketCard1 = card1;
+        PocketCard2 = card2;
     }
     
     private void Shutdown()
