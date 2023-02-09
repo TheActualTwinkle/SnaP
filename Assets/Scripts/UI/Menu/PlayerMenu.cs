@@ -12,16 +12,19 @@ public class PlayerMenu : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _nickNameInputField;
     [SerializeField] private Image _image;
+    [SerializeField] private Slider _slider;
 
     private ISaveLoadSystem _saveLoadSystem;
 
     private void OnEnable()
     {
+        _slider.onValueChanged.AddListener(OnSliderValueChanged);
         _nickNameInputField.onEndEdit.AddListener(OnInputFiledEndEdit);
     }
 
     private void OnDisable()
     {
+        _slider.onValueChanged.RemoveListener(OnSliderValueChanged);
         _nickNameInputField.onEndEdit.RemoveListener(OnInputFiledEndEdit);
     }
 
@@ -34,10 +37,12 @@ public class PlayerMenu : MonoBehaviour
     private void SetupUI()
     {
         PlayerData playerData = _saveLoadSystem.Load<PlayerData>();
-        _nickNameInputField.text = playerData.NickName;
+        _nickNameInputField.text = playerData._nickName;
 
-        byte[] rawTexture = Convert.FromBase64String(playerData.AvatarBase64String);
+        byte[] rawTexture = Convert.FromBase64String(playerData._avatarBase64String);
         _image.sprite = TextureConverter.GetSprite(rawTexture);
+
+        _slider.value = playerData._stack;
     }
 
     private void OnInputFiledEndEdit(string value)
@@ -49,8 +54,12 @@ public class PlayerMenu : MonoBehaviour
         
         SavePlayerData();
     }
+
+    private void OnSliderValueChanged(float value)
+    {
+        SavePlayerData();
+    }
    
-    // Button.
     private void OnChangeImageButtonClick()
     {
         StartCoroutine(ChangeImage());
@@ -58,7 +67,7 @@ public class PlayerMenu : MonoBehaviour
 
     private IEnumerator ChangeImage()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR // todo
         string filePath = EditorUtility.OpenFilePanel("Select avatar", "", "jpg,png");
         yield return StartCoroutine(SetImageFromLocalFIle(filePath));
 
@@ -87,7 +96,7 @@ public class PlayerMenu : MonoBehaviour
     private void SavePlayerData()
     {
         byte[] rawTexture = TextureConverter.GetRawTexture(_image.sprite.texture);
-        PlayerData playerData = new(_nickNameInputField.text, Convert.ToBase64String(rawTexture));
+        PlayerData playerData = new(_nickNameInputField.text, Convert.ToBase64String(rawTexture), (uint)_slider.value);
         _saveLoadSystem.Save(playerData);
     }
 }

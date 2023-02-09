@@ -1,9 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 public class OwnerBetUI : MonoBehaviour
 {
+    public static event Action<uint> BetInputFieldValueChangedEvent;
+
     private BetAction ChoosenBetAction => GetChoosenBetAction();
     
     private List<BetActionToggle> _toggles;
@@ -14,8 +20,16 @@ public class OwnerBetUI : MonoBehaviour
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
+    [SerializeField] private TMP_InputField _betInputField;
+    
+    private Animator _animator;
+    private static readonly int BetTogglePointerEnter = Animator.StringToHash("BetTogglePointerEnter");
+    private static readonly int BetTogglePointerExit = Animator.StringToHash("BetTogglePointerExit");
+
     private void Awake()
     {
+        _animator = GetComponent<Animator>();
+        
         _toggles = GetComponentsInChildren<BetActionToggle>().ToList();
         DisableToggles();
     }
@@ -32,6 +46,8 @@ public class OwnerBetUI : MonoBehaviour
         {
             toggle.Toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
+
+        _betInputField.onValueChanged.AddListener(OnBetInputFieldValueChanged);
     }
 
     private void OnDisable()
@@ -46,6 +62,8 @@ public class OwnerBetUI : MonoBehaviour
         {
             toggle.Toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
         }
+        
+        _betInputField.onValueChanged.AddListener(OnBetInputFieldValueChanged);
     }
 
     private void OnToggleValueChanged(bool value)
@@ -55,7 +73,43 @@ public class OwnerBetUI : MonoBehaviour
             DisableToggles();
         }
 
-        LocalPlayer.ChangeBetAction(ChoosenBetAction);
+        LocalPlayer.SetBetAction(ChoosenBetAction);
+    }
+
+    // Uinty Event
+    private void OnBetTogglePointerEnter()
+    {
+        if (PlayerSeats.LocalPlayer == null)
+        {
+            return;
+        }
+        
+        if (Betting.CurrentBetter != PlayerSeats.LocalPlayer)
+        {
+            return;
+        }
+        
+        _animator.ResetTrigger(BetTogglePointerExit);
+        _animator.SetTrigger(BetTogglePointerEnter);
+    }
+
+    // Uinty Event
+    private void OnBetTogglePointerExit()
+    {
+        _animator.ResetTrigger(BetTogglePointerEnter);
+        _animator.SetTrigger(BetTogglePointerExit);
+    }
+
+    private void OnBetInputFieldValueChanged(string value)
+    {
+        uint betValue = uint.Parse(value);
+        if (betValue > PlayerSeats.LocalPlayer.Stack)
+        {
+            betValue = PlayerSeats.LocalPlayer.Stack;
+        }
+        
+        _betInputField.text = betValue.ToString();
+        BetInputFieldValueChangedEvent?.Invoke(betValue);
     }
 
     private void OnGameStageOver(GameStage gameStage)

@@ -15,6 +15,7 @@ public class BoardButton
     [SerializeField] private int _position = EmptyPosition;
 
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
+    private static Betting Betting => Betting.Instance;
     
     public void Move()
     {
@@ -61,7 +62,7 @@ public class BoardButton
     {
         int[] turnSequence = GetTurnSequence();
 
-        if (PlayerSeats.Players.Where(x => x != null).All(x => x.BetAction == BetAction.Check))
+        if (Betting.LastBetRaiser == null)
         {
             return turnSequence;
         }

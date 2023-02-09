@@ -51,6 +51,8 @@ MonoBehaviour:
   _boardButton:
     _position: -1
   _roundsInterval: 1.75
+  _showdownEndTime: 2
+  _isBetCoroutineOver: 0
 --- !u!114 &5515698721813201346
 MonoBehaviour:
   m_ObjectHideFlags: 0

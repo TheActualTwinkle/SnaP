@@ -20,7 +20,8 @@ public class Game : NetworkBehaviour
 
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
-
+    private static Pot Pot => Pot.Instance;
+    
     [ReadOnly] [SerializeField] private Board _board;
     [ReadOnly] [SerializeField] private BoardButton _boardButton;
     private CardDeck _cardDeck;
@@ -34,6 +35,7 @@ public class Game : NetworkBehaviour
     private bool ConditionToStartDeal => _isPlaying == false && PlayerSeats.TakenSeatsAmount >= 2;
 
     [SerializeField] private float _roundsInterval;
+    [SerializeField] private float _showdownEndTime;
 
     // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCoroutineClientRpc' so when it`s called sets true and routine ends. 
     [ReadOnly] [SerializeField] private bool _isBetCoroutineOver;
@@ -72,7 +74,9 @@ public class Game : NetworkBehaviour
             PlayerSeats.Players[index].SetPocketCards(_cardDeck.PullCard(), _cardDeck.PullCard());
         }
         
-        AutoBetBlinds();
+        Player player1 = PlayerSeats.Players[turnSequensce[0]];
+        Player player2 = PlayerSeats.Players[turnSequensce[1]];
+        yield return Betting.AutoBetBlinds(player1, player2);
 
         int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequence();
 
@@ -131,20 +135,13 @@ public class Game : NetworkBehaviour
             throw new NullReferenceException();
         }
         
-        yield return new WaitForSeconds(3f); // todo Hardcode.
-        
-        WinnerInfo winnerInfo = new(winner.OwnerClientId, Pot.Instance.GetWinValue(winner));
+        yield return new WaitForSeconds(_showdownEndTime);
+
+        WinnerInfo winnerInfo = new(winner.OwnerClientId, Pot.GetWinValue(winner));
         EndDealClientRpc(winnerInfo);
-        print(winnerHand);
+        Log.WriteToFile(winnerHand);
     }
 
-    private void AutoBetBlinds()
-    {
-        int[] turnSequensce = _boardButton.GetTurnSequence();
-        PlayerSeats.Players[turnSequensce[0]].TryBet(Betting.SmallBlind);
-        PlayerSeats.Players[turnSequensce[1]].TryBet(Betting.BigBlind);
-    }
-    
     private IEnumerator Bet(int[] turnSequensce)
     {
         _isBetCoroutineOver = false;
@@ -173,7 +170,7 @@ public class Game : NetworkBehaviour
                 if (PlayerSeats.TakenSeatsAmount - foldPlayerAmount == 1)
                 {
                     ulong winnerId = player.OwnerClientId;
-                    WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(player));
+                    WinnerInfo winnerInfo = new(winnerId, Pot.GetWinValue(player));
                     EndDealClientRpc(winnerInfo);
                     yield break;
                 }

@@ -33,7 +33,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4144977245687866502}
-  - {fileID: 1436279154125636821}
+  - {fileID: 1602774601323371268}
   - {fileID: 3923288960531094738}
   - {fileID: 5034668332693981681}
   - {fileID: 2891278938704633811}
@@ -55,7 +55,7 @@ Canvas:
   m_GameObject: {fileID: 2891278938977396754}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 1
@@ -813,13 +813,21 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7274561765118454676, guid: ec33c1e25093f584887379d211c11bde, type: 3}
   m_PrefabInstance: {fileID: 6733309952238767890}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &9150328022027580434
+--- !u!1001 &8875747824551160771
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 2891278938977396766}
     m_Modifications:
+    - target: {fileID: 1317079132442830846, guid: 2eb1ba8732069d24cacdc7f0f01dce25, type: 3}
+      propertyPath: m_fontSize
+      value: 14.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4729144959149430289, guid: 2eb1ba8732069d24cacdc7f0f01dce25, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7859571473029312710, guid: 2eb1ba8732069d24cacdc7f0f01dce25, type: 3}
       propertyPath: m_Name
       value: PlayerSeatsUI
@@ -908,14 +916,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8992985804082284214, guid: 2eb1ba8732069d24cacdc7f0f01dce25, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 260
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2eb1ba8732069d24cacdc7f0f01dce25, type: 3}
---- !u!224 &1436279154125636821 stripped
+--- !u!224 &1602774601323371268 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7859571473029312711, guid: 2eb1ba8732069d24cacdc7f0f01dce25, type: 3}
-  m_PrefabInstance: {fileID: 9150328022027580434}
+  m_PrefabInstance: {fileID: 8875747824551160771}
   m_PrefabAsset: {fileID: 0}

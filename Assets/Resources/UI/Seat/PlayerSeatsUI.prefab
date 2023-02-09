@@ -64,6 +64,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_fontSize
+      value: 14.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5583830802040180282, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5597228465117885303, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_Name
       value: Seat (1)
@@ -210,6 +218,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_fontSize
+      value: 14.9
+      objectReference: {fileID: 0}
     - target: {fileID: 5597228465117885303, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_Name
       value: Seat (3)
@@ -360,6 +372,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_fontSize
+      value: 14.9
+      objectReference: {fileID: 0}
     - target: {fileID: 5597228465117885303, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_Name
       value: Seat (2)
@@ -510,10 +526,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
-    - target: {fileID: 1656182102418031411, guid: 36d2e2ab90a92e6448517cf3bdc6a9ed, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3471584852656741119, guid: 36d2e2ab90a92e6448517cf3bdc6a9ed, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -640,6 +652,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_fontSize
+      value: 14.9
+      objectReference: {fileID: 0}
     - target: {fileID: 5597228465117885303, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_Name
       value: Seat
@@ -713,10 +729,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5597228465117885304, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 240
-      objectReference: {fileID: 0}
-    - target: {fileID: 5597228465117885304, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -782,6 +794,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_fontSize
+      value: 14.9
+      objectReference: {fileID: 0}
     - target: {fileID: 5597228465117885303, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_Name
       value: Seat (4)

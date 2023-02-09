@@ -20,7 +20,6 @@ public class BetChipsUI : MonoBehaviour
     
     private void OnEnable()
     {
-        Game.GameStageBeganEvent += OnGameStageBegan;
         Game.GameStageOverEvent += OnGameStageOver;
         Game.EndDealEvent += OnEndDeal;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
@@ -28,7 +27,6 @@ public class BetChipsUI : MonoBehaviour
 
     private void OnDisable()
     {
-        Game.GameStageBeganEvent -= OnGameStageBegan;
         Game.GameStageOverEvent -= OnGameStageOver;
         Game.EndDealEvent -= OnEndDeal;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
@@ -38,29 +36,6 @@ public class BetChipsUI : MonoBehaviour
     {
         ResetAllAnimatorTriggers();
         _animator.SetTrigger(ToPot);
-    }
-
-    private void OnGameStageBegan(GameStage gameStage)
-    {
-        if (gameStage != GameStage.Preflop)
-        {
-            return;
-        }
-
-        List<int> turnSequence = BoardButton.TurnSequensce;
-
-        if (_index != turnSequence[0] && _index != turnSequence[1])
-        {
-            return;
-        }
-
-        uint betValue = _index == turnSequence[0] ? Betting.SmallBlind : Betting.BigBlind;
-            
-        _betValueText.text = betValue.ToString();
-        SetImage(betValue);
-        
-        ResetAllAnimatorTriggers();
-        _animator.SetTrigger(Bet);
     }
 
     private void OnGameStageOver(GameStage gameStage)
