@@ -404,7 +404,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3068127582238575552, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
       propertyPath: m_Name
-      value: PlayerBetUI
+      value: OwnerBetUI
       objectReference: {fileID: 0}
     - target: {fileID: 3068127582238575553, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
       propertyPath: m_Pivot.x

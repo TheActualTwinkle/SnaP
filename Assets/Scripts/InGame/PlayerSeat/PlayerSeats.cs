@@ -23,6 +23,7 @@ public class PlayerSeats : MonoBehaviour
     public Player LocalPlayer => GetLocalPlayer();
     
     public int TakenSeatsAmount => _players.Count(x => x != null);
+    public int TakenWaitSeatsAmount => _waitingPlayers.Count(x => x != null);
 
     [SerializeField] private float _conncetionLostCheckInterval;
 
@@ -131,13 +132,29 @@ public class PlayerSeats : MonoBehaviour
             PlayerSitEvent?.Invoke(_players[i], i);
         }
     }
+
+    public void KickPlayersWithZeroStack()
+    {
+        for (var i = 0; i < _players.Count; i++)
+        {
+            Player player = _players[i];
+
+            if (player == null || player.Stack != 0)
+            {
+                continue;
+            }
+            
+            _players[i] = null;
+            _waitingPlayers[i] = player;
+            PlayerWaitForSitEvent?.Invoke(player, i);
+        }
+    }
     
     public bool IsFree(int seatNumber)
     {
         return _players[seatNumber] == null && _waitingPlayers[seatNumber] == null;
     }
-
-
+    
     private Player GetLocalPlayer()
     {
         Player localPlayer = _players.FirstOrDefault(x => x != null && x.IsOwner == true);

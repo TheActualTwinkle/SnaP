@@ -105,7 +105,7 @@ public class Player : NetworkBehaviour
         {
             return false;
         }
-        
+
         SetChoosenBetActionServerRpc(betAction);
         return true;
     }
@@ -172,6 +172,11 @@ public class Player : NetworkBehaviour
             return;
         }
 
+        if (_stack.Value < Betting.BigBlind)
+        {
+            return;
+        }
+        
         SetSeatServerRpc(seatNumber);
 
         TakeSeat(seatNumber);

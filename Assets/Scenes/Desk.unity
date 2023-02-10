@@ -532,6 +532,10 @@ PrefabInstance:
       propertyPath: _index
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3923288960531094739, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: m_Name
+      value: OwnerBetUI
+      objectReference: {fileID: 0}
     - target: {fileID: 5726975620296846582, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: _index
       value: 4

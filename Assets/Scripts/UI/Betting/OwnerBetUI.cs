@@ -21,10 +21,13 @@ public class OwnerBetUI : MonoBehaviour
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
     [SerializeField] private TMP_InputField _betInputField;
+    [SerializeField] private TextMeshProUGUI _callText;
     
     private Animator _animator;
     private static readonly int BetTogglePointerEnter = Animator.StringToHash("BetTogglePointerEnter");
     private static readonly int BetTogglePointerExit = Animator.StringToHash("BetTogglePointerExit");
+    private static readonly int CallTogglePointerEnter = Animator.StringToHash("CallTogglePointerEnter");
+    private static readonly int CallTogglePointerExit = Animator.StringToHash("CallTogglePointerExit");
 
     private void Awake()
     {
@@ -47,7 +50,7 @@ public class OwnerBetUI : MonoBehaviour
             toggle.Toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
 
-        _betInputField.onValueChanged.AddListener(OnBetInputFieldValueChanged);
+        _betInputField.onEndEdit.AddListener(OnBetInputFieldValueChanged);
     }
 
     private void OnDisable()
@@ -63,32 +66,27 @@ public class OwnerBetUI : MonoBehaviour
             toggle.Toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
         }
         
-        _betInputField.onValueChanged.AddListener(OnBetInputFieldValueChanged);
+        _betInputField.onEndEdit.AddListener(OnBetInputFieldValueChanged);
     }
 
-    private void OnToggleValueChanged(bool value)
-    {
-        if (value == true && Betting.CurrentBetter == LocalPlayer)
-        {
-            DisableToggles();
-        }
-
-        LocalPlayer.SetBetAction(ChoosenBetAction);
-    }
+    #region UnityEvents
 
     // Uinty Event
     private void OnBetTogglePointerEnter()
     {
-        if (PlayerSeats.LocalPlayer == null)
+        if (LocalPlayer == null)
         {
             return;
         }
         
-        if (Betting.CurrentBetter != PlayerSeats.LocalPlayer)
+        if (Betting.CurrentBetter != LocalPlayer)
         {
             return;
         }
         
+        ClampBetToggleValue();
+        BetInputFieldValueChangedEvent?.Invoke(uint.Parse(_betInputField.text));
+
         _animator.ResetTrigger(BetTogglePointerExit);
         _animator.SetTrigger(BetTogglePointerEnter);
     }
@@ -100,16 +98,58 @@ public class OwnerBetUI : MonoBehaviour
         _animator.SetTrigger(BetTogglePointerExit);
     }
 
-    private void OnBetInputFieldValueChanged(string value)
+    // Uinty Event
+    private void OnCallTogglePointerEnter()
     {
-        uint betValue = uint.Parse(value);
-        if (betValue > PlayerSeats.LocalPlayer.Stack)
+        if (PlayerSeats.LocalPlayer == null)
         {
-            betValue = PlayerSeats.LocalPlayer.Stack;
+            return;
         }
         
-        _betInputField.text = betValue.ToString();
-        BetInputFieldValueChangedEvent?.Invoke(betValue);
+        if (Betting.GetBetSituation(LocalPlayer.BetAmount) != BetSituation.CallOrFold)
+        {
+            return;
+        }
+
+        if (Betting.CallAmount > LocalPlayer.Stack + LocalPlayer.BetAmount)
+        {
+            _callText.text = $"{LocalPlayer.Stack + LocalPlayer.BetAmount} (+{LocalPlayer.Stack})";
+        }
+        else
+        {
+            _callText.text = $"{Betting.CallAmount} (+{Betting.CallAmount - LocalPlayer.BetAmount})";
+        }
+        
+        _animator.ResetTrigger(CallTogglePointerExit);
+        _animator.SetTrigger(CallTogglePointerEnter);
+    }
+
+    // Uinty Event
+    private void OnCallTogglePointerExit()
+    {
+        _animator.ResetTrigger(CallTogglePointerEnter);
+        _animator.SetTrigger(CallTogglePointerExit);
+    }
+
+    #endregion
+    
+    private void OnToggleValueChanged(bool value)
+    {
+        if (value == true && Betting.CurrentBetter == LocalPlayer)
+        {
+            DisableToggles();
+        }
+
+        if (LocalPlayer != null) 
+        {
+            LocalPlayer.SetBetAction(ChoosenBetAction);
+        }
+    }
+
+    private void OnBetInputFieldValueChanged(string value)
+    {
+        ClampBetToggleValue();
+        BetInputFieldValueChangedEvent?.Invoke(uint.Parse(_betInputField.text));
     }
 
     private void OnGameStageOver(GameStage gameStage)
@@ -135,17 +175,37 @@ public class OwnerBetUI : MonoBehaviour
     {
         if (player.IsOwner == true)
         {
-            PushBackToggles();
-        }
+            if (player.Stack == 0)
+            {
+                _toggles[2].Toggle.enabled = false;
+            }
 
+            BetAction betAction = ChoosenBetAction;
+            
+            if (betAction == BetAction.Cancel)
+            {
+                PushBackToggles();
+            }
+
+            if (betAction is not (BetAction.Empty or BetAction.Cancel))
+            {
+                return;
+            }
+        }
+        
         EnableToggles();
-        SetupToggles();
+        SetupTogglesUI();
     }
     
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
         if (betActionInfo.Player.IsOwner == true)
         {
+            _betInputField.text = string.Empty;
+            
+            _animator.SetTrigger(CallTogglePointerExit);
+            _animator.SetTrigger(BetTogglePointerExit);
+            
             if (betActionInfo.BetAction == BetAction.Fold)
             {
                 ClearToggles();
@@ -155,8 +215,22 @@ public class OwnerBetUI : MonoBehaviour
             EnableToggles();
             PushBackToggles();
         }
-        
-        SetupToggles();
+        else
+        {
+            BetAction betAction = ChoosenBetAction;
+            
+            if (LocalPlayer != null)
+            {
+                LocalPlayer.SetBetAction(betAction);
+            }
+
+            if (betAction is not (BetAction.Empty or BetAction.Cancel))
+            {
+                DisableToggles();
+            }
+        }
+
+        SetupTogglesUI();
     }
     
     private void OnPlayerLeave(Player player, int seatIndex)
@@ -176,10 +250,21 @@ public class OwnerBetUI : MonoBehaviour
             return BetAction.Empty;
         }
 
-        return _toggles.First(x => x.Toggle.isOn == true).BetAction;
+        BetAction betAction = _toggles.First(x => x.Toggle.isOn == true).BetAction;
+        if (betAction is not (BetAction.CheckFold or BetAction.CallAny))
+        {
+            return betAction;
+        }
+
+        if (betAction == BetAction.CheckFold)
+        {
+            return Betting.GetBetSituation(LocalPlayer.BetAmount) == BetSituation.CanCheck ? BetAction.Check : BetAction.Fold; 
+        }
+
+        return Betting.CallAmount <= LocalPlayer.Stack + LocalPlayer.BetAmount ? BetAction.Call : BetAction.Cancel;
     }
 
-    private void SetupToggles() // todo НЕ обновлять тоглы когда выбран режим префаером 
+    private void SetupTogglesUI()
     {
         Player player = LocalPlayer;
         if (player == null)
@@ -221,6 +306,29 @@ public class OwnerBetUI : MonoBehaviour
         }
     }
 
+    private void ClampBetToggleValue()
+    {
+        uint minBetValue = Betting.BigBlind >= Betting.CallAmount ? Betting.BigBlind : Betting.CallAmount;
+        uint maxBetValue = Betting.MaxBetAmount >= LocalPlayer.Stack ? Betting.MaxBetAmount : LocalPlayer.Stack;
+     
+        if (uint.TryParse(_betInputField.text, out uint value) == false)
+        {
+            value = minBetValue;
+        }
+        
+        if (value + LocalPlayer.BetAmount < minBetValue) // Set min.
+        {
+            value = minBetValue - LocalPlayer.BetAmount;
+        }
+        
+        if (value > maxBetValue) // Set max.
+        {
+            value = maxBetValue;
+        }
+
+        _betInputField.text = value.ToString();
+    }
+    
     private void ClearToggles()
     {
         foreach (BetActionToggle toggle in _toggles)

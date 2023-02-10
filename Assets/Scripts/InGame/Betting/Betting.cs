@@ -14,13 +14,16 @@ public class Betting : NetworkBehaviour
     public Player LastBetRaiser { get; private set; }
     public Player CurrentBetter { get; private set; }
     
-    private static uint CallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
+    public static uint CallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
+    public static uint MaxBetAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.Stack).Min();
 
     private IEnumerator _startBetCountdownCoroutine;
     
+    public uint BigBlind => _bigBlind;
+    [SerializeField] private uint _bigBlind;
+
     public uint SmallBlind => _smallBlind;
     [SerializeField] private uint _smallBlind;
-    [ReadOnly] [SerializeField] private uint _bigBlind;
 
     public float BetTime => _betTime;
     [SerializeField] private float _betTime;
@@ -108,6 +111,7 @@ public class Betting : NetworkBehaviour
 
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
+        CurrentBetter = null;
         LastBetRaiser = null;
         
         if (_startBetCountdownCoroutine != null)
@@ -121,12 +125,13 @@ public class Betting : NetworkBehaviour
             return;
         }
 
-        PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, (BetAction)(-1), 0));
+        PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, BetAction.Cancel, 0));
     }
     
     private IEnumerator StartBetCountdown(Player player)
     {
         _isCountdownCoroutineOver = false;
+        
         if (IsServer == false)
         {
             yield return new WaitWhile(() => _isCountdownCoroutineOver == false);
@@ -137,7 +142,7 @@ public class Betting : NetworkBehaviour
 
         StartBetCountdownClientRpc(player.OwnerClientId);
 
-        while (player.BetAction == BetAction.Empty && _timePaasedSinceBetStart < _betTime)
+        while (player.BetAction is (BetAction.Empty or BetAction.Cancel or BetAction.CallAny or BetAction.CheckFold) && _timePaasedSinceBetStart < _betTime)
         {
             _timePaasedSinceBetStart += Time.deltaTime;
             yield return new WaitForEndOfFrame();
@@ -147,14 +152,14 @@ public class Betting : NetworkBehaviour
         switch (player.BetAction)
         {
             case BetAction.Call:
-                betAmount = CallAmount - player.BetAmount;
+                betAmount = CallAmount < player.Stack + player.BetAmount ? CallAmount - player.BetAmount : player.Stack;
                 break;
             case BetAction.Bet:
             case BetAction.Raise:
                 betAmount = player.BetInputFieldValue;
                 break;
         }
-
+        
         BetClientRpc(player.OwnerClientId, player.BetAction, betAmount);
         
         yield return new WaitForSeconds(DelayBeforeEndBet);
@@ -183,7 +188,7 @@ public class Betting : NetworkBehaviour
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
         BetActionInfo betActionInfo = new(player, betAction, betAmount);
         
-        Log.WriteToFile($"Player ('{player.NickName}'); {betAction}; {betAmount}");
+        Log.WriteToFile($"Player ('{player.NickName}') id: '{player.OwnerClientId}'; {betAction}; {betAmount}");
         PlayerEndBettingEvent?.Invoke(betActionInfo);
     }
 

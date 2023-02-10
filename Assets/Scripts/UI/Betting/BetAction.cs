@@ -1,6 +1,7 @@
 public enum BetAction
 {
     Empty,
+    Cancel,
     CheckFold,
     Fold,
     Check,

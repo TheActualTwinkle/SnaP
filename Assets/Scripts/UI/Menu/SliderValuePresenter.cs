@@ -16,6 +16,7 @@ public class SliderValuePresenter : MonoBehaviour
     private void Awake()
     {
         _text = GetComponent<TextMeshProUGUI>();
+        OnSliderValueChanged(_slider.value);
     }
 
     private void OnEnable()

@@ -102,7 +102,7 @@ public class Game : NetworkBehaviour
         StartNextStageClientRpc();
     }
 
-    private IEnumerator StartShowdown() // todo MB not IEnumerator?
+    private IEnumerator StartShowdown()
     {
         int[] turnSequensce = _boardButton.GetShowdownTurnSequence();
         
@@ -165,14 +165,19 @@ public class Game : NetworkBehaviour
                 Log.WriteToFile($"Player ('{player.NickName}'). Seat №{index} start betting");
                 yield return StartCoroutine(Betting.Bet(player));
             
-                int foldPlayerAmount = PlayerSeats.Players.Count(x => x != null && x.BetAction == BetAction.Fold);
-                
-                if (PlayerSeats.TakenSeatsAmount - foldPlayerAmount == 1)
+                List<Player> notFoldPlayers = PlayerSeats.Players.Where(x => x != null && x.BetAction != BetAction.Fold).ToList();
+                if (notFoldPlayers.Count == 1)
                 {
-                    ulong winnerId = player.OwnerClientId;
+                    ulong winnerId = notFoldPlayers[0].OwnerClientId;
                     WinnerInfo winnerInfo = new(winnerId, Pot.GetWinValue(player));
                     EndDealClientRpc(winnerInfo);
                     yield break;
+                }
+
+                List<Player> playersWithZeroStack = PlayerSeats.Players.Where(x => x != null && x.Stack == 0).ToList();
+                if (PlayerSeats.TakenSeatsAmount - playersWithZeroStack.Count == 1)
+                {
+                    // todo StartShowdown
                 }
 
                 if (i == 0 || IsBetsEquals() == false)
@@ -217,11 +222,11 @@ public class Game : NetworkBehaviour
             return;
         }
         
-        if (PlayerSeats.TakenSeatsAmount != 1)
+        if (PlayerSeats.TakenSeatsAmount != 1 || _isPlaying == false)
         {
-            return;
+            return; 
         }
-
+        
         Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
         ulong winnerId = winner!.OwnerClientId; 
         WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(winner));
@@ -305,10 +310,10 @@ public class Game : NetworkBehaviour
         }
         
         PlayerSeats.SitEveryoneWaiting();
+        PlayerSeats.KickPlayersWithZeroStack();
 
-        // Not pot but some chips based on bet.
         EndDealEvent?.Invoke(winnerInfo);
-        Log.WriteToFile($"End deal. Winner id: {winnerInfo.WinnerId}");
+        Log.WriteToFile($"End deal. Winner id: '{winnerInfo.WinnerId}'");
 
         StartCoroutine(StartDealAfterIntervalRounds());
     }

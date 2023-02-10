@@ -51,7 +51,7 @@ public class BetChipsUI : MonoBehaviour
             return;
         }
         
-        if (betActionInfo.BetAction is BetAction.Empty or BetAction.Fold or BetAction.Check or BetAction.CheckFold or (BetAction)(-1))
+        if (betActionInfo.BetAction is BetAction.Empty or BetAction.Fold or BetAction.Check or BetAction.CheckFold or BetAction.Cancel)
         {
             return;
         }
