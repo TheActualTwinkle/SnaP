@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
 public class Game : NetworkBehaviour
 {
+    [SerializeField] private TextMeshProUGUI text; // todo DELETE.
+    
     public static Game Instance { get; private set; }
 
     public event Action<GameStage> GameStageBeganEvent;
@@ -125,16 +128,20 @@ public class Game : NetworkBehaviour
             {
                 print("TIE!");
                 print(bestHand + " vs " + winnerHand);
-                yield break;
+                break;
                 // todo Force Tie.
             }
         }
-
+        
         if (winner == null)
         {
             throw new NullReferenceException();
         }
         
+        text.text = $"ПОБЕДИЛ - '{winner.NickName}', потому что у него блять {winnerHand}";
+
+        GameStageOverEvent?.Invoke(GameStage.Showdown);
+
         yield return new WaitForSeconds(_showdownEndTime);
 
         WinnerInfo winnerInfo = new(winner.OwnerClientId, Pot.GetWinValue(winner));
@@ -320,9 +327,9 @@ public class Game : NetworkBehaviour
 
     [ClientRpc]
     private void StartNextStageClientRpc()
-    {        
+    {
         _currentGameStage++;
-        
+
         Log.WriteToFile($"Starting {_currentGameStage} stage.");
 
         SetStageCoroutine();

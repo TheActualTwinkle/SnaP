@@ -98,7 +98,7 @@ public class PlayerSeatsUI : MonoBehaviour
 
     private void PlayerEndBetting(BetActionInfo betActionInfo)
     {
-        if (betActionInfo.BetAction is not (BetAction.Call or BetAction.Raise or BetAction.Bet))
+        if (betActionInfo.BetAction is not (BetAction.Call or BetAction.Raise or BetAction.Bet or BetAction.AllIn))
         {
             return;
         }

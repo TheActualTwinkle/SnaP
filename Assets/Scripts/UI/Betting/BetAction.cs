@@ -9,4 +9,5 @@ public enum BetAction
     Call,
     Raise,
     Bet,
+    AllIn
 }

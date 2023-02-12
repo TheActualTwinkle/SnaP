@@ -13,9 +13,9 @@ public class Betting : NetworkBehaviour
 
     public Player LastBetRaiser { get; private set; }
     public Player CurrentBetter { get; private set; }
-    
-    public static uint CallAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
-    public static uint MaxBetAmount => PlayerSeats.Instance.Players.Where(x => x != null).Select(x => x.Stack).Min();
+
+    public static bool IsAllIn => PlayerSeats.Players.Any(x => x != null && x.BetAction == BetAction.AllIn);
+    public static uint CallAmount => PlayerSeats.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
 
     private IEnumerator _startBetCountdownCoroutine;
     
@@ -72,6 +72,11 @@ public class Betting : NetworkBehaviour
         return betAmount < CallAmount ? BetSituation.CallOrFold : BetSituation.CanCheck;
     }
     
+    public static uint GetAllInBetAmount(Player player)
+    {
+        return PlayerSeats.Players.Where(x => x != null).Select(x => x.Stack + x.BetAmount).Min() - player.BetAmount;
+    }
+    
     public IEnumerator AutoBetBlinds(Player player1, Player player2)
     {
         player1.TryBet(_smallBlind);    
@@ -92,7 +97,7 @@ public class Betting : NetworkBehaviour
         _startBetCountdownCoroutine = StartBetCountdown(player);
         yield return StartCoroutine(_startBetCountdownCoroutine);
     }
-    
+
     private void OnPlayerLeave(Player player, int seatIndex)
     {
         if (player != CurrentBetter)  
@@ -154,9 +159,14 @@ public class Betting : NetworkBehaviour
             case BetAction.Call:
                 betAmount = CallAmount < player.Stack + player.BetAmount ? CallAmount - player.BetAmount : player.Stack;
                 break;
+            
             case BetAction.Bet:
             case BetAction.Raise:
                 betAmount = player.BetInputFieldValue;
+                break;
+            
+            case BetAction.AllIn:
+                betAmount = GetAllInBetAmount(player);
                 break;
         }
         
@@ -195,7 +205,7 @@ public class Betting : NetworkBehaviour
     [ClientRpc]
     private void BetClientRpc(ulong playerId, BetAction betAction, uint betAmount)
     {
-        if (betAction is not (BetAction.Bet or BetAction.Raise or BetAction.Call))
+        if (betAction is not (BetAction.Bet or BetAction.Raise or BetAction.Call or BetAction.AllIn))
         {
             return;
         }

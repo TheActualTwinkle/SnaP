@@ -28,7 +28,8 @@ public class Pot : MonoBehaviour
 
     public uint GetWinValue(Player player)
     {
-        return player.Stack; // todo
+        
+        return 200; // todo
     }
 
     private void OnEnable()

@@ -66,6 +66,13 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F) == true && IsOwner == true)
+        {
+            print(_choosenBetAction.Value); // todo
+        }
+            
+
+    
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
         {
             if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
