@@ -66,13 +66,6 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F) == true && IsOwner == true)
-        {
-            print(_choosenBetAction.Value); // todo
-        }
-            
-
-    
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
         {
             if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
@@ -270,9 +263,9 @@ public class Player : NetworkBehaviour
     [ServerRpc]
     private void SetPlayerDataServerRpc(PlayerData data)
     {
-        _nickName.Value = data._nickName;
-        _avatarBase64String.Value = data._avatarBase64String;
-        _stack.Value = data._stack;
+        _nickName.Value = data.NickName;
+        _avatarBase64String.Value = data.AvatarBase64String;
+        _stack.Value = data.Stack;
     }
 
     [ServerRpc]

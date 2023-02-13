@@ -1,4 +1,4 @@
-public enum BetAction
+public enum BetAction : byte
 {
     Empty,
     Cancel,

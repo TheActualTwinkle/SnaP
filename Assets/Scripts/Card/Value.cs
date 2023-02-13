@@ -1,4 +1,4 @@
-public enum Value
+public enum Value : byte
 {
     Two = 2,
     Three,

@@ -8,8 +8,6 @@ using UnityEngine;
 
 public class Game : NetworkBehaviour
 {
-    [SerializeField] private TextMeshProUGUI text; // todo DELETE.
-    
     public static Game Instance { get; private set; }
 
     public event Action<GameStage> GameStageBeganEvent;
@@ -41,7 +39,7 @@ public class Game : NetworkBehaviour
     [SerializeField] private float _showdownEndTime;
 
     // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCoroutineClientRpc' so when it`s called sets true and routine ends. 
-    [ReadOnly] [SerializeField] private bool _isBetCoroutineOver;
+    private readonly NetworkVariable<bool> _isBetCoroutineOver = new();
 
     private void Awake()
     {
@@ -65,6 +63,16 @@ public class Game : NetworkBehaviour
     {
         PlayerSeats.PlayerSitEvent -= OnPlayerSit;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
+    }
+
+    private void Start()
+    {
+        if (IsOwner == true)
+        {
+            return;
+        }
+        
+        
     }
 
     private IEnumerator StartPreflop()
@@ -137,8 +145,6 @@ public class Game : NetworkBehaviour
         {
             throw new NullReferenceException();
         }
-        
-        text.text = $"ПОБЕДИЛ - '{winner.NickName}', потому что у него блять {winnerHand}";
 
         GameStageOverEvent?.Invoke(GameStage.Showdown);
 
@@ -151,13 +157,15 @@ public class Game : NetworkBehaviour
 
     private IEnumerator Bet(int[] turnSequensce)
     {
-        _isBetCoroutineOver = false;
+        //_isBetCoroutineOver = false;
         if (IsServer == false)
         {
-            yield return new WaitWhile(() => _isBetCoroutineOver == false);
+            yield return new WaitWhile(() => _isBetCoroutineOver.Value == false);
             yield break;
         }
 
+        ChangeIsBetCoroutineOverValueServerRpc(false);
+        
         for (var i = 0;; i++)
         {
             foreach (int index in turnSequensce)
@@ -192,7 +200,7 @@ public class Game : NetworkBehaviour
                     continue;
                 }
 
-                EndBetCoroutineClientRpc();
+                ChangeIsBetCoroutineOverValueServerRpc(true);
                 yield break;
             }
 
@@ -201,7 +209,7 @@ public class Game : NetworkBehaviour
                 continue;
             }
 
-            EndBetCoroutineClientRpc();
+            ChangeIsBetCoroutineOverValueServerRpc(true);
             yield break;
         }
     }
@@ -291,10 +299,18 @@ public class Game : NetworkBehaviour
     }
     
     #region RPC
-
+    
+    [ServerRpc]
+    private void ChangeIsBetCoroutineOverValueServerRpc(bool value)
+    {
+        _isBetCoroutineOver.Value = value;
+    }
+    
     [ClientRpc]
     private void StartDealClientRpc(int[] cardDeck)
     {
+        PlayerSeats.KickPlayersWithZeroStack();
+
         _isPlaying = true;
         _cardDeck = new CardDeck(cardDeck);
 
@@ -317,7 +333,6 @@ public class Game : NetworkBehaviour
         }
         
         PlayerSeats.SitEveryoneWaiting();
-        PlayerSeats.KickPlayersWithZeroStack();
 
         EndDealEvent?.Invoke(winnerInfo);
         Log.WriteToFile($"End deal. Winner id: '{winnerInfo.WinnerId}'");
@@ -336,12 +351,6 @@ public class Game : NetworkBehaviour
         
         StartCoroutine(_stageCoroutine);
         GameStageBeganEvent?.Invoke(_currentGameStage);
-    }
-
-    [ClientRpc]
-    private void EndBetCoroutineClientRpc()
-    {
-        _isBetCoroutineOver = true;
     }
     
     #endregion

@@ -206,6 +206,7 @@ MonoBehaviour:
   _image: {fileID: 2975029522263859207}
   _betValueText: {fileID: 6544205447828123932}
   _animator: {fileID: 7547011042309484728}
+  _delayToPotAnimation: 1.5
 --- !u!1 &1026550805292741723
 GameObject:
   m_ObjectHideFlags: 0
@@ -999,7 +1000,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17
+  m_fontSize: 14.9
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1

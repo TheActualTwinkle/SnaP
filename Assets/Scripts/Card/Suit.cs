@@ -1,4 +1,4 @@
-public enum Suit
+public enum Suit : byte
 {
     Clubs,
     Hearts,

@@ -238,7 +238,7 @@ public class OwnerBetUI : MonoBehaviour
         {
             if (betActionInfo.BetAction == BetAction.AllIn)
             {
-                SetupTogglesUI(); // todo
+                SetupTogglesUI();
                 return;
             }
             

@@ -36,7 +36,7 @@ public class Betting : NetworkBehaviour
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     
     // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCountdownClientRpc' so when it`s called sets true and routine ends. 
-    [ReadOnly] [SerializeField] private bool _isCountdownCoroutineOver;
+    private readonly NetworkVariable<bool> _isCountdownCoroutineOver = new();
 
     private void OnValidate()
     {
@@ -135,14 +135,14 @@ public class Betting : NetworkBehaviour
     
     private IEnumerator StartBetCountdown(Player player)
     {
-        _isCountdownCoroutineOver = false;
-        
         if (IsServer == false)
         {
-            yield return new WaitWhile(() => _isCountdownCoroutineOver == false);
+            yield return new WaitWhile(() => _isCountdownCoroutineOver.Value == false);
             yield break;
         }
-        
+
+        ChangeIsCountdownCoroutineOverValueServerRpc(false);
+
         yield return new WaitForSeconds(DelayBeforeStartBet);
 
         StartBetCountdownClientRpc(player.OwnerClientId);
@@ -170,14 +170,23 @@ public class Betting : NetworkBehaviour
                 break;
         }
         
+        uint totalBet = betAmount + player.BetAmount; // Ping compensation.
         BetClientRpc(player.OwnerClientId, player.BetAction, betAmount);
-        
+
         yield return new WaitForSeconds(DelayBeforeEndBet);
+        yield return new WaitUntil(() => player.BetAmount == totalBet);
 
         EndBetCountdownClientRpc(player.OwnerClientId, player.BetAction, player.BetAmount);
     }
 
     #region RPC
+
+    [ServerRpc]
+    private void ChangeIsCountdownCoroutineOverValueServerRpc(bool value)
+    {
+        _isCountdownCoroutineOver.Value = value;
+    }
+
     
     [ClientRpc]
     private void StartBetCountdownClientRpc(ulong playerId)
@@ -193,7 +202,10 @@ public class Betting : NetworkBehaviour
     [ClientRpc]
     private void EndBetCountdownClientRpc(ulong playerId, BetAction betAction, uint betAmount)
     {
-        _isCountdownCoroutineOver = true;
+        if (IsServer == true)
+        {
+            ChangeIsCountdownCoroutineOverValueServerRpc(true);
+        }
         
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
         BetActionInfo betActionInfo = new(player, betAction, betAmount);

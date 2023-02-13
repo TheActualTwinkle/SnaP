@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,9 @@ public class BetChipsUI : MonoBehaviour
     [SerializeField] private Image _image;
     [SerializeField] private TextMeshProUGUI _betValueText;
     [SerializeField] private Animator _animator;
-    
+
+    [SerializeField] private float _delayToPotAnimation;
+
     private static readonly int Bet = Animator.StringToHash("Bet");
     private static readonly int ToPot = Animator.StringToHash("ToPot");
 
@@ -33,14 +36,12 @@ public class BetChipsUI : MonoBehaviour
 
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        ResetAllAnimatorTriggers();
-        _animator.SetTrigger(ToPot);
+        StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
     }
 
     private void OnGameStageOver(GameStage gameStage)
     {
-        ResetAllAnimatorTriggers();
-        _animator.SetTrigger(ToPot);
+        StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
     }
     
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
@@ -65,6 +66,14 @@ public class BetChipsUI : MonoBehaviour
         
         ResetAllAnimatorTriggers();
         _animator.SetTrigger(Bet);
+    }
+
+    private IEnumerator DelayToPotAnimation(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        ResetAllAnimatorTriggers();
+        _animator.SetTrigger(ToPot);
     }
 
     private void SetImage(uint betValue)

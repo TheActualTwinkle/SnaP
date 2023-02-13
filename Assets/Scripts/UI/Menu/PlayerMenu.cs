@@ -37,12 +37,23 @@ public class PlayerMenu : MonoBehaviour
     private void SetupUI()
     {
         PlayerData playerData = _saveLoadSystem.Load<PlayerData>();
-        _nickNameInputField.text = playerData._nickName;
 
-        byte[] rawTexture = Convert.FromBase64String(playerData._avatarBase64String);
+        if (playerData.Equals(default(PlayerData)) == true)
+        {
+            playerData.NickName = "Player";
+            
+            byte[] texture = TextureConverter.GetRawTexture(Resources.Load<Sprite>("Sprites/ava").texture);
+            playerData.AvatarBase64String = Convert.ToBase64String(texture);
+                
+            playerData.Stack = (uint)_slider.minValue;
+        }
+         
+        _nickNameInputField.text = playerData.NickName;
+
+        byte[] rawTexture = Convert.FromBase64String(playerData.AvatarBase64String);
         _image.sprite = TextureConverter.GetSprite(rawTexture);
 
-        _slider.value = playerData._stack;
+        _slider.value = playerData.Stack;
     }
 
     private void OnInputFiledEndEdit(string value)
