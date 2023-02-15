@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -64,7 +63,7 @@ public class Game : NetworkBehaviour
         PlayerSeats.PlayerSitEvent -= OnPlayerSit;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
-
+    
     private void Start()
     {
         if (IsOwner == true)
@@ -72,7 +71,7 @@ public class Game : NetworkBehaviour
             return;
         }
         
-        
+        // todo.
     }
 
     private IEnumerator StartPreflop()
@@ -87,6 +86,7 @@ public class Game : NetworkBehaviour
         
         Player player1 = PlayerSeats.Players[turnSequensce[0]];
         Player player2 = PlayerSeats.Players[turnSequensce[1]];
+        print("ZERO");
         yield return Betting.AutoBetBlinds(player1, player2);
 
         int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequence();
@@ -248,15 +248,17 @@ public class Game : NetworkBehaviour
         EndDealClientRpc(winnerInfo);
     }
 
-    private IEnumerator StartDealAfterIntervalRounds()
+    private IEnumerator StartDealAfterRoundsInterval()
     {
-        if (IsServer == false)
+        if (IsServer == false || _startDealWhenСonditionTrueCoroutine != null)
         {
             yield break;
         }
         
         yield return new WaitForSeconds(_roundsInterval);
-        StartCoroutine(StartDealWhenСonditionTrue());
+        
+        _startDealWhenСonditionTrueCoroutine = StartDealWhenСonditionTrue();
+        StartCoroutine(_startDealWhenСonditionTrueCoroutine);
     }
     
     private IEnumerator StartDealWhenСonditionTrue()
@@ -337,7 +339,7 @@ public class Game : NetworkBehaviour
         EndDealEvent?.Invoke(winnerInfo);
         Log.WriteToFile($"End deal. Winner id: '{winnerInfo.WinnerId}'");
 
-        StartCoroutine(StartDealAfterIntervalRounds());
+        StartCoroutine(StartDealAfterRoundsInterval());
     }
 
     [ClientRpc]

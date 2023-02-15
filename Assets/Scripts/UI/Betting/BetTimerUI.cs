@@ -14,6 +14,8 @@ public class BetTimerUI : MonoBehaviour
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
 
+    private float _localTimePassedSinceBetStart; // For ping compensation and network identity.
+
     private void OnEnable()
     {
         Game.EndDealEvent += OnEndDeal;
@@ -60,7 +62,7 @@ public class BetTimerUI : MonoBehaviour
         
         _image.enabled = false;
     }
-
+    
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
         _image.enabled = false;
@@ -68,8 +70,8 @@ public class BetTimerUI : MonoBehaviour
     
     private IEnumerator StartTimer()
     {
-        _image.fillAmount = 1f;
-        while (_image.fillAmount > 0)
+        _image.fillAmount = 1 - (_localTimePassedSinceBetStart / Betting.BetTime);
+        while (Betting.TimePassedSinceBetStart < Betting.BetTime)
         {
             _image.fillAmount -= Time.deltaTime / Betting.BetTime;
             yield return new WaitForEndOfFrame();

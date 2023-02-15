@@ -27,7 +27,9 @@ public class Betting : NetworkBehaviour
 
     public float BetTime => _betTime;
     [SerializeField] private float _betTime;
-    [SerializeField] [ReadOnly] private float _timePaasedSinceBetStart;
+
+    public float TimePassedSinceBetStart => _timePassedSinceBetStart.Value;
+    public NetworkVariable<float> _timePassedSinceBetStart = new();
     
     private const float DelayBeforeStartBet = 1f;
     private const float DelayBeforeEndBet = 0.7f;
@@ -82,7 +84,12 @@ public class Betting : NetworkBehaviour
         player1.TryBet(_smallBlind);    
         player2.TryBet(_bigBlind);
 
+        print("1");
         yield return new WaitForSeconds(DelayBeforeEndBet);
+        print("2");
+        yield return new WaitUntil(() => player1.BetAmount == _smallBlind && player2.BetAmount == _bigBlind);       
+        print("3");
+
 
         EndBetCountdownClientRpc(player1.OwnerClientId, BetAction.Bet, _smallBlind);
         EndBetCountdownClientRpc(player2.OwnerClientId, BetAction.Bet, _bigBlind);
@@ -141,15 +148,15 @@ public class Betting : NetworkBehaviour
             yield break;
         }
 
-        ChangeIsCountdownCoroutineOverValueServerRpc(false);
+        SetIsCountdownCoroutineOverValueServerRpc(false);
 
         yield return new WaitForSeconds(DelayBeforeStartBet);
 
         StartBetCountdownClientRpc(player.OwnerClientId);
 
-        while (player.BetAction is (BetAction.Empty or BetAction.Cancel or BetAction.CallAny or BetAction.CheckFold) && _timePaasedSinceBetStart < _betTime)
+        while (player.BetAction is (BetAction.Empty or BetAction.Cancel or BetAction.CallAny or BetAction.CheckFold) && _timePassedSinceBetStart.Value < _betTime)
         {
-            _timePaasedSinceBetStart += Time.deltaTime;
+            SetTimePaasedSinceBetStartValueServerRpc(_timePassedSinceBetStart.Value + Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
 
@@ -182,19 +189,28 @@ public class Betting : NetworkBehaviour
     #region RPC
 
     [ServerRpc]
-    private void ChangeIsCountdownCoroutineOverValueServerRpc(bool value)
+    private void SetIsCountdownCoroutineOverValueServerRpc(bool value)
     {
         _isCountdownCoroutineOver.Value = value;
     }
 
-    
+    [ServerRpc]
+    private void SetTimePaasedSinceBetStartValueServerRpc(float value)
+    {
+        _timePassedSinceBetStart.Value = value;
+    }
+
     [ClientRpc]
     private void StartBetCountdownClientRpc(ulong playerId)
     {
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
         
         CurrentBetter = player;
-        _timePaasedSinceBetStart = 0f;
+
+        if (IsServer == true)
+        {
+            SetTimePaasedSinceBetStartValueServerRpc(0);
+        }
         
         PlayerStartBettingEvent?.Invoke(player);
     }
@@ -204,7 +220,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == true)
         {
-            ChangeIsCountdownCoroutineOverValueServerRpc(true);
+            SetIsCountdownCoroutineOverValueServerRpc(true);
         }
         
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
