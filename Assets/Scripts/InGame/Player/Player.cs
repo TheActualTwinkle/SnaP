@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Collections;
 using Unity.Netcode;
@@ -55,15 +56,6 @@ public class Player : NetworkBehaviour
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
     }
 
-    private void Start()
-    {
-        // Set data and UI to non owner players.
-        if (IsOwner == false && _seatNumber.Value != NullSeatNumber)
-        {
-            TakeSeat(_seatNumber.Value);
-        }
-    }
-
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
@@ -92,6 +84,10 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner == false)
         {
+            if (_seatNumber.Value != NullSeatNumber)
+            {
+                TakeSeat(_seatNumber.Value, true);
+            }
             return;
         }
 
@@ -242,9 +238,9 @@ public class Player : NetworkBehaviour
         SetBetAmountServerRpc(0);
     } 
     
-    private void TakeSeat(int seatNumber)
+    private void TakeSeat(int seatNumber, bool forceToSeat = false)
     {
-        PlayerSeats.TryTake(this, seatNumber);
+        PlayerSeats.TryTake(this, seatNumber, forceToSeat);
     }
 
     private void LeaveSeat()

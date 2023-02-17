@@ -16,6 +16,11 @@ public static class Log
     
     public static void WriteToFile(object message)
     {
+                
+#if UNITY_EDITOR
+        Debug.Log(message);
+#endif
+        return; // todo
         using StreamWriter sw = new(LogFilePath, _appendLogFile);
         _appendLogFile = true;
 
@@ -26,10 +31,6 @@ public static class Log
         {
             TelegramBot.SendMessage(message.ToString());
         }
-        
-        #if UNITY_EDITOR
-        Debug.Log(message);
-        #endif
     }
 
     private static string GetIp()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
 [RequireComponent(typeof(Animator))]
 public class OwnerBetUI : MonoBehaviour
@@ -157,6 +158,11 @@ public class OwnerBetUI : MonoBehaviour
 
     private void OnGameStageBegan(GameStage gameStage)
     {
+        if (LocalPlayer == null)
+        {
+            return;
+        }
+        
         if (PlayerSeats.Players.Contains(LocalPlayer) == false || gameStage != GameStage.Preflop)
         {
             return;

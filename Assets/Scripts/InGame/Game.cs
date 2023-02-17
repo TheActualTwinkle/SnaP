@@ -15,8 +15,8 @@ public class Game : NetworkBehaviour
 
     public List<CardObject> BoardCards => _board.Cards;
     
-    public bool IsPlaying => _isPlaying;
-    [ReadOnly] [SerializeField] private bool _isPlaying;
+    public bool IsPlaying => _isPlaying.Value;
+    private readonly NetworkVariable<bool> _isPlaying = new();
 
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
@@ -30,9 +30,9 @@ public class Game : NetworkBehaviour
     private IEnumerator _startDealWhenСonditionTrueCoroutine;
 
     public GameStage CurrentGameStage => _currentGameStage;
-    private GameStage _currentGameStage = (GameStage)(-1);
+    private GameStage _currentGameStage = GameStage.Empty;
     
-    private bool ConditionToStartDeal => _isPlaying == false && PlayerSeats.TakenSeatsAmount >= 2;
+    private bool ConditionToStartDeal => _isPlaying.Value == false && PlayerSeats.TakenSeatsAmount >= 2;
 
     [SerializeField] private float _roundsInterval;
     [SerializeField] private float _showdownEndTime;
@@ -86,7 +86,6 @@ public class Game : NetworkBehaviour
         
         Player player1 = PlayerSeats.Players[turnSequensce[0]];
         Player player2 = PlayerSeats.Players[turnSequensce[1]];
-        print("ZERO");
         yield return Betting.AutoBetBlinds(player1, player2);
 
         int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequence();
@@ -157,7 +156,6 @@ public class Game : NetworkBehaviour
 
     private IEnumerator Bet(int[] turnSequensce)
     {
-        //_isBetCoroutineOver = false;
         if (IsServer == false)
         {
             yield return new WaitWhile(() => _isBetCoroutineOver.Value == false);
@@ -178,7 +176,7 @@ public class Game : NetworkBehaviour
                 }
 
                 Log.WriteToFile($"Player ('{player.NickName}'). Seat №{index} start betting");
-                yield return StartCoroutine(Betting.Bet(player));
+                yield return Betting.Bet(player);
             
                 List<Player> notFoldPlayers = PlayerSeats.Players.Where(x => x != null && x.BetAction != BetAction.Fold).ToList();
                 if (notFoldPlayers.Count == 1)
@@ -237,7 +235,7 @@ public class Game : NetworkBehaviour
             return;
         }
         
-        if (PlayerSeats.TakenSeatsAmount != 1 || _isPlaying == false)
+        if (PlayerSeats.TakenSeatsAmount != 1 || _isPlaying.Value == false)
         {
             return; 
         }
@@ -267,6 +265,7 @@ public class Game : NetworkBehaviour
         yield return new WaitForSeconds(0.05f);
 
         _cardDeck = new CardDeck();
+        
         StartDealClientRpc(_cardDeck.GetCodedCards());
 
         _startDealWhenСonditionTrueCoroutine = null;
@@ -297,7 +296,7 @@ public class Game : NetworkBehaviour
     
     private static bool IsBetsEquals()
     {
-        return PlayerSeats.Players.Where(x => x != null).Select(x => x.BetAmount).Distinct().Skip(1).Any() == false;
+        return PlayerSeats.Players.Where(x => x != null && x.BetAction != BetAction.Fold).Select(x => x.BetAmount).Distinct().Skip(1).Any() == false;
     }
     
     #region RPC
@@ -307,27 +306,41 @@ public class Game : NetworkBehaviour
     {
         _isBetCoroutineOver.Value = value;
     }
+
+    [ServerRpc]
+    private void SetIsPlayingValueServerRpc(bool value)
+    {
+        _isPlaying.Value = value;
+    }
     
     [ClientRpc]
     private void StartDealClientRpc(int[] cardDeck)
     {
         PlayerSeats.KickPlayersWithZeroStack();
-
-        _isPlaying = true;
+        
         _cardDeck = new CardDeck(cardDeck);
 
         _boardButton ??= new BoardButton();
         _boardButton.Move();
         
-        _currentGameStage = (GameStage)(-1);
-        
+        _currentGameStage = GameStage.Empty;
+
+        if (IsServer == false)
+        {
+            return;
+        }
+
+        SetIsPlayingValueServerRpc(true);
         StartNextStageClientRpc();
     }
 
     [ClientRpc]
     private void EndDealClientRpc(WinnerInfo winnerInfo)
     {
-        _isPlaying = false;
+        if (IsServer == true)
+        {
+            SetIsPlayingValueServerRpc(false);
+        }
 
         if (_stageCoroutine != null)
         {

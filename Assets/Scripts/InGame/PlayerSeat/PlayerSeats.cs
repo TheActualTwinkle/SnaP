@@ -23,7 +23,6 @@ public class PlayerSeats : MonoBehaviour
     public Player LocalPlayer => GetLocalPlayer();
     
     public int TakenSeatsAmount => _players.Count(x => x != null);
-    public int TakenWaitSeatsAmount => _waitingPlayers.Count(x => x != null);
 
     [SerializeField] private float _conncetionLostCheckInterval;
 
@@ -60,29 +59,29 @@ public class PlayerSeats : MonoBehaviour
         StartCoroutine(CheckForConnectonLost());
     }
     
-    public bool TryTake(Player player, int seatNumber)
+    public bool TryTake(Player player, int seatNumber, bool forceToSeat = false)
     {
         if (_players[seatNumber] != null || _waitingPlayers[seatNumber] != null)
         {
             Log.WriteToFile($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by some Player.'");
             return false;
         }
-        
+
         TryLeave(player);
-
-        if (Game.Instance.IsPlaying == true && _players.Contains(player) == false)
-        {
-            _waitingPlayers[seatNumber] = player;
-            PlayerWaitForSitEvent?.Invoke(player, seatNumber);
-            return false;
-        }
         
-        _players[seatNumber] = player;
+        if (Game.Instance.IsPlaying == false || _players.Contains(player) == true || forceToSeat == true)
+        {
+            _players[seatNumber] = player;
 
-        Log.WriteToFile($"Player ('{player.NickName}') sit on №{seatNumber} seat.");
+            Log.WriteToFile($"Player ('{player.NickName}') sit on №{seatNumber} seat.");
 
-        PlayerSitEvent?.Invoke(player, seatNumber);
-        return true;
+            PlayerSitEvent?.Invoke(player, seatNumber);
+            return true;
+        }
+
+        _waitingPlayers[seatNumber] = player;
+        PlayerWaitForSitEvent?.Invoke(player, seatNumber);
+        return false;
     }
     
     public bool TryLeave(Player player)

@@ -52,12 +52,11 @@ public class PlayerSeatsUI : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        _seatsUI = GetComponentsInChildren<SeatUI>().ToList();
     }
 
     private void Start()
     {
-        _seatsUI = GetComponentsInChildren<SeatUI>().ToList();
-
         foreach (Vector3 seatPosition in _seatsUI.Select(x => x.transform.localPosition))
         {
             _defaultSeatPositions.Add(seatPosition);

@@ -30,7 +30,17 @@ public class BoardUI : MonoBehaviour
         Game.GameStageBeganEvent -= OnGameStageBegan;
         Game.EndDealEvent -= OnEndDeal;
     }
-    
+
+    private void Start()
+    {
+        if (Game.IsPlaying == false)
+        {
+            return;
+        }
+        
+        
+    }
+
     private void OnGameStageBegan(GameStage gameStage)
     {
         ResetAllTriggers();

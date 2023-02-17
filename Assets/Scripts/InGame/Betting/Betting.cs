@@ -13,6 +13,7 @@ public class Betting : NetworkBehaviour
 
     public Player LastBetRaiser { get; private set; }
     public Player CurrentBetter { get; private set; }
+    private readonly NetworkVariable<ulong> _currentBetterId = new();
 
     public static bool IsAllIn => PlayerSeats.Players.Any(x => x != null && x.BetAction == BetAction.AllIn);
     public static uint CallAmount => PlayerSeats.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
@@ -42,7 +43,7 @@ public class Betting : NetworkBehaviour
 
     private void OnValidate()
     {
-        _bigBlind = _smallBlind * 2;    
+        _bigBlind = _smallBlind * 2;
     }
 
     private void Awake()
@@ -69,6 +70,27 @@ public class Betting : NetworkBehaviour
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
+    private void Start()
+    {
+        if (IsOwner == true)
+        {
+            return;
+        }
+
+        if (Game.IsPlaying == false)
+        {
+            return;
+        }
+
+        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == _currentBetterId.Value);
+        if (player == null)
+        {
+            return;
+        }
+        
+        PlayerStartBettingEvent?.Invoke(player);
+    }
+
     public static BetSituation GetBetSituation(uint betAmount)
     {
         return betAmount < CallAmount ? BetSituation.CallOrFold : BetSituation.CanCheck;
@@ -84,12 +106,8 @@ public class Betting : NetworkBehaviour
         player1.TryBet(_smallBlind);    
         player2.TryBet(_bigBlind);
 
-        print("1");
         yield return new WaitForSeconds(DelayBeforeEndBet);
-        print("2");
         yield return new WaitUntil(() => player1.BetAmount == _smallBlind && player2.BetAmount == _bigBlind);       
-        print("3");
-
 
         EndBetCountdownClientRpc(player1.OwnerClientId, BetAction.Bet, _smallBlind);
         EndBetCountdownClientRpc(player2.OwnerClientId, BetAction.Bet, _bigBlind);
@@ -123,6 +141,11 @@ public class Betting : NetworkBehaviour
 
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
+        if (IsServer == true)
+        {
+            SetCurrentBetterIdValueServerRpc(ulong.MaxValue);
+        }
+        
         CurrentBetter = null;
         LastBetRaiser = null;
         
@@ -200,16 +223,22 @@ public class Betting : NetworkBehaviour
         _timePassedSinceBetStart.Value = value;
     }
 
+    [ServerRpc]
+    private void SetCurrentBetterIdValueServerRpc(ulong value)
+    {
+        _currentBetterId.Value = value;
+    }
+
     [ClientRpc]
     private void StartBetCountdownClientRpc(ulong playerId)
     {
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
-        
+
         CurrentBetter = player;
 
         if (IsServer == true)
         {
-            SetTimePaasedSinceBetStartValueServerRpc(0);
+            SetCurrentBetterIdValueServerRpc(player.OwnerClientId);
         }
         
         PlayerStartBettingEvent?.Invoke(player);
@@ -221,6 +250,7 @@ public class Betting : NetworkBehaviour
         if (IsServer == true)
         {
             SetIsCountdownCoroutineOverValueServerRpc(true);
+            SetTimePaasedSinceBetStartValueServerRpc(0);
         }
         
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
