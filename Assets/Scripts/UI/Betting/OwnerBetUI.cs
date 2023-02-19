@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 [RequireComponent(typeof(Animator))]
 public class OwnerBetUI : MonoBehaviour
 {
     public static event Action<uint> BetInputFieldValueChangedEvent;
 
-    private BetAction ChoosenBetAction => GetChoosenBetAction();
+    private BetAction ChosenBetAction => GetChosenBetAction();
     
     private List<BetActionToggle> _toggles;
     
@@ -139,14 +138,19 @@ public class OwnerBetUI : MonoBehaviour
     
     private void OnToggleValueChanged(bool value)
     {
-        if (value == true && Betting.CurrentBetter == LocalPlayer)
+        if (Betting.CurrentBetter != LocalPlayer)
+        {
+            return;
+        }
+
+        if (value == true)
         {
             DisableToggles();
         }
 
         if (LocalPlayer != null) 
         {
-            LocalPlayer.SetBetAction(ChoosenBetAction);
+            LocalPlayer.SetBetAction(ChosenBetAction);
         }
     }
 
@@ -201,25 +205,25 @@ public class OwnerBetUI : MonoBehaviour
         {
             if (player.Stack == 0 || Betting.IsAllIn == true)
             {
-                SetupTogglesUI();
                 return;
             }
 
-            BetAction betAction = ChoosenBetAction;
+            BetAction betAction = ChosenBetAction;
             
-            if (betAction == BetAction.Cancel)
+            if (betAction is BetAction.Cancel or BetAction.Empty)
             {
                 PushBackToggles();
             }
-
-            if (betAction is not (BetAction.Empty or BetAction.Cancel))
+            
+            if (LocalPlayer != null)
             {
-                return;
+                LocalPlayer.SetBetAction(betAction);
             }
         }
 
-        EnableToggles();
+        EnableToggles();        
         SetupTogglesUI();
+
     }
     
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
@@ -239,20 +243,26 @@ public class OwnerBetUI : MonoBehaviour
             
             EnableToggles();
             PushBackToggles();
+
+            if (LocalPlayer != null)
+            {
+                SetupTogglesUI();
+                LocalPlayer.SetBetAction(BetAction.Empty);
+            }
         }
         else
         {
             if (betActionInfo.BetAction == BetAction.AllIn)
-            {
+            {        
                 SetupTogglesUI();
                 return;
             }
             
-            BetAction betAction = ChoosenBetAction;
-            
-            if (LocalPlayer != null)
+            BetAction betAction = ChosenBetAction;
+
+            if (betAction == BetAction.Check && LocalPlayer.BetAmount < betActionInfo.BetAmount)
             {
-                LocalPlayer.SetBetAction(betAction);
+                PushBackToggles();
             }
 
             if (betAction is not (BetAction.Empty or BetAction.Cancel))
@@ -260,8 +270,6 @@ public class OwnerBetUI : MonoBehaviour
                 DisableToggles();
             }
         }
-
-        SetupTogglesUI();
     }
     
     private void OnPlayerLeave(Player player, int seatIndex)
@@ -275,7 +283,7 @@ public class OwnerBetUI : MonoBehaviour
         HideToggles();
     }
 
-    private BetAction GetChoosenBetAction()
+    private BetAction GetChosenBetAction()
     {
         if (_toggles.Count(x => x.Toggle.isOn == true) == 0)
         {
@@ -284,19 +292,24 @@ public class OwnerBetUI : MonoBehaviour
 
         BetAction betAction = _toggles.First(x => x.Toggle.isOn == true).BetAction;
 
-        if ((betAction is BetAction.Raise or BetAction.Bet && _betInputField.text == LocalPlayer.Stack.ToString()) ||
-            (betAction == BetAction.Call && Betting.CallAmount == LocalPlayer.Stack + LocalPlayer.BetAmount) ||
-            (_betInputField.text == Betting.GetAllInBetAmount(LocalPlayer).ToString()))
+        if (betAction == BetAction.CheckFold)
         {
-            return BetAction.AllIn;
+            betAction = Betting.GetBetSituation(LocalPlayer.BetAmount) == BetSituation.CanCheck ? BetAction.Check : BetAction.Fold;
         }
 
-        return betAction switch
+        if (betAction == BetAction.CallAny)
         {
-            BetAction.CheckFold => Betting.GetBetSituation(LocalPlayer.BetAmount) == BetSituation.CanCheck ? BetAction.Check : BetAction.Fold,
-            BetAction.CallAny => Betting.CallAmount <= LocalPlayer.Stack + LocalPlayer.BetAmount ? BetAction.Call : BetAction.Cancel,
-            _ => betAction
-        };
+            betAction = Betting.CallAmount <= LocalPlayer.Stack + LocalPlayer.BetAmount ? BetAction.Call : BetAction.Cancel;
+        }
+        
+        switch (betAction)
+        {
+            case BetAction.Raise or BetAction.Bet when _betInputField.text == LocalPlayer.Stack.ToString() || _betInputField.text == Betting.GetAllInBetAmount(LocalPlayer).ToString():
+            case BetAction.Call when Betting.CallAmount >= LocalPlayer.Stack + LocalPlayer.BetAmount || Betting.CallAmount == Betting.GetAllInBetAmount(LocalPlayer):
+                return BetAction.AllIn;
+            default:
+                return betAction;
+        }
     }
 
     private void SetupTogglesUI()
@@ -387,7 +400,7 @@ public class OwnerBetUI : MonoBehaviour
     }
 
     private void PushBackToggles()
-    {        
+    {
         foreach (BetActionToggle toggle in _toggles)
         {
             toggle.Toggle.isOn = false;

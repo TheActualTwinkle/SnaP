@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,17 +44,12 @@ public class OwnerPocketCardsUI : MonoBehaviour
         {
             return;
         }
-        
-        _cardImage1.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit.ToString()}");
-        _cardImage2.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit.ToString()}");
 
-        ResetAllTriggers();
-        _animator.SetTrigger(GetCards);
+        StartCoroutine(LoadSprites(player));
     }
 
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        
         ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);
     }
@@ -68,6 +64,17 @@ public class OwnerPocketCardsUI : MonoBehaviour
         _animator.SetTrigger(Fold);
     }
 
+    private IEnumerator LoadSprites(Player player)
+    {
+        yield return new WaitUntil(() => ReferenceEquals(player.PocketCard1, null) == false && ReferenceEquals(player.PocketCard2, null) == false);
+        
+        _cardImage1.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit.ToString()}");
+        _cardImage2.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit.ToString()}");
+
+        ResetAllTriggers();
+        _animator.SetTrigger(GetCards);
+    }
+    
     private void ResetAllTriggers()
     {
         _animator.ResetTrigger(GetCards);

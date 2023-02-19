@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,19 +39,20 @@ public class BoardUI : MonoBehaviour
         {
             return;
         }
-        
-        
+
+        for (var i = 1; i <= (int)Game.CurrentGameStage; i++)
+        {
+            OnGameStageBegan((GameStage)i);
+        }
     }
 
     private void OnGameStageBegan(GameStage gameStage)
     {
-        ResetAllTriggers();
-        
         switch (gameStage)
         {
             case GameStage.Preflop:
             {
-                LoadFrontSpriteForCards();
+                StartCoroutine(LoadFrontSpriteForCards());
         
                 _animator.SetTrigger(StartPreflop);
                 break;
@@ -90,12 +93,16 @@ public class BoardUI : MonoBehaviour
         _animator.ResetTrigger(StartRiver);
     }
 
-    private void LoadFrontSpriteForCards()
+    private IEnumerator LoadFrontSpriteForCards()
     {
         _cardSprites.Clear();
-        for (var i = 0; i < _cardImages.Count; i++)
+
+        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length > 9);
+        
+        List<CardObject> cards = CardObjectConverter.GetCards(Game.CodedBoardCardsString).ToList();
+        foreach (CardObject card in cards)
         {
-            var id = $"Sprites/{(int)Game.BoardCards[i].Value}_{Game.BoardCards[i].Suit}";
+            var id = $"Sprites/{(int)card.Value}_{card.Suit}";
 
             Sprite sprite = Resources.Load<Sprite>(id);
             _cardSprites.Add(sprite);

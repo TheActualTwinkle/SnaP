@@ -206,7 +206,7 @@ MonoBehaviour:
   _image: {fileID: 2975029522263859207}
   _betValueText: {fileID: 6544205447828123932}
   _animator: {fileID: 7547011042309484728}
-  _delayToPotAnimation: 1.5
+  _delayToPotAnimation: 1.1
 --- !u!1 &1026550805292741723
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,6 +486,7 @@ GameObject:
   - component: {fileID: 4630900547002127559}
   - component: {fileID: 5169288779612944107}
   - component: {fileID: 2884534071132424927}
+  - component: {fileID: 1694960791105978638}
   m_Layer: 5
   m_Name: StackPanel
   m_TagString: Untagged
@@ -552,6 +553,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 100
+--- !u!114 &1694960791105978638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3697262162965988142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f19e37407b967b84498af51663413b6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stackText: {fileID: 2205559514257080277}
+  _stackBackgroundImage: {fileID: 2884534071132424927}
+  _index: 0
 --- !u!1 &5477502480099419836
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,10 +772,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerImage: {fileID: 5681092452131566889}
   _nickNameText: {fileID: 8076024403278709569}
-  _stackText: {fileID: 2205559514257080277}
   _pocketCards: {fileID: 6648614148782940300}
   _nickNameBackgroundImage: {fileID: 6588139272083517065}
-  _stackBackgroundImage: {fileID: 2884534071132424927}
 --- !u!1 &6648614148782940300
 GameObject:
   m_ObjectHideFlags: 0

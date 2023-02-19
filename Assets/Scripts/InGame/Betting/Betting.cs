@@ -13,7 +13,7 @@ public class Betting : NetworkBehaviour
 
     public Player LastBetRaiser { get; private set; }
     public Player CurrentBetter { get; private set; }
-    private readonly NetworkVariable<ulong> _currentBetterId = new();
+    private readonly NetworkVariable<ulong> _currentBetterId = new(NullBettterId);
 
     public static bool IsAllIn => PlayerSeats.Players.Any(x => x != null && x.BetAction == BetAction.AllIn);
     public static uint CallAmount => PlayerSeats.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
@@ -34,12 +34,10 @@ public class Betting : NetworkBehaviour
     
     private const float DelayBeforeStartBet = 1f;
     private const float DelayBeforeEndBet = 0.7f;
-    
+    private const ulong NullBettterId = ulong.MaxValue;
+
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
-    
-    // This field is for CLIENTS. It`s tracking when Server/Host calls the 'EndBetCountdownClientRpc' so when it`s called sets true and routine ends. 
-    private readonly NetworkVariable<bool> _isCountdownCoroutineOver = new();
 
     private void OnValidate()
     {
@@ -70,27 +68,29 @@ public class Betting : NetworkBehaviour
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
-    private void Start()
-    {
+    private IEnumerator Start()
+    {        
         if (IsOwner == true)
         {
-            return;
+            yield break;
         }
 
         if (Game.IsPlaying == false)
         {
-            return;
+            yield break;
         }
 
+        yield return new WaitUntil(() => _currentBetterId.Value != NullBettterId);
+        
         Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == _currentBetterId.Value);
         if (player == null)
         {
-            return;
+            yield break;
         }
         
         PlayerStartBettingEvent?.Invoke(player);
     }
-
+    
     public static BetSituation GetBetSituation(uint betAmount)
     {
         return betAmount < CallAmount ? BetSituation.CallOrFold : BetSituation.CanCheck;
@@ -119,6 +119,7 @@ public class Betting : NetworkBehaviour
         {
             StopCoroutine(_startBetCountdownCoroutine);
         }
+        
         _startBetCountdownCoroutine = StartBetCountdown(player);
         yield return StartCoroutine(_startBetCountdownCoroutine);
     }
@@ -165,20 +166,18 @@ public class Betting : NetworkBehaviour
     
     private IEnumerator StartBetCountdown(Player player)
     {
-        if (IsServer == false)
-        {
-            yield return new WaitWhile(() => _isCountdownCoroutineOver.Value == false);
-            yield break;
-        }
-
-        SetIsCountdownCoroutineOverValueServerRpc(false);
-
         yield return new WaitForSeconds(DelayBeforeStartBet);
 
         StartBetCountdownClientRpc(player.OwnerClientId);
 
         while (player.BetAction is (BetAction.Empty or BetAction.Cancel or BetAction.CallAny or BetAction.CheckFold) && _timePassedSinceBetStart.Value < _betTime)
         {
+            if (player.SeatNumber == Player.NullSeatNumber)
+            {
+                EndBetCountdownClientRpc(player.OwnerClientId, BetAction.Empty, player.BetAmount);
+                yield break;
+            }
+            
             SetTimePaasedSinceBetStartValueServerRpc(_timePassedSinceBetStart.Value + Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
@@ -212,12 +211,6 @@ public class Betting : NetworkBehaviour
     #region RPC
 
     [ServerRpc]
-    private void SetIsCountdownCoroutineOverValueServerRpc(bool value)
-    {
-        _isCountdownCoroutineOver.Value = value;
-    }
-
-    [ServerRpc]
     private void SetTimePaasedSinceBetStartValueServerRpc(float value)
     {
         _timePassedSinceBetStart.Value = value;
@@ -228,7 +221,7 @@ public class Betting : NetworkBehaviour
     {
         _currentBetterId.Value = value;
     }
-
+    
     [ClientRpc]
     private void StartBetCountdownClientRpc(ulong playerId)
     {
@@ -249,7 +242,6 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == true)
         {
-            SetIsCountdownCoroutineOverValueServerRpc(true);
             SetTimePaasedSinceBetStartValueServerRpc(0);
         }
         

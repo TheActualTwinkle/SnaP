@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Unity.Collections;
 using Unity.Netcode;
@@ -6,8 +5,9 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
-    private const int NullSeatNumber = -1;
+    public const int NullSeatNumber = -1;
 
+    public int SeatNumber => _seatNumber.Value;
     [SerializeField] private NetworkVariable<int> _seatNumber = new(NullSeatNumber);
     
     public string NickName => _nickName.Value.ToString();
@@ -19,12 +19,14 @@ public class Player : NetworkBehaviour
     public BetAction BetAction => _choosenBetAction.Value;
     private readonly NetworkVariable<BetAction> _choosenBetAction = new();
 
+    public NetworkVariable<uint> BetNetworkVariable => _betAmount;
     public uint BetAmount => _betAmount.Value;
     private readonly NetworkVariable<uint> _betAmount = new();
 
     public uint BetInputFieldValue => _betInputFieldValue.Value;
     private readonly NetworkVariable<uint> _betInputFieldValue = new();
-    
+
+    public NetworkVariable<uint> StackNetworkVariable => _stack;
     public uint Stack => _stack.Value;
     private readonly NetworkVariable<uint> _stack = new();
 
@@ -56,6 +58,15 @@ public class Player : NetworkBehaviour
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
     }
 
+    private void Start()
+    {
+        // Set data and UI to non owner players.
+        if (IsOwner == false && _seatNumber.Value != NullSeatNumber)
+        {
+            TakeSeat(_seatNumber.Value, true);
+        }
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
@@ -84,10 +95,6 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner == false)
         {
-            if (_seatNumber.Value != NullSeatNumber)
-            {
-                TakeSeat(_seatNumber.Value, true);
-            }
             return;
         }
 
@@ -95,20 +102,19 @@ public class Player : NetworkBehaviour
         SetPlayerDataServerRpc(playerData);
     }
     
-    public bool SetBetAction(BetAction betAction)
+    public void SetBetAction(BetAction betAction)
     {
         if (IsOwner == false)
         {
-            return false;
+            return;
         }
 
         SetChoosenBetActionServerRpc(betAction);
-        return true;
     }
 
     public bool TryBet(uint value)
     {
-        if (IsOwner == false)
+        if (IsServer == false)
         {
             return false;
         }
@@ -119,8 +125,8 @@ public class Player : NetworkBehaviour
             return false;
         }
         
-        SetStackAmountServerRpc(_stack.Value - value);
-        SetBetAmountServerRpc(_betAmount.Value + value);
+        SetStackAmountClientRpc(_stack.Value - value);
+        SetBetAmountClientRpc(_betAmount.Value + value);
         return true;
     }
     
@@ -215,27 +221,32 @@ public class Player : NetworkBehaviour
 
     private void OnGameStageOver(GameStage gameStage)
     {
-        if (IsOwner == false)
+        if (IsServer == false)
         {
             return;
         }
         
-        SetBetAmountServerRpc(0);
+        SetBetAmountClientRpc(0);
     }
 
     private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        if (IsOwner == false)
+        if (IsOwner == true)
+        {
+            SetChoosenBetActionServerRpc(BetAction.Empty);
+        }
+        
+        if (IsServer == false)
         {
             return;
         }
         
         if (winnerInfo.WinnerId == OwnerClientId)
         { 
-            SetStackAmountServerRpc(_stack.Value + winnerInfo.Chips);
+            SetStackAmountClientRpc(_stack.Value + winnerInfo.Chips);
         }
-
-        SetBetAmountServerRpc(0);
+        
+        SetBetAmountClientRpc(0);
     } 
     
     private void TakeSeat(int seatNumber, bool forceToSeat = false)
@@ -265,18 +276,6 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void SetStackAmountServerRpc(uint value)
-    {
-        _stack.Value = value;
-    }
-    
-    [ServerRpc]
-    private void SetBetAmountServerRpc(uint value)
-    {
-        _betAmount.Value = value;
-    }
-    
-    [ServerRpc]
     private void SetBetInputFieldValueServerRpc(uint value)
     {
         _betInputFieldValue.Value = value;
@@ -286,6 +285,28 @@ public class Player : NetworkBehaviour
     private void SetChoosenBetActionServerRpc(BetAction betAction)
     {
         _choosenBetAction.Value = betAction;
+    }
+    
+    [ClientRpc]
+    private void SetStackAmountClientRpc(uint value)
+    {
+        if (IsServer == false)
+        {
+            return;
+        }
+        
+        _stack.Value = value;
+    }
+    
+    [ClientRpc]
+    private void SetBetAmountClientRpc(uint value)
+    {
+        if (IsServer == false)
+        {
+            return;
+        }
+        
+        _betAmount.Value = value;
     }
     
     [ClientRpc]

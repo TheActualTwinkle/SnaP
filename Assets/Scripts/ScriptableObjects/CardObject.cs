@@ -1,19 +1,24 @@
-using System;
+using System;using Unity.Netcode;
 
 /// <summary>
 /// Source https://github.com/ccqi/TexasHoldem
 /// </summary>
 [System.Serializable]
-public class CardObject
+public class CardObject : INetworkSerializable
 {
-    public Suit Suit { get; }
+    public Suit Suit => _suit;
+    private Suit _suit;
 
-    public Value Value { get; }
+    public Value Value => _value;
+    private Value _value;
 
+
+    public CardObject() { }
+    
     public CardObject(Suit suit, Value value)
     {
-        Suit = suit;
-        Value = value;
+        _suit = suit;
+        _value = value; 
     }
     
     public static string RankToString(int rank)
@@ -88,6 +93,12 @@ public class CardObject
     {
         return HashCode.Combine((int)Suit, (int)Value);
     }
-    
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref _suit);
+        serializer.SerializeValue(ref _value);
+    }
+
     #endregion
 }

@@ -1,41 +1,50 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Unity.Netcode;
 
 [Serializable]
-public class BoardButton
+public class BoardButton : NetworkBehaviour
 {
     public static event Action<int> OnMove;
 
-    public static List<int> TurnSequensce { get; private set; }
-
     private const int EmptyPosition = -1;
 
-    [SerializeField] private int _position = EmptyPosition;
+    private readonly NetworkVariable<int> _position = new(EmptyPosition);
 
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
+
+    private void OnEnable()
+    {
+        _position.OnValueChanged += OnPositionChanged;
+    }
+
+    private void OnDisable()
+    {
+        _position.OnValueChanged -= OnPositionChanged;
+    }
     
+    private void OnPositionChanged(int previousValue, int newValue)
+    {
+        OnMove?.Invoke(newValue);
+    }
+
     public void Move()
     {
-        if (_position == EmptyPosition)
+        if (IsServer == false)
         {
-            _position = GetActivePlayerIndexes().First();
+            return;
         }
 
-        int[] turnSequensce = GetTurnSequence();
-
-        _position = turnSequensce.First();
-        
-        OnMove?.Invoke(_position);
+        MoveServerRpc();
     }
 
     public int[] GetTurnSequence()
     {
         List<int> activeSeatIndexes = GetActivePlayerIndexes().ToList();
 
-        int pivot = activeSeatIndexes.IndexOf(_position);
+        int pivot = activeSeatIndexes.IndexOf(_position.Value);
         
         List<int> turnSequence = new();
         for (int i = pivot + 1; i < activeSeatIndexes.Count; i++)
@@ -48,7 +57,6 @@ public class BoardButton
             turnSequence.Add(activeSeatIndexes[i]);
         }
 
-        TurnSequensce = turnSequence.ToList();
         return turnSequence.ToArray();
     }
 
@@ -105,4 +113,19 @@ public class BoardButton
 
         return indexes.ToArray();
     }
+
+    #region Rpc
+
+    [ServerRpc]
+    private void MoveServerRpc()
+    {
+        if (_position.Value == EmptyPosition)
+        {
+            _position.Value = GetActivePlayerIndexes().First();
+        }
+
+        _position.Value = GetTurnSequence().First();
+    }
+
+    #endregion
 }

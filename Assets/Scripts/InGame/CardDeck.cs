@@ -6,6 +6,7 @@ using Random = System.Random;
 [Serializable]
 public class CardDeck
 {
+    public List<CardObject> Cards => _cards.ToList();
     private Queue<CardObject> _cards;
     
     public CardDeck()
@@ -14,7 +15,7 @@ public class CardDeck
         Shuffle();
     }
 
-    public CardDeck(int[] cards)
+    public CardDeck(IEnumerable<int> cards)
     {
         _cards = new Queue<CardObject>();
         foreach (int card in cards)
@@ -25,19 +26,6 @@ public class CardDeck
         }
     }
 
-    public int[] GetCodedCards() // e.g. 211 means Suit = 2, Value = 11 that`s mean Jack of Spades. 
-    {
-        List<int> codedCards = new();
-        foreach (CardObject card in _cards)
-        {
-            var suit = (int)card.Suit;
-            var value = (int)card.Value;
-            codedCards.Add(suit * 100 + value);
-        }
-
-        return codedCards.ToArray();
-    }
-    
     public CardObject PullCard()
     {
         return _cards.Dequeue();

@@ -556,9 +556,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: OwnerBetUI
       objectReference: {fileID: 0}
+    - target: {fileID: 4029259446685439780, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: _index
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5213754497680574649, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: _index
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5482815319409749015, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: _index
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5726975620296846582, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: _index
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6950677698583999206, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
+      propertyPath: _index
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8057859347781027513, guid: 1963f77a25ebf044b9f387bcfdf57034, type: 3}
       propertyPath: m_AnchorMax.y
@@ -711,6 +727,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5711857578682196954, guid: 5085809d5260f1542898eba3bb076119, type: 3}
+      propertyPath: _betTime
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 5711857578682196955, guid: 5085809d5260f1542898eba3bb076119, type: 3}
       propertyPath: m_RootOrder
       value: 3

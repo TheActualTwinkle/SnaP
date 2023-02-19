@@ -27,8 +27,6 @@ public class PlayerSeatsUI : MonoBehaviour
         PlayerSeats.PlayerSitEvent += OnPlayerSit;
         PlayerSeats.PlayerWaitForSitEvent += OnPlayerWaitForSit;
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
-
-        Betting.PlayerEndBettingEvent += PlayerEndBetting;
     }
 
     private void OnDisable()
@@ -38,8 +36,6 @@ public class PlayerSeatsUI : MonoBehaviour
         PlayerSeats.PlayerSitEvent -= OnPlayerSit;
         PlayerSeats.PlayerWaitForSitEvent -= OnPlayerWaitForSit;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
-
-        Betting.PlayerEndBettingEvent += PlayerEndBetting;
     }
 
     private void Awake()
@@ -73,8 +69,7 @@ public class PlayerSeatsUI : MonoBehaviour
         }
         
         int index = PlayerSeats.Players.IndexOf(winner);
-        
-        _seatsUI[index].StackText.text = winner.Stack.ToString();
+        //_seatsUI[index].StackText.text = winner.Stack.ToString();
     }
         
     private void OnPlayerSit(Player player, int seatNumber)
@@ -82,9 +77,7 @@ public class PlayerSeatsUI : MonoBehaviour
         byte[] rawData = Convert.FromBase64String(player.AvatarBase64String);
         _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(rawData);
         _seatsUI[seatNumber].NickNameText.text = player.NickName;
-        _seatsUI[seatNumber].StackText.text = player.Stack.ToString();
         _seatsUI[seatNumber].NickNameBackgroundImage.enabled = true;
-        _seatsUI[seatNumber].StackBackgroundImage.enabled = true;
         
         ChanageSeatImageTransparency(seatNumber, 1f);
 
@@ -107,28 +100,9 @@ public class PlayerSeatsUI : MonoBehaviour
     {
         _seatsUI[seatNumber].PlayerImage.sprite = Resources.Load<Sprite>("Sprites/Arrow");
         _seatsUI[seatNumber].NickNameText.text = string.Empty;
-        _seatsUI[seatNumber].StackText.text = string.Empty;
         _seatsUI[seatNumber].NickNameBackgroundImage.enabled = false; 
-        _seatsUI[seatNumber].StackBackgroundImage.enabled = false;
 
         ChanageSeatImageTransparency(seatNumber, 1f);
-    }
-
-    private void PlayerEndBetting(BetActionInfo betActionInfo)
-    {
-        if (betActionInfo.BetAction is not (BetAction.Call or BetAction.Raise or BetAction.Bet or BetAction.AllIn))
-        {
-            return;
-        }
-        
-        int index = PlayerSeats.Players.IndexOf(betActionInfo.Player);
-
-        if (index == -1)
-        {
-            return;
-        }
-        
-        _seatsUI[index].StackText.text = betActionInfo.Player.Stack.ToString();
     }
     
     private void ChanageSeatImageTransparency(int seatNumber, float alpha)
@@ -151,7 +125,7 @@ public class PlayerSeatsUI : MonoBehaviour
         Log.WriteToFile($"Changed central view to {centralSeatNubmer}.");
     }
 
-    private int[] GetCentredIndexes(int centralSeatNubmer)
+    private static int[] GetCentredIndexes(int centralSeatNubmer)
     {
         List<int> centredIndexes = new();
 

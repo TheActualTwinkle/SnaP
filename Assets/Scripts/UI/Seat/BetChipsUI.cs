@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,47 +24,79 @@ public class BetChipsUI : MonoBehaviour
     
     private void OnEnable()
     {
-        Game.GameStageOverEvent += OnGameStageOver;
         Game.EndDealEvent += OnEndDeal;
-        Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
+        Game.GameStageOverEvent += OnGameStageOver;
+        PlayerSeats.PlayerSitEvent += OnPlayerSit;
+        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
     }
 
     private void OnDisable()
     {
-        Game.GameStageOverEvent -= OnGameStageOver;
         Game.EndDealEvent -= OnEndDeal;
-        Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
+        Game.GameStageOverEvent -= OnGameStageOver;
+        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
+        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void Start()
     {
-        StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
+        List<Player> betPlayer = PlayerSeats.Players.Where(x => x != null && x.BetAmount > 0).ToList();
+        foreach (Player player in betPlayer)
+        {        
+            int playerIndex = PlayerSeats.Players.IndexOf(player);
+            if (playerIndex != _index)
+            {
+                continue;
+            }
+
+            _betValueText.text = player.BetAmount.ToString();
+            SetImage(player.BetAmount);
+        
+            ResetAllAnimatorTriggers();
+            _animator.SetTrigger(Bet);
+            break;
+        }
     }
 
     private void OnGameStageOver(GameStage gameStage)
     {
         StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
     }
-    
-    private void OnPlayerEndBetting(BetActionInfo betActionInfo)
+
+    private void OnEndDeal(WinnerInfo winnerInfo)
     {
-        if (PlayerSeats.Players.IndexOf(betActionInfo.Player) != _index)
+        StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
+    }
+    
+    private void OnPlayerSit(Player player, int index)
+    {
+        if (index != _index)
+        {
+            return;
+        }
+
+        player.BetNetworkVariable.OnValueChanged += OnBetValueChanged;
+    }
+
+    private void OnPlayerLeave(Player player, int index)
+    {
+        if (index != _index)
         {
             return;
         }
         
-        if (betActionInfo.BetAction is BetAction.Empty or BetAction.Fold or BetAction.Check or BetAction.CheckFold or BetAction.Cancel)
+        player.BetNetworkVariable.OnValueChanged -= OnBetValueChanged;
+    }
+    
+    private void OnBetValueChanged(uint oldValue, uint newValue)
+    {
+        if (newValue <= 0)
         {
             return;
         }
 
-        if (betActionInfo.BetAmount <= 0)
-        {
-            return;
-        }
-
-        _betValueText.text = betActionInfo.BetAmount.ToString();
-        SetImage(betActionInfo.BetAmount);
+        _betValueText.text = newValue.ToString();
+        SetImage(newValue);
         
         ResetAllAnimatorTriggers();
         _animator.SetTrigger(Bet);

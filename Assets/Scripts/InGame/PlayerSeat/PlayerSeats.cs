@@ -58,7 +58,7 @@ public class PlayerSeats : MonoBehaviour
     {
         StartCoroutine(CheckForConnectonLost());
     }
-    
+
     public bool TryTake(Player player, int seatNumber, bool forceToSeat = false)
     {
         if (_players[seatNumber] != null || _waitingPlayers[seatNumber] != null)
@@ -69,7 +69,7 @@ public class PlayerSeats : MonoBehaviour
 
         TryLeave(player);
         
-        if (Game.Instance.IsPlaying == false || _players.Contains(player) == true || forceToSeat == true)
+        if (Game.Instance.IsPlaying == false || forceToSeat == true)
         {
             _players[seatNumber] = player;
 
@@ -91,7 +91,7 @@ public class PlayerSeats : MonoBehaviour
             return false;
         }
 
-        int seatNumber = -1;
+        int seatNumber;
 
         if (_players.Contains(player) == true)
         {
