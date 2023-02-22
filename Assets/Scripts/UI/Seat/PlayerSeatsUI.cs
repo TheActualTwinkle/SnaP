@@ -22,8 +22,6 @@ public class PlayerSeatsUI : MonoBehaviour
 
     private void OnEnable()
     {
-        Game.EndDealEvent += OnEndGame;
-
         PlayerSeats.PlayerSitEvent += OnPlayerSit;
         PlayerSeats.PlayerWaitForSitEvent += OnPlayerWaitForSit;
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
@@ -31,8 +29,6 @@ public class PlayerSeatsUI : MonoBehaviour
 
     private void OnDisable()
     {
-        Game.EndDealEvent -= OnEndGame;
-        
         PlayerSeats.PlayerSitEvent -= OnPlayerSit;
         PlayerSeats.PlayerWaitForSitEvent -= OnPlayerWaitForSit;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
@@ -57,19 +53,6 @@ public class PlayerSeatsUI : MonoBehaviour
         {
             _defaultSeatPositions.Add(seatPosition);
         }
-    }
-
-    private void OnEndGame(WinnerInfo winnerInfo)
-    {
-        Player winner = PlayerSeats.Players.First(x => x != null && x.OwnerClientId == winnerInfo.WinnerId);
-
-        if (winner == null)
-        {
-            return;
-        }
-        
-        int index = PlayerSeats.Players.IndexOf(winner);
-        //_seatsUI[index].StackText.text = winner.Stack.ToString();
     }
         
     private void OnPlayerSit(Player player, int seatNumber)

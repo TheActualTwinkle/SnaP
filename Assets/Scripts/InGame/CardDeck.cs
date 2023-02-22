@@ -49,7 +49,8 @@ public class CardDeck
         {
             for (var j = 2; j < Enum.GetValues(typeof(Value)).Length + 2; j++)
             {
-                CardObject cardObject = new((Suit)i, (Value)j);
+                CardObject cardObject = new((Suit)i, Value.Ace);
+                //CardObject cardObject = new((Suit)i, (Value)j);
 
                 _cards.Enqueue(cardObject);
             }

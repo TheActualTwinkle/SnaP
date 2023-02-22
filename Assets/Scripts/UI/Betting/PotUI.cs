@@ -28,7 +28,7 @@ public class PotUI : MonoBehaviour
         _valueText.text = Pot.Value.ToString();
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         _valueText.text = string.Empty;
         _chipsImage.enabled = false;

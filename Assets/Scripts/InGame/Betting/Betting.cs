@@ -100,13 +100,13 @@ public class Betting : NetworkBehaviour
     {
         return PlayerSeats.Players.Where(x => x != null).Select(x => x.Stack + x.BetAmount).Min() - player.BetAmount;
     }
-    
+
     public IEnumerator AutoBetBlinds(Player player1, Player player2)
     {
-        player1.TryBet(_smallBlind);    
+        player1.TryBet(_smallBlind);
         player2.TryBet(_bigBlind);
 
-        yield return new WaitForSeconds(DelayBeforeEndBet);
+        yield return new WaitForSeconds(DelayBeforeEndBet / 4);
         yield return new WaitUntil(() => player1.BetAmount == _smallBlind && player2.BetAmount == _bigBlind);       
 
         EndBetCountdownClientRpc(player1.OwnerClientId, BetAction.Bet, _smallBlind);
@@ -140,7 +140,7 @@ public class Betting : NetworkBehaviour
         PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, BetAction.Fold, 0));
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         if (IsServer == true)
         {
@@ -155,7 +155,7 @@ public class Betting : NetworkBehaviour
             StopCoroutine(_startBetCountdownCoroutine);
         }
 
-        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == winnerInfo.WinnerId);
+        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && winnerInfo.Select(info => info.WinnerId).Contains(x.OwnerClientId));
         if (player == null)
         {
             return;

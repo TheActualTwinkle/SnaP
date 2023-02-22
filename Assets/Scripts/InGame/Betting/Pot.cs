@@ -6,11 +6,11 @@ public class Pot : MonoBehaviour
 {
     public static Pot Instance { get; private set; }
 
-    public uint Value => _value;
-    [ReadOnly] [SerializeField] private uint _value;
-    
+    public uint Value => (uint)_bets.Sum(x => x.Value);
+
     private Dictionary<Player, uint> StageBets { get; } = new();
-    
+    private Dictionary<Player, uint> _bets;
+
     private static Betting Betting => Betting.Instance;
     private static Game Game => Game.Instance;
 
@@ -25,13 +25,7 @@ public class Pot : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    public uint GetWinValue(Player player)
-    {
-        
-        return 200; // todo
-    }
-
+    
     private void OnEnable()
     {
         Game.EndDealEvent += OnEndDeal;
@@ -46,20 +40,72 @@ public class Pot : MonoBehaviour
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    public uint GetWinValue(Player player, IReadOnlyList<Player> winners)
     {
-        _value = 0;
-        StageBets.Clear();
+        if (winners.Contains(player) == false)
+        {
+            return 0;
+        }
+
+        UpdateBets();
+        uint bank = 0;
+        foreach (KeyValuePair<Player, uint> bet in _bets)
+        {
+            if (winners.Contains(bet.Key) == false)
+            {
+                bank += bet.Value / (uint)winners.Count;
+            }
+            else if (bet.Key == player)
+            {
+                bank += bet.Value;
+            }
+        }
+
+        return bank;
+    }
+
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    {
+        _bets?.Clear();
+        StageBets?.Clear();
     }
 
     private void GameStageOverEvent(GameStage gameStage)
     {
-        _value += (uint)StageBets.Sum(x => x.Value);
-        StageBets.Clear();
+        UpdateBets();
+        StageBets?.Clear();
     }
         
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
-        StageBets[betActionInfo.Player] = betActionInfo.BetAmount;
+        Player player = betActionInfo.Player;
+        
+        if (StageBets.TryGetValue(player, out uint _) == false)
+        {
+            StageBets.Add(player, 0);
+        }
+        
+        StageBets[player] = player.BetAmount;
+    }
+
+    private void UpdateBets()
+    {
+        if (_bets == null)
+        {
+            _bets = new Dictionary<Player, uint>(StageBets);
+            return;
+        }
+
+        foreach (KeyValuePair<Player,uint> bet in StageBets)
+        {
+            if (_bets.TryGetValue(bet.Key, out uint value) == false)
+            {
+                _bets.Add(bet.Key, value);
+            }
+            else
+            {
+                _bets[bet.Key] = bet.Value;
+            }
+        }
     }
 }

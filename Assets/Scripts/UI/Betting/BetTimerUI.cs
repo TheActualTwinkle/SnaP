@@ -61,7 +61,7 @@ public class BetTimerUI : MonoBehaviour
         _image.enabled = false;
     }
     
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         _image.enabled = false;
     }

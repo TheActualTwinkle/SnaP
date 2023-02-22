@@ -63,7 +63,7 @@ public class BetChipsUI : MonoBehaviour
         StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
     }

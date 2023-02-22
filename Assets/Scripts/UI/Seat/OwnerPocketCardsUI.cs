@@ -48,7 +48,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
         StartCoroutine(LoadSprites(player));
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);

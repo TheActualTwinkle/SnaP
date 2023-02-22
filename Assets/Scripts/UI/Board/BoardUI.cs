@@ -73,7 +73,7 @@ public class BoardUI : MonoBehaviour
         }
     }
     
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         ResetAllTriggers();
         _animator.SetTrigger(EndDeal);

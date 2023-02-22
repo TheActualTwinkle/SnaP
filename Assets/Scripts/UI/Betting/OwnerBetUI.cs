@@ -192,7 +192,7 @@ public class OwnerBetUI : MonoBehaviour
         }
     }
     
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         DisableToggles();
         PushBackToggles();

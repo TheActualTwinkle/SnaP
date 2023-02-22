@@ -206,7 +206,7 @@ MonoBehaviour:
   _image: {fileID: 2975029522263859207}
   _betValueText: {fileID: 6544205447828123932}
   _animator: {fileID: 7547011042309484728}
-  _delayToPotAnimation: 1.1
+  _delayToPotAnimation: 0.65
 --- !u!1 &1026550805292741723
 GameObject:
   m_ObjectHideFlags: 0

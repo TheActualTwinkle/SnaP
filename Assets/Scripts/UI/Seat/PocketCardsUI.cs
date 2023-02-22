@@ -52,7 +52,7 @@ public class PocketCardsUI : MonoBehaviour
         _animator.SetTrigger(GetCards);
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         _animator.ResetTrigger(GetCards);
         _animator.SetTrigger(ThrowCards);

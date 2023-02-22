@@ -50,7 +50,7 @@ AnimatorStateMachine:
     m_Position: {x: 530, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6023504582703191886}
-    m_Position: {x: 740, y: -10, z: 0}
+    m_Position: {x: 750, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6555976403591832998}
     m_Position: {x: 950, y: -10, z: 0}
@@ -73,7 +73,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: StartTurn
-  m_Speed: 1
+  m_Speed: 1.25
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 7998052483703460167}
@@ -301,7 +301,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: StartFlop
-  m_Speed: 1
+  m_Speed: 1.25
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 245723345284471714}
@@ -353,7 +353,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: StartRiver
-  m_Speed: 1
+  m_Speed: 1.25
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []

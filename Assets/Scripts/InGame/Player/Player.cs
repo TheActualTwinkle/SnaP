@@ -1,9 +1,11 @@
 using System.Collections;
+using System.Linq;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class Player : NetworkBehaviour
+public class 
+Player : NetworkBehaviour
 {
     public const int NullSeatNumber = -1;
 
@@ -69,6 +71,11 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F) == true && IsOwner == true)
+        {
+            print(_betAmount.Value);
+        }
+        
         if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
         {
             if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
@@ -229,7 +236,7 @@ public class Player : NetworkBehaviour
         SetBetAmountClientRpc(0);
     }
 
-    private void OnEndDeal(WinnerInfo winnerInfo)
+    private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         if (IsOwner == true)
         {
@@ -240,12 +247,13 @@ public class Player : NetworkBehaviour
         {
             return;
         }
-        
-        if (winnerInfo.WinnerId == OwnerClientId)
-        { 
-            SetStackAmountClientRpc(_stack.Value + winnerInfo.Chips);
+
+        if (winnerInfo.Select(x => x.WinnerId).Contains(OwnerClientId) == true)
+        {        
+            WinnerInfo info = winnerInfo.FirstOrDefault(x => x.WinnerId == OwnerClientId);
+            SetStackAmountClientRpc(_stack.Value + info.Chips);
         }
-        
+
         SetBetAmountClientRpc(0);
     } 
     

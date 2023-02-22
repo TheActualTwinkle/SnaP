@@ -12,7 +12,7 @@ public class Game : NetworkBehaviour
 
     public event Action<GameStage> GameStageBeganEvent;
     public event Action<GameStage> GameStageOverEvent;
-    public event Action<WinnerInfo> EndDealEvent;
+    public event Action<WinnerInfo[]> EndDealEvent;
 
     public string CodedBoardCardsString => _codedBoardCardsString.Value.ToString();
     private readonly NetworkVariable<FixedString32Bytes> _codedBoardCardsString = new();
@@ -34,7 +34,9 @@ public class Game : NetworkBehaviour
     public GameStage CurrentGameStage => _currentGameStage.Value;
     private readonly NetworkVariable<GameStage> _currentGameStage = new();
     
-    private bool ConditionToStartDeal => _isPlaying.Value == false && PlayerSeats.TakenSeatsAmount >= 2;
+    private bool ConditionToStartDeal => _isPlaying.Value == false && 
+                                         PlayerSeats.TakenSeatsAmount >= 2 && 
+                                         PlayerSeats.Players.Where(x => x != null).All(x => x.BetAmount == 0);
 
     [SerializeField] private float _roundsInterval;
     [SerializeField] private float _showdownEndTime;
@@ -128,7 +130,7 @@ public class Game : NetworkBehaviour
         
         int[] turnSequensce = _boardButton.GetShowdownTurnSequence();
         
-        Player winner = null;
+        List<Player> winners = new();
         Hand winnerHand = new();
         for (var i = 0; i < turnSequensce.Length; i++)
         {
@@ -140,19 +142,17 @@ public class Game : NetworkBehaviour
 
             if (i == 0 || bestHand > winnerHand)
             {
-                winner = player;
+                winners.Clear();
+                winners.Add(player);
                 winnerHand = bestHand;
             }
             else if (bestHand == winnerHand)
             {
-                print("TIE!");
-                print(bestHand + " vs " + winnerHand);
-                break;
-                // todo Force Tie.
+                winners.Add(player);
             }
         }
         
-        if (winner == null)
+        if (winners.Count == 0)
         {
             throw new NullReferenceException();
         }
@@ -163,8 +163,13 @@ public class Game : NetworkBehaviour
         
         yield return new WaitForSeconds(_showdownEndTime);
 
-        WinnerInfo winnerInfo = new(winner.OwnerClientId, Pot.GetWinValue(winner));
-        EndDealClientRpc(winnerInfo);
+        List<WinnerInfo> winnerInfo = new();
+        foreach (Player winner in winners)
+        {
+            winnerInfo.Add(new WinnerInfo(winner.OwnerClientId, Pot.GetWinValue(winner, winners)));
+        }
+
+        EndDealClientRpc(winnerInfo.ToArray());
         Log.WriteToFile(winnerHand);
     }
 
@@ -193,7 +198,7 @@ public class Game : NetworkBehaviour
                 if (notFoldPlayers.Count == 1)
                 {
                     ulong winnerId = notFoldPlayers[0].OwnerClientId;
-                    WinnerInfo winnerInfo = new(winnerId, Pot.GetWinValue(player));
+                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(player, new []{player}))};
                     EndDealClientRpc(winnerInfo);
                     yield break;
                 }
@@ -251,7 +256,7 @@ public class Game : NetworkBehaviour
         
         Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
         ulong winnerId = winner!.OwnerClientId; 
-        WinnerInfo winnerInfo = new(winnerId, Pot.Instance.GetWinValue(winner));
+        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{player}))};
         EndDealClientRpc(winnerInfo);
     }
 
@@ -369,7 +374,7 @@ public class Game : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void EndDealClientRpc(WinnerInfo winnerInfo)
+    private void EndDealClientRpc(WinnerInfo[] winnerInfo)
     {
         if (IsServer == true)
         {        
@@ -383,8 +388,7 @@ public class Game : NetworkBehaviour
         }
         
         EndDealEvent?.Invoke(winnerInfo);
-        Log.WriteToFile($"End deal. Winner id: '{winnerInfo.WinnerId}'");
-
+        Log.WriteToFile($"End deal. Winner id(`s): {string.Join("' '", winnerInfo.Select(x => x.WinnerId))}");
         StartCoroutine(StartDealAfterRoundsInterval());
     }
 
@@ -399,12 +403,11 @@ public class Game : NetworkBehaviour
             SetCurrentGameStageValueServerRpc(nextStage);
         }
         
-        Log.WriteToFile($"Starting {nextStage} stage.");        
+        Log.WriteToFile($"Starting {nextStage} stage.");               
+        GameStageBeganEvent?.Invoke(nextStage);
 
         SetStageCoroutine(nextStage);
         StartCoroutine(_stageCoroutine);
-        
-        GameStageBeganEvent?.Invoke(nextStage);
     }
 
     [ClientRpc]
