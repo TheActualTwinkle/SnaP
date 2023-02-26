@@ -41,14 +41,14 @@ public class Pot : MonoBehaviour
     }
 
     public uint GetWinValue(Player player, IReadOnlyList<Player> winners)
-    {
+    {        
+        uint bank = 0;
         if (winners.Contains(player) == false)
         {
-            return 0;
+            return bank;
         }
 
         UpdateBets();
-        uint bank = 0;
         foreach (KeyValuePair<Player, uint> bet in _bets)
         {
             if (winners.Contains(bet.Key) == false)
@@ -98,13 +98,13 @@ public class Pot : MonoBehaviour
 
         foreach (KeyValuePair<Player,uint> bet in StageBets)
         {
-            if (_bets.TryGetValue(bet.Key, out uint value) == false)
+            if (_bets.TryGetValue(bet.Key, out uint _) == false)
             {
-                _bets.Add(bet.Key, value);
+                _bets.Add(bet.Key, bet.Value);
             }
             else
             {
-                _bets[bet.Key] = bet.Value;
+                _bets[bet.Key] += bet.Value;
             }
         }
     }

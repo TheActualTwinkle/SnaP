@@ -248,7 +248,7 @@ public class Betting : NetworkBehaviour
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
         BetActionInfo betActionInfo = new(player, betAction, betAmount);
         
-        Log.WriteToFile($"Player ('{player.NickName}') id: '{player.OwnerClientId}'; {betAction}; {betAmount}");
+        Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}'; {betAction}; {betAmount}");
         PlayerEndBettingEvent?.Invoke(betActionInfo);
     }
 

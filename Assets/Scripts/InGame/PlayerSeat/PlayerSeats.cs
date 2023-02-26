@@ -56,7 +56,9 @@ public class PlayerSeats : MonoBehaviour
 
     private void Start()
     {
+        #if UNITY_EDITOR
         StartCoroutine(CheckForConnectonLost());
+        #endif
     }
 
     public bool TryTake(Player player, int seatNumber, bool forceToSeat = false)
@@ -174,7 +176,6 @@ public class PlayerSeats : MonoBehaviour
                 try
                 {
                     GameObject gameObjectName = _players[i].gameObject;
-                    //Log.WriteToFile($"Connection stable on '{_players[i].NickName}'. GameObject name '{gameObjectName}'");
                 }
                 catch (NullReferenceException)
                 {

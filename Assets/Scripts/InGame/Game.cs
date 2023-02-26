@@ -191,7 +191,7 @@ public class Game : NetworkBehaviour
                     continue;
                 }
 
-                Log.WriteToFile($"Player ('{player.NickName}'). Seat №{index} start betting");
+                Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}', seat №{index} start betting");
                 yield return Betting.Bet(player);
             
                 List<Player> notFoldPlayers = PlayerSeats.Players.Where(x => x != null && x.BetAction != BetAction.Fold).ToList();
@@ -388,7 +388,7 @@ public class Game : NetworkBehaviour
         }
         
         EndDealEvent?.Invoke(winnerInfo);
-        Log.WriteToFile($"End deal. Winner id(`s): {string.Join("' '", winnerInfo.Select(x => x.WinnerId))}");
+        Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'");
         StartCoroutine(StartDealAfterRoundsInterval());
     }
 
