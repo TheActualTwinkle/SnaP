@@ -12,7 +12,6 @@ public class CardObject : INetworkSerializable
     public Value Value => _value;
     private Value _value;
 
-
     public CardObject() { }
     
     public CardObject(Suit suit, Value value)

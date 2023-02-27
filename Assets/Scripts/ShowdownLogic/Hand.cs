@@ -29,6 +29,23 @@ public class Hand
     }
     
     public CardObject this[int index] => _hand[index];
+
+    public List<CardObject> GetMainCombination()
+    {
+        return _combinationId[0] switch
+        {
+            1 => new List<CardObject> {_hand[0]},
+            2 => new List<CardObject> {_hand[0], _hand[1]},
+            3 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3]},
+            4 => new List<CardObject> {_hand[0], _hand[1], _hand[2]},
+            5 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},
+            6 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3]},
+            7 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},
+            8 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3]},
+            9 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},
+            _ => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},
+        };
+    }
     
     public CardObject GetCard(int index)
     {

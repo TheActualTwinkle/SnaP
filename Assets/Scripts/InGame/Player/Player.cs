@@ -4,8 +4,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class 
-Player : NetworkBehaviour
+public class Player : NetworkBehaviour
 {
     public const int NullSeatNumber = -1;
 

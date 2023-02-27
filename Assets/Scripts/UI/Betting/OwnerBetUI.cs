@@ -203,7 +203,7 @@ public class OwnerBetUI : MonoBehaviour
     {
         if (player.IsOwner == true)
         {
-            if (player.Stack == 0 || Betting.IsAllIn == true)
+            if (player.Stack == 0)
             {
                 return;
             }
@@ -223,7 +223,6 @@ public class OwnerBetUI : MonoBehaviour
 
         EnableToggles();        
         SetupTogglesUI();
-
     }
     
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)

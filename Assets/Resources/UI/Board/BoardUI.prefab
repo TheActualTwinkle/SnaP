@@ -90,6 +90,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5084385057578158001}
     m_Modifications:
+    - target: {fileID: 2292986782310567053, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7106760174112873684, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -195,6 +199,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5084385057578158001}
     m_Modifications:
+    - target: {fileID: 2292986782310567053, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7106760174112873684, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -300,6 +308,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5084385057578158001}
     m_Modifications:
+    - target: {fileID: 2292986782310567053, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7106760174112873684, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -401,6 +413,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5084385057578158001}
     m_Modifications:
+    - target: {fileID: 2292986782310567053, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7106760174112873684, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -506,6 +522,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5084385057578158001}
     m_Modifications:
+    - target: {fileID: 2292986782310567053, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7106760174112873684, guid: 1ba16a8df391538429747d9d75b42b27, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

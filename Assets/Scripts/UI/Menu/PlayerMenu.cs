@@ -84,7 +84,6 @@ public class PlayerMenu : MonoBehaviour
 
         SavePlayerData();
 #endif
-        yield return null;
     }
 
     private IEnumerator SetImageFromLocalFIle(string filePath)

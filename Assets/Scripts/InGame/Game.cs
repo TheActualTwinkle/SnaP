@@ -17,6 +17,8 @@ public class Game : NetworkBehaviour
     public string CodedBoardCardsString => _codedBoardCardsString.Value.ToString();
     private readonly NetworkVariable<FixedString32Bytes> _codedBoardCardsString = new();
 
+    public List<CardObject> BoardCards => _board.Cards.ToList();
+
     public bool IsPlaying => _isPlaying.Value;
     private readonly NetworkVariable<bool> _isPlaying = new();
 
@@ -108,9 +110,12 @@ public class Game : NetworkBehaviour
             yield break;
         }
         
-        int[] turnSequensce = _boardButton.GetTurnSequence();
-        yield return Bet(turnSequensce);
-        
+        if (Betting.IsAllIn == false)
+        {
+            int[] turnSequensce = _boardButton.GetTurnSequence();
+            yield return Bet(turnSequensce);
+        }
+
         ChangeIsStageCoroutineOverValueServerRpc(true);
 
         EndStageClientRpc();
@@ -198,15 +203,9 @@ public class Game : NetworkBehaviour
                 if (notFoldPlayers.Count == 1)
                 {
                     ulong winnerId = notFoldPlayers[0].OwnerClientId;
-                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(player, new []{player}))};
+                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(player, new []{notFoldPlayers[0]}))};
                     EndDealClientRpc(winnerInfo);
                     yield break;
-                }
-
-                List<Player> playersWithZeroStack = PlayerSeats.Players.Where(x => x != null && x.Stack == 0).ToList();
-                if (PlayerSeats.TakenSeatsAmount - playersWithZeroStack.Count == 1)
-                {
-                    // todo StartShowdown.
                 }
 
                 if (i == 0 || IsBetsEquals() == false)
@@ -256,7 +255,7 @@ public class Game : NetworkBehaviour
         
         Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
         ulong winnerId = winner!.OwnerClientId; 
-        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{player}))};
+        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{winner}))};
         EndDealClientRpc(winnerInfo);
     }
 

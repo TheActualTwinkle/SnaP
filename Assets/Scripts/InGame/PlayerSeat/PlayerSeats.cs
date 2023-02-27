@@ -56,7 +56,7 @@ public class PlayerSeats : MonoBehaviour
 
     private void Start()
     {
-        #if UNITY_EDITOR
+        #if !UNITY_EDITOR
         StartCoroutine(CheckForConnectonLost());
         #endif
     }

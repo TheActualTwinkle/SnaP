@@ -60,7 +60,7 @@ public class Pot : MonoBehaviour
                 bank += bet.Value;
             }
         }
-
+        
         return bank;
     }
 
