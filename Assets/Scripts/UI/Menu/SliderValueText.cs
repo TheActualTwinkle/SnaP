@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 
 [RequireComponent(typeof(TextMeshProUGUI))]
-public class SliderValuePresenter : MonoBehaviour
+public class SliderValueText : MonoBehaviour
 {
     [SerializeField] private Slider _slider;
     private TextMeshProUGUI _text;

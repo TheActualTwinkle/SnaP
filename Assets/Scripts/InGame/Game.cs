@@ -203,7 +203,7 @@ public class Game : NetworkBehaviour
                 if (notFoldPlayers.Count == 1)
                 {
                     ulong winnerId = notFoldPlayers[0].OwnerClientId;
-                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(player, new []{notFoldPlayers[0]}))};
+                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}))};
                     EndDealClientRpc(winnerInfo);
                     yield break;
                 }
@@ -365,7 +365,7 @@ public class Game : NetworkBehaviour
         }
         
         _boardButton.Move();
-
+        
         SetCodedBoardCardsValueServerRpc(CardObjectConverter.GetCodedCardsString(_board.Cards));
         SetIsPlayingValueServerRpc(true);
         
@@ -379,6 +379,7 @@ public class Game : NetworkBehaviour
         {        
             SetCurrentGameStageValueServerRpc(GameStage.Empty);
             SetIsPlayingValueServerRpc(false);
+            SetCodedBoardCardsValueServerRpc(string.Empty);
         }
 
         if (_stageCoroutine != null)

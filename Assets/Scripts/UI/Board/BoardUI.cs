@@ -84,6 +84,12 @@ public class BoardUI : MonoBehaviour
         }
     }
 
+    // Animator
+    private void PlaySound(int index)
+    {
+        SfxAudio.Instance.Play(index);
+    }
+    
     private void ResetAllTriggers()
     {
         _animator.ResetTrigger(EndDeal);
@@ -97,7 +103,7 @@ public class BoardUI : MonoBehaviour
     {
         _cardSprites.Clear();
 
-        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length > 9);
+        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length >= 9);
         
         List<CardObject> cards = CardObjectConverter.GetCards(Game.CodedBoardCardsString).ToList();
         foreach (CardObject card in cards)

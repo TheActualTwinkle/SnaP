@@ -47,13 +47,15 @@ public class PlayerMenu : MonoBehaviour
                 
             playerData.Stack = (uint)_slider.minValue;
         }
-         
+        
         _nickNameInputField.text = playerData.NickName;
 
         byte[] rawTexture = Convert.FromBase64String(playerData.AvatarBase64String);
         _image.sprite = TextureConverter.GetSprite(rawTexture);
 
         _slider.value = playerData.Stack;
+        
+        SavePlayerData();
     }
 
     private void OnInputFiledEndEdit(string value)
@@ -84,6 +86,8 @@ public class PlayerMenu : MonoBehaviour
 
         SavePlayerData();
 #endif
+
+        yield return null;
     }
 
     private IEnumerator SetImageFromLocalFIle(string filePath)

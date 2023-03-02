@@ -311,7 +311,7 @@ public class Player : NetworkBehaviour
         if (IsServer == false)
         {
             return;
-        }
+        }   
         
         _betAmount.Value = value;
     }

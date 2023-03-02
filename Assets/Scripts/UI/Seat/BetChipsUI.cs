@@ -100,8 +100,10 @@ public class BetChipsUI : MonoBehaviour
         
         ResetAllAnimatorTriggers();
         _animator.SetTrigger(Bet);
-    }
 
+        SfxAudio.Instance.Play(1);
+    }
+    
     private IEnumerator DelayToPotAnimation(float delay)
     {
         yield return new WaitForSeconds(delay);

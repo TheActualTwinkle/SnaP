@@ -24,6 +24,11 @@ public class PotUI : MonoBehaviour
 
     private void OnGameStageOver(GameStage gameStage)
     {
+        if (_valueText.text != Pot.Value.ToString())
+        {
+            SfxAudio.Instance.Play(2);
+        }
+        
         _chipsImage.enabled = true;
         _valueText.text = Pot.Value.ToString();
     }

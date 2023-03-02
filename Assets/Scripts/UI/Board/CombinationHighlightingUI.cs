@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CombinationHighlightingUI : MonoBehaviour
 {
@@ -69,6 +67,7 @@ public class CombinationHighlightingUI : MonoBehaviour
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
+        _cards.Clear();
         foreach (CombinationCard combinationCard in _combinationCards)
         {
             combinationCard.DisableAnimation();
