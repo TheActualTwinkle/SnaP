@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -27,17 +28,26 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
     public T Load<T>() where T : ISaveLoadData
     {
         var saveFileName = $"{SavePath}/{typeof(T).Name}.{SaveFileExtension}";
-        if (File.Exists(saveFileName) == true)
+        if (File.Exists(saveFileName) == false)
         {
-            FileStream fileStream = new(saveFileName, FileMode.Open);
+            return default;
+        }
+        
+        FileStream fileStream = new(saveFileName, FileMode.Open);
 
+        try
+        {
             ISaveLoadData data = BinatyFormatter.Deserialize(fileStream) as ISaveLoadData;
 
             fileStream.Close();
 
             return (T)data;
         }
+        catch
+        {
+            fileStream.Close();
 
-        return default;
+            return default;
+        }
     }
 }

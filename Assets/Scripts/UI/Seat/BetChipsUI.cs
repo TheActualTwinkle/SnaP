@@ -38,13 +38,14 @@ public class BetChipsUI : MonoBehaviour
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
-        List<Player> betPlayer = PlayerSeats.Players.Where(x => x != null && x.BetAmount > 0).ToList();
-        foreach (Player player in betPlayer)
-        {        
-            int playerIndex = PlayerSeats.Players.IndexOf(player);
-            if (playerIndex != _index)
+        yield return new WaitUntil(() => PlayerSeats.Players.Count >= 2);
+        
+        List<Player> betPlayers = PlayerSeats.Players.Where(x => x != null && x.BetAmount > 0).ToList();
+        foreach (Player player in betPlayers)
+        {
+            if (PlayerSeats.Players.IndexOf(player) != _index)
             {
                 continue;
             }

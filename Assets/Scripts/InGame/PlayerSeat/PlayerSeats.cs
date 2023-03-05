@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
@@ -22,7 +23,7 @@ public class PlayerSeats : MonoBehaviour
 
     public Player LocalPlayer => GetLocalPlayer();
     
-    public int TakenSeatsAmount => _players.Count(x => x != null);
+    public int PlayersAmount => _players.Count(x => x != null);
 
     [SerializeField] private float _conncetionLostCheckInterval;
 
@@ -116,7 +117,7 @@ public class PlayerSeats : MonoBehaviour
     {
         for (var i = 0; i < _waitingPlayers.Count; i++)
         {
-            if (_waitingPlayers[i] == null)
+            if (_waitingPlayers[i] == null || _waitingPlayers[i].Stack == 0)
             {
                 continue;
             }

@@ -37,7 +37,7 @@ public class Game : NetworkBehaviour
     private readonly NetworkVariable<GameStage> _currentGameStage = new();
     
     private bool ConditionToStartDeal => _isPlaying.Value == false && 
-                                         PlayerSeats.TakenSeatsAmount >= 2 && 
+                                         PlayerSeats.PlayersAmount >= 2 && 
                                          PlayerSeats.Players.Where(x => x != null).All(x => x.BetAmount == 0);
 
     [SerializeField] private float _roundsInterval;
@@ -248,9 +248,14 @@ public class Game : NetworkBehaviour
             return;
         }
         
-        if (PlayerSeats.TakenSeatsAmount != 1 || _isPlaying.Value == false)
+        if (_isPlaying.Value == false)
         {
             return; 
+        }
+
+        if (PlayerSeats.Players.Count(x => x != null && x.BetAction != BetAction.Fold) != 1)
+        {
+            return;
         }
         
         Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
@@ -261,16 +266,16 @@ public class Game : NetworkBehaviour
 
     private IEnumerator StartDealAfterRoundsInterval()
     {
-        yield return new WaitForSeconds(_roundsInterval);        
-        
-        PlayerSeats.SitEveryoneWaiting();
-        PlayerSeats.KickPlayersWithZeroStack();        
+        yield return new WaitForSeconds(_roundsInterval);
 
+        PlayerSeats.SitEveryoneWaiting();
+        PlayerSeats.KickPlayersWithZeroStack();
+        
         if (IsServer == false || _startDealWhenСonditionTrueCoroutine != null)
         {
             yield break;
         }
-
+        
         _startDealWhenСonditionTrueCoroutine = StartDealWhenСonditionTrue();
         StartCoroutine(_startDealWhenСonditionTrueCoroutine);
     }
@@ -352,7 +357,7 @@ public class Game : NetworkBehaviour
         
         player.SetPocketCards(card1, card2);
     }
-    
+
     [ClientRpc]
     private void StartDealClientRpc(int[] cardDeck)
     {

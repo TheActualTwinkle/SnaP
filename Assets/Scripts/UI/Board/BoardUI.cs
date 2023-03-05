@@ -8,6 +8,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Animator))]
 public class BoardUI : MonoBehaviour
 {
+    [SerializeField] private CombinationHighlightingUI _combinationHighlighting;
     [SerializeField] private Animator _animator;
     [SerializeField] private Sprite _backSprite;
     [SerializeField] private List<Image> _cardImages;
@@ -88,6 +89,12 @@ public class BoardUI : MonoBehaviour
     private void PlaySound(int index)
     {
         SfxAudio.Instance.Play(index);
+    }
+    
+    // Animator
+    private void HighlightCards(GameStage gameStage)
+    {
+        _combinationHighlighting.Highlight(gameStage);
     }
     
     private void ResetAllTriggers()

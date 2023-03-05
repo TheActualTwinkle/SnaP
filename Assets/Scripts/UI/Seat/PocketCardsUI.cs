@@ -16,6 +16,7 @@ public class PocketCardsUI : MonoBehaviour
     private static readonly int Fold = Animator.StringToHash("Fold");
 
     private static Game Game => Game.Instance;
+    private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
 
     private void OnEnable()
@@ -39,7 +40,7 @@ public class PocketCardsUI : MonoBehaviour
             return;
         }
 
-        Player player = PlayerSeats.Instance.Players[_position];
+        Player player = PlayerSeats.Players[_position];
         if (player == null || player.IsOwner == true)
         {
             return;
@@ -47,24 +48,37 @@ public class PocketCardsUI : MonoBehaviour
         
         _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
         _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
-        
-        _animator.ResetTrigger(ThrowCards);
+
+        ResetAllTriggers();
         _animator.SetTrigger(GetCards);
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
-        _animator.ResetTrigger(GetCards);
+        ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);
     }
 
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
-        if (betActionInfo.BetAction != BetAction.Fold || betActionInfo.Player.IsOwner == true)
+        if (betActionInfo.Player.IsOwner == true)
+        {
+            return;
+        }
+        
+        if (betActionInfo.BetAction != BetAction.Fold || PlayerSeats.Players.IndexOf(betActionInfo.Player) != _position)
         {
             return;
         }
 
+        ResetAllTriggers();
         _animator.SetTrigger(Fold);
+    }
+
+    private void ResetAllTriggers()
+    {
+         _animator.ResetTrigger(GetCards);
+         _animator.ResetTrigger(ThrowCards);
+         _animator.ResetTrigger(Fold);
     }
 }

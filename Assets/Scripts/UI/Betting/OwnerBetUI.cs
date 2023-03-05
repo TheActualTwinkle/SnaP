@@ -42,7 +42,8 @@ public class OwnerBetUI : MonoBehaviour
     {
         Game.GameStageBeganEvent += OnGameStageBegan;
         Game.GameStageOverEvent += OnGameStageOver;
-        Game.EndDealEvent += OnEndDeal;
+        Game.EndDealEvent += OnEndDeal; 
+        PlayerSeats.PlayerSitEvent += OnPlayerSit; //todo
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
         Betting.PlayerStartBettingEvent += OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
@@ -60,6 +61,7 @@ public class OwnerBetUI : MonoBehaviour
         Game.GameStageBeganEvent -= OnGameStageBegan;
         Game.GameStageOverEvent -= OnGameStageOver;
         Game.EndDealEvent -= OnEndDeal;
+        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
         Betting.PlayerStartBettingEvent -= OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
@@ -270,8 +272,19 @@ public class OwnerBetUI : MonoBehaviour
             }
         }
     }
+
+    private void OnPlayerSit(Player player, int index)
+    {
+        if (LocalPlayer == null || PlayerSeats.Players.Contains(LocalPlayer) == false)
+        {
+            return;
+        }
+
+        _toggles[2].gameObject.SetActive(true);
+        ShowToggles();
+    }
     
-    private void OnPlayerLeave(Player player, int seatIndex)
+    private void OnPlayerLeave(Player player, int index)
     {
         if (player.IsOwner == false)
         {
@@ -299,6 +312,11 @@ public class OwnerBetUI : MonoBehaviour
         if (betAction == BetAction.CallAny)
         {
             betAction = Betting.CallAmount <= LocalPlayer.Stack + LocalPlayer.BetAmount ? BetAction.Call : BetAction.Cancel;
+        }
+
+        if (betAction == BetAction.Check)
+        {
+            betAction = Betting.GetBetSituation(LocalPlayer.BetAmount) == BetSituation.CanCheck ? BetAction.Check : BetAction.Cancel;
         }
         
         switch (betAction)

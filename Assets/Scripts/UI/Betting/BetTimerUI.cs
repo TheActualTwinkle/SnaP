@@ -17,6 +17,7 @@ public class BetTimerUI : MonoBehaviour
     private void OnEnable()
     {
         Game.EndDealEvent += OnEndDeal;
+        PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
         Betting.PlayerStartBettingEvent += OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
     }
@@ -24,6 +25,7 @@ public class BetTimerUI : MonoBehaviour
     private void OnDisable()
     {
         Game.EndDealEvent -= OnEndDeal;
+        PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
         Betting.PlayerStartBettingEvent -= OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
     }
@@ -44,7 +46,7 @@ public class BetTimerUI : MonoBehaviour
         _startTimerCoroutine = StartTimer();
         StartCoroutine(_startTimerCoroutine);
     }
-
+    
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
         int playerIndex = PlayerSeats.Players.IndexOf(betActionInfo.Player);
@@ -60,7 +62,22 @@ public class BetTimerUI : MonoBehaviour
         
         _image.enabled = false;
     }
-    
+
+    private void OnPlayerLeave(Player player, int index)
+    {
+        if (_position != index || index == -1)
+        {
+            return;
+        }
+        
+        if (_startTimerCoroutine != null)
+        {
+            StopCoroutine(_startTimerCoroutine);
+        }
+        
+        _image.enabled = false;
+    }
+
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         _image.enabled = false;

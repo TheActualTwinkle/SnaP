@@ -49,7 +49,7 @@ MonoBehaviour:
   _boardButton: {fileID: 9018023548917246893}
   _board:
     _cards: []
-  _roundsInterval: 0.9
+  _roundsInterval: 1.75
   _showdownEndTime: 2
 --- !u!114 &5515698721813201346
 MonoBehaviour:

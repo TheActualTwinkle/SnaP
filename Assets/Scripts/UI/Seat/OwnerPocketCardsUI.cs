@@ -16,12 +16,14 @@ public class OwnerPocketCardsUI : MonoBehaviour
     private static readonly int Fold = Animator.StringToHash("Fold");
 
     private static Game Game => Game.Instance;
+    private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
 
     private void OnEnable()
     {
         Game.GameStageBeganEvent += GameStageBeganEvent;
         Game.EndDealEvent += OnEndDeal;
+        PlayerSeats.PlayerSitEvent += OnPlayerSit;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
     }
 
@@ -29,6 +31,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
     {
         Game.GameStageBeganEvent -= GameStageBeganEvent;
         Game.EndDealEvent -= OnEndDeal; 
+        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
     }
 
@@ -39,13 +42,13 @@ public class OwnerPocketCardsUI : MonoBehaviour
             return;
         }
 
-        Player player = PlayerSeats.Instance.LocalPlayer;
-        if (player == null)
+        Player player = PlayerSeats.LocalPlayer;
+        if (player == null || PlayerSeats.Players.Contains(player) == false)
         {
             return;
         }
 
-        StartCoroutine(LoadSprites(player));
+        StartCoroutine(ShowCards(player));
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
@@ -53,7 +56,17 @@ public class OwnerPocketCardsUI : MonoBehaviour
         ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);
     }
-
+    
+    private void OnPlayerSit(Player player, int index)
+    {
+        if (player.IsOwner == false || PlayerSeats.Players.Contains(player) == false)
+        {
+            return;
+        }
+    
+        StartCoroutine(ShowCards(player));
+    }
+    
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
         if (betActionInfo.BetAction != BetAction.Fold || betActionInfo.Player.IsOwner == false)
@@ -64,7 +77,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
         _animator.SetTrigger(Fold);
     }
 
-    private IEnumerator LoadSprites(Player player)
+    private IEnumerator ShowCards(Player player)
     {
         yield return new WaitUntil(() => ReferenceEquals(player.PocketCard1, null) == false && ReferenceEquals(player.PocketCard2, null) == false);
         

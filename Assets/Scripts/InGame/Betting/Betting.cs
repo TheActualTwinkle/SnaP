@@ -130,21 +130,18 @@ public class Betting : NetworkBehaviour
         {
             return;
         }
-
-        if (_startBetCountdownCoroutine == null)
+        
+        if (IsServer == true)
         {
-            return;
+            SetTimePaasedSinceBetStartValueServerRpc(_betTime);
         }
-
-        StopCoroutine(_startBetCountdownCoroutine);
-        PlayerEndBettingEvent?.Invoke(new BetActionInfo(player, BetAction.Fold, 0));
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         if (IsServer == true)
         {
-            SetCurrentBetterIdValueServerRpc(ulong.MaxValue);
+            SetCurrentBetterIdValueServerRpc(NullBettterId);
         }
         
         CurrentBetter = null;
@@ -221,7 +218,7 @@ public class Betting : NetworkBehaviour
     {
         _currentBetterId.Value = value;
     }
-    
+
     [ClientRpc]
     private void StartBetCountdownClientRpc(ulong playerId)
     {
@@ -244,8 +241,18 @@ public class Betting : NetworkBehaviour
         {
             SetTimePaasedSinceBetStartValueServerRpc(0);
         }
-        
+
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
+        if (player == null)
+        {
+            player = FindObjectsOfType<Player>().FirstOrDefault(x => x.OwnerClientId == playerId);
+        }
+
+        if (player == null)
+        {
+            return;
+        }
+
         BetActionInfo betActionInfo = new(player, betAction, betAmount);
         
         Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}'; {betAction}; {betAmount}");
