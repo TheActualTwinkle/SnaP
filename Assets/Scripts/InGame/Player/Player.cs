@@ -241,7 +241,7 @@ public class Player : NetworkBehaviour
         {
             return;
         }
-
+        
         if (winnerInfo.Select(x => x.WinnerId).Contains(OwnerClientId) == true)
         {        
             WinnerInfo info = winnerInfo.FirstOrDefault(x => x.WinnerId == OwnerClientId);

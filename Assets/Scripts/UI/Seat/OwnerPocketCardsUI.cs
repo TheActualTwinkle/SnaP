@@ -19,6 +19,8 @@ public class OwnerPocketCardsUI : MonoBehaviour
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
 
+    private IEnumerator _showCardsCoroutine;
+
     private void OnEnable()
     {
         Game.GameStageBeganEvent += GameStageBeganEvent;
@@ -48,7 +50,13 @@ public class OwnerPocketCardsUI : MonoBehaviour
             return;
         }
 
-        StartCoroutine(ShowCards(player));
+        if (_showCardsCoroutine != null)
+        {
+            StopCoroutine(_showCardsCoroutine);
+        }
+
+        _showCardsCoroutine = ShowCards(player);
+        StartCoroutine(_showCardsCoroutine);
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
@@ -63,8 +71,14 @@ public class OwnerPocketCardsUI : MonoBehaviour
         {
             return;
         }
-    
-        StartCoroutine(ShowCards(player));
+        
+        if (_showCardsCoroutine != null)
+        {
+            StopCoroutine(_showCardsCoroutine);
+        }
+
+        _showCardsCoroutine = ShowCards(player);
+        StartCoroutine(_showCardsCoroutine);
     }
     
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)

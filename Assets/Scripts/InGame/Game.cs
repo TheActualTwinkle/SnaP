@@ -196,7 +196,6 @@ public class Game : NetworkBehaviour
                     continue;
                 }
 
-                Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}', seat №{index} start betting");
                 yield return Betting.Bet(player);
             
                 List<Player> notFoldPlayers = PlayerSeats.Players.Where(x => x != null && x.BetAction != BetAction.Fold).ToList();

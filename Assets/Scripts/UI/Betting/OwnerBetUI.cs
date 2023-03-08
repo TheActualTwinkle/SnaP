@@ -42,8 +42,7 @@ public class OwnerBetUI : MonoBehaviour
     {
         Game.GameStageBeganEvent += OnGameStageBegan;
         Game.GameStageOverEvent += OnGameStageOver;
-        Game.EndDealEvent += OnEndDeal; 
-        PlayerSeats.PlayerSitEvent += OnPlayerSit; //todo
+        Game.EndDealEvent += OnEndDeal;
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
         Betting.PlayerStartBettingEvent += OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
@@ -61,7 +60,6 @@ public class OwnerBetUI : MonoBehaviour
         Game.GameStageBeganEvent -= OnGameStageBegan;
         Game.GameStageOverEvent -= OnGameStageOver;
         Game.EndDealEvent -= OnEndDeal;
-        PlayerSeats.PlayerSitEvent -= OnPlayerSit;
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
         Betting.PlayerStartBettingEvent -= OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
@@ -175,7 +173,6 @@ public class OwnerBetUI : MonoBehaviour
         }
         
         _toggles[2].gameObject.SetActive(true);
-        ShowToggles();
     }
     
     private void OnGameStageOver(GameStage gameStage)
@@ -223,6 +220,17 @@ public class OwnerBetUI : MonoBehaviour
             }
         }
 
+        if (LocalPlayer == null || PlayerSeats.Players.Contains(LocalPlayer) == false)
+        {
+            return;
+        }
+        
+        if (LocalPlayer.BetAction is BetAction.AllIn or BetAction.Fold)
+        {
+            return;
+        }
+        
+        ShowToggles();
         EnableToggles();        
         SetupTogglesUI();
     }
@@ -238,13 +246,18 @@ public class OwnerBetUI : MonoBehaviour
             
             if (betActionInfo.BetAction is BetAction.Fold or BetAction.AllIn)
             {
+                if (LocalPlayer != null && betActionInfo.BetAction == BetAction.AllIn)
+                {
+                    LocalPlayer.SetBetAction(betActionInfo.BetAction);
+                }
+                DisableToggles();
                 HideToggles();
                 return;
             }
             
             EnableToggles();
             PushBackToggles();
-
+            
             if (LocalPlayer != null)
             {
                 SetupTogglesUI();
@@ -271,17 +284,6 @@ public class OwnerBetUI : MonoBehaviour
                 DisableToggles();
             }
         }
-    }
-
-    private void OnPlayerSit(Player player, int index)
-    {
-        if (LocalPlayer == null || PlayerSeats.Players.Contains(LocalPlayer) == false)
-        {
-            return;
-        }
-
-        _toggles[2].gameObject.SetActive(true);
-        ShowToggles();
     }
     
     private void OnPlayerLeave(Player player, int index)

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class Log
 {
-    public static readonly string LogFilePath = $"{Application.persistentDataPath}\\CustomLog.log";
+    private static readonly string LogFilePath = $"{Application.persistentDataPath}\\CustomLog.log";
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
@@ -18,6 +18,11 @@ public static class Log
         Debug.Log(message);
 
 #if !UNITY_EDITOR
+        if (File.Exists(LogFilePath) == false)
+        {
+            File.Create(LogFilePath);
+        }
+        
         using StreamWriter sw = new(LogFilePath, _appendLogFile);
         _appendLogFile = true;
 

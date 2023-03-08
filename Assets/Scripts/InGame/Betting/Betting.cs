@@ -103,14 +103,27 @@ public class Betting : NetworkBehaviour
 
     public IEnumerator AutoBetBlinds(Player player1, Player player2)
     {
-        player1.TryBet(_smallBlind);
-        player2.TryBet(_bigBlind);
+        BetAction betAction = BetAction.Bet;
+        
+        if (player1.Stack <= _smallBlind || player2.Stack <= _bigBlind)
+        {
+            var betValue = (uint)Mathf.Min((int)player1.Stack, (int)player2.Stack);
+            player1.TryBet(betValue);
+            player2.TryBet(betValue);
 
+            betAction = BetAction.AllIn;
+        }
+        else
+        {
+            player1.TryBet(_smallBlind);
+            player2.TryBet(_bigBlind);
+        }
+        
         yield return new WaitForSeconds(DelayBeforeEndBet / 4);
-        yield return new WaitUntil(() => player1.BetAmount == _smallBlind && player2.BetAmount == _bigBlind);       
+        yield return new WaitUntil(() => (player1.BetAmount == _smallBlind && player2.BetAmount == _bigBlind) || betAction == BetAction.AllIn);
 
-        EndBetCountdownClientRpc(player1.OwnerClientId, BetAction.Bet, _smallBlind);
-        EndBetCountdownClientRpc(player2.OwnerClientId, BetAction.Bet, _bigBlind);
+        EndBetCountdownClientRpc(player1.OwnerClientId, betAction, player1.BetAmount);
+        EndBetCountdownClientRpc(player2.OwnerClientId, betAction, player2.BetAmount);
     }
 
     public IEnumerator Bet(Player player)
@@ -197,12 +210,13 @@ public class Betting : NetworkBehaviour
         }
         
         uint totalBet = betAmount + player.BetAmount; // Ping compensation.
-        BetClientRpc(player.OwnerClientId, player.BetAction, betAmount);
+        BetAction betAction = player.BetAction; // Ping compensation.
+        BetClientRpc(player.OwnerClientId, betAction, betAmount);
 
         yield return new WaitForSeconds(DelayBeforeEndBet);
         yield return new WaitUntil(() => player.BetAmount == totalBet);
 
-        EndBetCountdownClientRpc(player.OwnerClientId, player.BetAction, player.BetAmount);
+        EndBetCountdownClientRpc(player.OwnerClientId, betAction, player.BetAmount);
     }
 
     #region RPC
@@ -232,6 +246,8 @@ public class Betting : NetworkBehaviour
         }
         
         PlayerStartBettingEvent?.Invoke(player);
+        
+        Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}', seat №{PlayerSeats.Players.IndexOf(player)} start betting");
     }
 
     [ClientRpc]
