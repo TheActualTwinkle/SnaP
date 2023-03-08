@@ -18,6 +18,9 @@ public static class Log
         Debug.Log(message);
 
 #if !UNITY_EDITOR
+        
+        return; // todo Remove on Release!!!
+
         if (File.Exists(LogFilePath) == false)
         {
             File.Create(LogFilePath);

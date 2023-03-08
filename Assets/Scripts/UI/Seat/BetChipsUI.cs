@@ -38,27 +38,6 @@ public class BetChipsUI : MonoBehaviour
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
-    private IEnumerator Start()
-    {
-        yield return new WaitUntil(() => PlayerSeats.Players.Count >= 2);
-        
-        List<Player> betPlayers = PlayerSeats.Players.Where(x => x != null && x.BetAmount > 0).ToList();
-        foreach (Player player in betPlayers)
-        {
-            if (PlayerSeats.Players.IndexOf(player) != _index)
-            {
-                continue;
-            }
-
-            _betValueText.text = player.BetAmount.ToString();
-            SetImage(player.BetAmount);
-        
-            ResetAllAnimatorTriggers();
-            _animator.SetTrigger(Bet);
-            break;
-        }
-    }
-
     private void OnGameStageOver(GameStage gameStage)
     {
         StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
@@ -77,6 +56,19 @@ public class BetChipsUI : MonoBehaviour
         }
 
         player.BetNetworkVariable.OnValueChanged += OnBetValueChanged;
+
+        if (player.BetAmount <= 0)
+        {
+            return;
+        }
+
+        _betValueText.text = player.BetAmount.ToString();
+        SetImage(player.BetAmount);
+        
+        ResetAllAnimatorTriggers();
+        _animator.SetTrigger(Bet);
+
+        SfxAudio.Instance.Play(1);
     }
 
     private void OnPlayerLeave(Player player, int index)
@@ -91,6 +83,7 @@ public class BetChipsUI : MonoBehaviour
     
     private void OnBetValueChanged(uint oldValue, uint newValue)
     {
+        print("OnBetValueChanged");
         if (newValue <= 0)
         {
             return;

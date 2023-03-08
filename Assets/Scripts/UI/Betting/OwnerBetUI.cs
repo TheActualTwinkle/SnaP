@@ -268,6 +268,7 @@ public class OwnerBetUI : MonoBehaviour
         {
             if (betActionInfo.BetAction == BetAction.AllIn)
             {        
+                PushBackToggles();
                 SetupTogglesUI();
                 return;
             }

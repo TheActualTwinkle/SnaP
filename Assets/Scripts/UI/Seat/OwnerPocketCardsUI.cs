@@ -71,12 +71,17 @@ public class OwnerPocketCardsUI : MonoBehaviour
         {
             return;
         }
+
+        if (Game.IsPlaying == false)
+        {
+            return;
+        }
         
         if (_showCardsCoroutine != null)
         {
             StopCoroutine(_showCardsCoroutine);
         }
-
+        
         _showCardsCoroutine = ShowCards(player);
         StartCoroutine(_showCardsCoroutine);
     }

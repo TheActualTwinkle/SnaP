@@ -32,6 +32,7 @@ public class Game : NetworkBehaviour
 
     private IEnumerator _stageCoroutine;
     private IEnumerator _startDealWhenСonditionTrueCoroutine;
+    private IEnumerator _startDealAfterRoundsInterval;
 
     public GameStage CurrentGameStage => _currentGameStage.Value;
     private readonly NetworkVariable<GameStage> _currentGameStage = new();
@@ -171,11 +172,10 @@ public class Game : NetworkBehaviour
         List<WinnerInfo> winnerInfo = new();
         foreach (Player winner in winners)
         {
-            winnerInfo.Add(new WinnerInfo(winner.OwnerClientId, Pot.GetWinValue(winner, winners)));
+            winnerInfo.Add(new WinnerInfo(winner.OwnerClientId, Pot.GetWinValue(winner, winners), winnerHand.ToString()));
         }
 
         EndDealClientRpc(winnerInfo.ToArray());
-        Log.WriteToFile(winnerHand);
     }
 
     private IEnumerator Bet(int[] turnSequensce)
@@ -231,13 +231,13 @@ public class Game : NetworkBehaviour
             return;
         }
         
-        if (_startDealWhenСonditionTrueCoroutine != null || IsPlaying == true)   
+        if (_startDealAfterRoundsInterval != null || IsPlaying == true)   
         {
             return;
         }
         
-        _startDealWhenСonditionTrueCoroutine = StartDealWhenСonditionTrue();
-        StartCoroutine(_startDealWhenСonditionTrueCoroutine);
+        _startDealAfterRoundsInterval = StartDealAfterRoundsInterval();
+        StartCoroutine(_startDealAfterRoundsInterval);
     }
 
     private void OnPlayerLeave(Player player, int seatNumber)
@@ -276,7 +276,9 @@ public class Game : NetworkBehaviour
         }
         
         _startDealWhenСonditionTrueCoroutine = StartDealWhenСonditionTrue();
-        StartCoroutine(_startDealWhenСonditionTrueCoroutine);
+        yield return StartCoroutine(_startDealWhenСonditionTrueCoroutine);
+
+        _startDealAfterRoundsInterval = null;
     }
     
     private IEnumerator StartDealWhenСonditionTrue()
@@ -363,6 +365,8 @@ public class Game : NetworkBehaviour
         _cardDeck = new CardDeck(cardDeck);
         _board = new Board(_cardDeck.PullCards(5).ToList());
         
+        Log.WriteToFile("Start Deal.");
+        
         if (IsServer == false)
         {
             return;
@@ -393,7 +397,14 @@ public class Game : NetworkBehaviour
         
         EndDealEvent?.Invoke(winnerInfo);
         Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'");
-        StartCoroutine(StartDealAfterRoundsInterval());
+
+        if (_startDealAfterRoundsInterval != null)
+        {
+            StopCoroutine(_startDealAfterRoundsInterval);
+        }
+
+        _startDealAfterRoundsInterval = StartDealAfterRoundsInterval();
+        StartCoroutine(_startDealAfterRoundsInterval);
     }
 
     [ClientRpc]
