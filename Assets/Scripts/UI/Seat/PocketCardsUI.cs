@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,14 +12,19 @@ public class PocketCardsUI : MonoBehaviour
 
     [SerializeField] private Image _cardImage1;
     [SerializeField] private Image _cardImage2;
-    
+    private Sprite _cardSprite1;
+    private Sprite _cardSprite2;
+
     private static readonly int GetCards = Animator.StringToHash("GetCards");
     private static readonly int ThrowCards = Animator.StringToHash("ThrowCards");
     private static readonly int Fold = Animator.StringToHash("Fold");
+    private static readonly int OpenCards = Animator.StringToHash("OpenCards");
 
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
+
+    private IEnumerator _loadFrontSpriteForCardsCoroutine;
 
     private void OnEnable()
     {
@@ -35,27 +42,46 @@ public class PocketCardsUI : MonoBehaviour
 
     private void GameStageBeganEvent(GameStage gameStage)
     {
-        if (gameStage != GameStage.Preflop)
+        switch (gameStage)
         {
-            return;
-        }
-
-        Player player = PlayerSeats.Players[_position];
-        if (player == null || player.IsOwner == true)
-        {
-            return;
-        }
+            case GameStage.Preflop:
+            {
+                Player player = PlayerSeats.Players[_position];
+                if (player == null || player.IsOwner == true)
+                {
+                    return;
+                }
         
-        _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
-        _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
+                StartCoroutine(LoadFrontSpriteForCards(player));
 
-        ResetAllTriggers();
-        _animator.SetTrigger(GetCards);
+                _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
+                _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
+        
+                ResetAllAnimatorTriggers();
+                _animator.SetTrigger(GetCards);
+                break;
+            }
+            case GameStage.Showdown:
+            {
+                ResetAllAnimatorTriggers();
+                _animator.SetTrigger(OpenCards);
+                break;
+            }
+            default:
+            {
+                if (Betting.IsAllIn == true)
+                {
+                    ResetAllAnimatorTriggers();
+                    _animator.SetTrigger(OpenCards);
+                }
+                break;
+            }
+        }
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
-        ResetAllTriggers();
+        ResetAllAnimatorTriggers();
         _animator.SetTrigger(ThrowCards);
     }
 
@@ -71,14 +97,40 @@ public class PocketCardsUI : MonoBehaviour
             return;
         }
 
-        ResetAllTriggers();
+        ResetAllAnimatorTriggers();
         _animator.SetTrigger(Fold);
     }
 
-    private void ResetAllTriggers()
+    private IEnumerator LoadFrontSpriteForCards(Player player)
     {
-         _animator.ResetTrigger(GetCards);
-         _animator.ResetTrigger(ThrowCards);
-         _animator.ResetTrigger(Fold);
+        yield return new WaitUntil(() => ReferenceEquals(player.PocketCard1, null) == false && ReferenceEquals(player.PocketCard2, null) == false);
+        
+        _cardSprite1 = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit.ToString()}");
+        _cardSprite2 = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit.ToString()}");
+    }
+    
+    private void ResetAllAnimatorTriggers()
+    {
+        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
+        {
+            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
+            {
+                _animator.ResetTrigger(controllerParameter.name);
+            }
+        }
+    }    
+    
+    // Animator
+    private void OpenCard(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                _cardImage1.sprite = _cardSprite1;
+                break;
+            case 1:
+                _cardImage2.sprite = _cardSprite2;
+                break;
+        }
     }
 }

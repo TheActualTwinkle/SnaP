@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -147,7 +145,12 @@ public class BetChipsUI : MonoBehaviour
 
     private void ResetAllAnimatorTriggers()
     {
-        _animator.ResetTrigger(Bet);
-        _animator.ResetTrigger(ToPot);
+        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
+        {
+            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
+            {
+                _animator.ResetTrigger(controllerParameter.name);
+            }
+        }
     }
 }

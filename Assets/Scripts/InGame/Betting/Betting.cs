@@ -273,6 +273,11 @@ public class Betting : NetworkBehaviour
         
         Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}'; {betAction}; {betAmount}");
         PlayerEndBettingEvent?.Invoke(betActionInfo);
+
+        if (betAction == BetAction.Check)
+        {
+            SfxAudio.Instance.Play(3);
+        }
     }
 
     [ClientRpc]

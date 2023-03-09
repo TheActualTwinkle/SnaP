@@ -76,7 +76,7 @@ public class BoardUI : MonoBehaviour
     
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
-        ResetAllTriggers();
+        ResetAllAnimatorTriggers();
         _animator.SetTrigger(EndDeal);
 
         foreach (Image image in _cardImages)
@@ -97,13 +97,15 @@ public class BoardUI : MonoBehaviour
         _combinationHighlighting.Highlight(gameStage);
     }
     
-    private void ResetAllTriggers()
+    private void ResetAllAnimatorTriggers()
     {
-        _animator.ResetTrigger(EndDeal);
-        _animator.ResetTrigger(StartPreflop);
-        _animator.ResetTrigger(StartFlop);
-        _animator.ResetTrigger(StartTurn);
-        _animator.ResetTrigger(StartRiver);
+        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
+        {
+            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
+            {
+                _animator.ResetTrigger(controllerParameter.name);
+            }
+        }
     }
 
     private IEnumerator LoadFrontSpriteForCards()
@@ -123,8 +125,8 @@ public class BoardUI : MonoBehaviour
     }
     
     // Animator
-    private void OpenCard(int idnex)
+    private void OpenCard(int index)
     {
-        _cardImages[idnex].sprite = _cardSprites[idnex];
+        _cardImages[index].sprite = _cardSprites[index];
     }
 }
