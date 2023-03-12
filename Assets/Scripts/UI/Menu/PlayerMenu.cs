@@ -12,19 +12,19 @@ public class PlayerMenu : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _nickNameInputField;
     [SerializeField] private Image _image;
-    [SerializeField] private Slider _slider;
+    [SerializeField] private Slider _stackSlider;
 
     private ISaveLoadSystem _saveLoadSystem;
 
     private void OnEnable()
     {
-        _slider.onValueChanged.AddListener(OnSliderValueChanged);
+        _stackSlider.onValueChanged.AddListener(OnSliderValueChanged);
         _nickNameInputField.onEndEdit.AddListener(OnInputFiledEndEdit);
     }
 
     private void OnDisable()
     {
-        _slider.onValueChanged.RemoveListener(OnSliderValueChanged);
+        _stackSlider.onValueChanged.RemoveListener(OnSliderValueChanged);
         _nickNameInputField.onEndEdit.RemoveListener(OnInputFiledEndEdit);
     }
 
@@ -32,6 +32,7 @@ public class PlayerMenu : MonoBehaviour
     {
         _saveLoadSystem = SaveLoadSystemFactory.Instance.Get();
         SetupUI();
+        SetupBetSliderStep();
     }
 
     private void SetupUI()
@@ -40,12 +41,14 @@ public class PlayerMenu : MonoBehaviour
 
         if (playerData.Equals(default(PlayerData)) == true)
         {
-            playerData.NickName = "Player";
+            //playerData.NickName = "Player";
             
             byte[] texture = TextureConverter.GetRawTexture(Resources.Load<Sprite>("Sprites/ava").texture);
-            playerData.AvatarBase64String = Convert.ToBase64String(texture);
+            //playerData.AvatarBase64String = Convert.ToBase64String(texture);
                 
-            playerData.Stack = (uint)_slider.minValue;
+            //playerData.Stack = (uint)_stackSlider.minValue;
+            
+            playerData = new PlayerData("Player", Convert.ToBase64String(texture), (uint)_stackSlider.minValue);
         }
         
         _nickNameInputField.text = playerData.NickName;
@@ -53,11 +56,19 @@ public class PlayerMenu : MonoBehaviour
         byte[] rawTexture = Convert.FromBase64String(playerData.AvatarBase64String);
         _image.sprite = TextureConverter.GetSprite(rawTexture);
 
-        _slider.value = playerData.Stack;
+        _stackSlider.value = playerData.Stack;
         
         SavePlayerData();
     }
 
+    private void SetupBetSliderStep()
+    {
+        if (_stackSlider.TryGetComponent(out ISliderSetter sliderSetter) == true)
+        {
+            sliderSetter.IntervalPerScroll = _stackSlider.maxValue / _stackSlider.minValue;
+        }
+    }
+    
     private void OnInputFiledEndEdit(string value)
     {
         if (string.IsNullOrEmpty(value) == true)
@@ -110,7 +121,7 @@ public class PlayerMenu : MonoBehaviour
     private void SavePlayerData()
     {
         byte[] rawTexture = TextureConverter.GetRawTexture(_image.sprite.texture);
-        PlayerData playerData = new(_nickNameInputField.text, Convert.ToBase64String(rawTexture), (uint)_slider.value);
+        PlayerData playerData = new(_nickNameInputField.text, Convert.ToBase64String(rawTexture), (uint)_stackSlider.value);
         _saveLoadSystem.Save(playerData);
     }
 }

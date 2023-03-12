@@ -129,7 +129,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 132}
+  m_AnchoredPosition: {x: 0, y: 122}
   m_SizeDelta: {x: 48, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5674665423630418156
@@ -206,7 +206,7 @@ MonoBehaviour:
   _image: {fileID: 2975029522263859207}
   _betValueText: {fileID: 6544205447828123932}
   _animator: {fileID: 7547011042309484728}
-  _delayToPotAnimation: 0.65
+  _delayToPotAnimation: 0
 --- !u!1 &1026550805292741723
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,7 +543,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Winner!
+  m_text: Winner! +1337
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
   m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
@@ -624,6 +624,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baffedd1b219af441b7af4270604710a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _index: 0
+  _text: {fileID: 1158206932454973004}
   _animator: {fileID: 6422631279959915370}
 --- !u!95 &6422631279959915370
 Animator:

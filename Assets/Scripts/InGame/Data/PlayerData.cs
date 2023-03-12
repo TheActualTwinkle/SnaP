@@ -1,4 +1,5 @@
 using Unity.Netcode;
+// ReSharper disable InconsistentNaming
 
 [System.Serializable]
 public struct PlayerData : ISaveLoadData, INetworkSerializable

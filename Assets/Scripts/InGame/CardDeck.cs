@@ -58,7 +58,7 @@ public class CardDeck
     
     private void Shuffle()
     {
-        IOrderedEnumerable<CardObject> newCards = _cards.OrderBy(x => new Random().Next(0, _cards.Count));
+        IOrderedEnumerable<CardObject> newCards = _cards.OrderBy(_ => new Random().Next(0, _cards.Count));
         _cards = new Queue<CardObject>(newCards);
     }
 }

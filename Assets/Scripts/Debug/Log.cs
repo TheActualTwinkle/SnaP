@@ -1,8 +1,10 @@
+// ReSharper disable RedundantUsingDirective
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
 using UnityEngine;
+// ReSharper disable UnusedMember.Local
 
 public static class Log
 {
@@ -18,19 +20,26 @@ public static class Log
         Debug.Log(message);
 
 #if !UNITY_EDITOR
-        
-        return; // todo Remove on Release!!!
 
-        if (File.Exists(LogFilePath) == false)
+        try
         {
-            File.Create(LogFilePath);
+            if (File.Exists(LogFilePath) == false)
+            {
+                File.Create(LogFilePath);
+            }
+        
+            using StreamWriter sw = new(LogFilePath, _appendLogFile);
+            _appendLogFile = true;
+
+            message = $"[{DateTime}] {message} Platform: {Platform}. IP: {GetIp()}";
+            sw.WriteLine(message);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"{nameof(e)} {e.Message}");
         }
         
-        using StreamWriter sw = new(LogFilePath, _appendLogFile);
-        _appendLogFile = true;
 
-        message = $"[{DateTime}] {message} Platform: {Platform}. IP: {GetIp()}";
-        sw.WriteLine(message);
 #endif
     }
 

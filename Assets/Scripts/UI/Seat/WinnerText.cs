@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -9,6 +7,7 @@ using UnityEngine;
 public class WinnerText : MonoBehaviour
 {
     [SerializeField] private int _index;
+    [SerializeField] private TextMeshProUGUI _text;
     [SerializeField] private Animator _animator;
 
     private static readonly int Show = Animator.StringToHash("Show");
@@ -30,13 +29,14 @@ public class WinnerText : MonoBehaviour
     {
         List<Player> winners = PlayerSeats.Players.FindAll(player => player != null && winnerInfo.Select(info => info.WinnerId).Contains(player.OwnerClientId));
 
-        foreach (Player winner in winners)
+        for (var i = 0; i < winners.Count; i++)
         {
-            if (PlayerSeats.Players.IndexOf(winner) != _index)
+            if (PlayerSeats.Players.IndexOf(winners[i]) != _index)
             {
                 continue;
             }
 
+            _text.text = $"Winner! +{winnerInfo[i].Chips}";
             ResetAllAnimatorTriggers();
             _animator.SetTrigger(Show);
             return;

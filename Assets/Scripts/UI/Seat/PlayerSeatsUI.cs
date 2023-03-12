@@ -14,11 +14,9 @@ public class PlayerSeatsUI : MonoBehaviour
 
     private readonly List<Vector3> _defaultSeatPositions = new();
 
-    [Range(0f, 1f)] [SerializeField] private float _waitingTransparecyAlpha;
-    
-    private static Game Game => Game.Instance;
+    [Range(0f, 1f)] [SerializeField] private float _waitingTransparencyAlpha;
+
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
-    private static Betting Betting => Betting.Instance;
 
     private void OnEnable()
     {
@@ -62,7 +60,7 @@ public class PlayerSeatsUI : MonoBehaviour
         _seatsUI[seatNumber].NickNameText.text = player.NickName;
         _seatsUI[seatNumber].NickNameBackgroundImage.enabled = true;
         
-        ChanageSeatImageTransparency(seatNumber, 1f);
+        ChangeSeatImageTransparency(seatNumber, 1f);
 
         if (player.IsOwner == false)
         {
@@ -76,7 +74,7 @@ public class PlayerSeatsUI : MonoBehaviour
     private void OnPlayerWaitForSit(Player player, int seatNumber)
     {
         OnPlayerSit(player, seatNumber);
-        ChanageSeatImageTransparency(seatNumber, _waitingTransparecyAlpha);
+        ChangeSeatImageTransparency(seatNumber, _waitingTransparencyAlpha);
     }
     
     private void OnPlayerLeave(Player player, int seatNumber)
@@ -85,49 +83,49 @@ public class PlayerSeatsUI : MonoBehaviour
         _seatsUI[seatNumber].NickNameText.text = string.Empty;
         _seatsUI[seatNumber].NickNameBackgroundImage.enabled = false; 
 
-        ChanageSeatImageTransparency(seatNumber, 1f);
+        ChangeSeatImageTransparency(seatNumber, 1f);
     }
     
-    private void ChanageSeatImageTransparency(int seatNumber, float alpha)
+    private void ChangeSeatImageTransparency(int seatNumber, float alpha)
     {
         Color baseColor = _seatsUI[seatNumber].PlayerImage.color;
         Color newColor = new(baseColor.r, baseColor.g, baseColor.b, alpha);
         _seatsUI[seatNumber].PlayerImage.color = newColor;
     }
     
-    private void CenterPlayerSeat(int centralSeatNubmer)
+    private void CenterPlayerSeat(int centralSeatNumber)
     {
-        int[] centredIndexes = GetCentredIndexes(centralSeatNubmer);
+        int[] centredIndexes = GetCentredIndexes(centralSeatNumber);
 
         for (var newIndex = 0; newIndex < centredIndexes.Length; newIndex++)
         {
-            int preveousIndex = centredIndexes[newIndex];
-            _seatsUI[preveousIndex].transform.localPosition = _defaultSeatPositions[newIndex];
+            int previousIndex = centredIndexes[newIndex];
+            _seatsUI[previousIndex].transform.localPosition = _defaultSeatPositions[newIndex];
         }
         
-        Log.WriteToFile($"Changed central view to {centralSeatNubmer}.");
+        Log.WriteToFile($"Changed central view to {centralSeatNumber}.");
     }
 
-    private static int[] GetCentredIndexes(int centralSeatNubmer)
+    private static int[] GetCentredIndexes(int centralSeatNumber)
     {
         List<int> centredIndexes = new();
 
         for (var i = 0; i < PlayerSeats.MaxSeats; i++)
         {
-            centredIndexes.Add((centralSeatNubmer + i) % PlayerSeats.MaxSeats);
+            centredIndexes.Add((centralSeatNumber + i) % PlayerSeats.MaxSeats);
         }
 
         return centredIndexes.ToArray();
     }
 
-    private void SetupPocketCardsVisibility(int centralSeatNubmer)
+    private void SetupPocketCardsVisibility(int centralSeatNumber)
     {
         foreach (SeatUI seatUI in _seatsUI)
         {
             seatUI.PocketCards.gameObject.SetActive(true);
         }
 
-        _seatsUI[centralSeatNubmer].PocketCards.gameObject.SetActive(false);
+        _seatsUI[centralSeatNumber].PocketCards.gameObject.SetActive(false);
     }
 
     // Button.

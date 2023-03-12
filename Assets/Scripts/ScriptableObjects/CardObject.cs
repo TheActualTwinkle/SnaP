@@ -3,7 +3,7 @@ using System;using Unity.Netcode;
 /// <summary>
 /// Source https://github.com/ccqi/TexasHoldem
 /// </summary>
-[System.Serializable]
+[Serializable]
 public class CardObject : INetworkSerializable
 {
     public Suit Suit => _suit;
@@ -80,7 +80,7 @@ public class CardObject : INetworkSerializable
             return true;
         }
 
-        if (obj.GetType() != this.GetType())
+        if (obj.GetType() != GetType())
         {
             return false;
         }

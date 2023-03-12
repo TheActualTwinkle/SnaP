@@ -63,7 +63,7 @@ public class BoardButton : NetworkBehaviour
     public int[] GetPreflopTurnSequence()
     {
         List<int> turnSequence = GetTurnSequence().ToList();
-        return GetSwapedByPivotTurnSequence(2, turnSequence); // 2 is because Big and Small blinds.
+        return GetSwappedByPivotTurnSequence(2, turnSequence); // 2 is because Big and Small blinds.
     }
 
     public int[] GetShowdownTurnSequence()
@@ -79,23 +79,23 @@ public class BoardButton : NetworkBehaviour
         int lastBetRaiserIndex = PlayerSeats.Players.IndexOf(lastBetRaiser);
         int index = turnSequence.ToList().IndexOf(lastBetRaiserIndex);
         
-        return GetSwapedByPivotTurnSequence(index, turnSequence);
+        return GetSwappedByPivotTurnSequence(index, turnSequence);
     }
 
-    private int[] GetSwapedByPivotTurnSequence(int pivot, IReadOnlyList<int> sequence)
+    private int[] GetSwappedByPivotTurnSequence(int pivot, IReadOnlyList<int> sequence)
     {
-        List<int> splitedTurnSequence = new();
+        List<int> splittedTurnSequence = new();
         for (int i = pivot; i < sequence.Count; i++)
         {
-            splitedTurnSequence.Add(sequence[i]);
+            splittedTurnSequence.Add(sequence[i]);
         }
 
         for (var i = 0; i < pivot; i++)
         {
-            splitedTurnSequence.Add(sequence[i]);
+            splittedTurnSequence.Add(sequence[i]);
         }
 
-        return splitedTurnSequence.ToArray();
+        return splittedTurnSequence.ToArray();
     } 
     
     private int[] GetActivePlayerIndexes()

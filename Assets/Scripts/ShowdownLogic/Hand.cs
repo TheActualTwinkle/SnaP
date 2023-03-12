@@ -124,6 +124,7 @@ public class Hand
         return list;
     }
 
+    // ReSharper disable once UnusedMember.Local
     private List<CardObject> QuickSortSuit(List<CardObject> myCards)
     {
         Random ran = new();
@@ -185,9 +186,9 @@ public class Hand
     
     public static bool operator ==(Hand a, Hand b)
     {
-        for (var i = 0; i < a._combinationId.Count(); i++)
+        for (var i = 0; i < a!._combinationId.Count(); i++)
         {
-            if (a._combinationId[i] != b._combinationId[i])
+            if (a._combinationId[i] != b!._combinationId[i])
             {
                 return false;
             }
@@ -315,7 +316,7 @@ public class Hand
             return true;
         }
 
-        if (obj.GetType() != this.GetType())
+        if (obj.GetType() != GetType())
         {
             return false;
         }
@@ -325,6 +326,7 @@ public class Hand
 
     public override int GetHashCode()
     {
+        // ReSharper disable once NonReadonlyMemberInGetHashCode
         return HashCode.Combine(_hand, _combinationId);
     }
 

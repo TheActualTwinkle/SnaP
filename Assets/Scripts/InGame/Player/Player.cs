@@ -17,8 +17,8 @@ public class Player : NetworkBehaviour
     public string AvatarBase64String => _avatarBase64String.Value.ToString();
     private readonly NetworkVariable<FixedString4096Bytes> _avatarBase64String = new();
 
-    public BetAction BetAction => _choosenBetAction.Value;
-    private readonly NetworkVariable<BetAction> _choosenBetAction = new();
+    public BetAction BetAction => _selectedBetAction.Value;
+    private readonly NetworkVariable<BetAction> _selectedBetAction = new();
 
     public NetworkVariable<uint> BetNetworkVariable => _betAmount;
     public uint BetAmount => _betAmount.Value;
@@ -110,7 +110,7 @@ public class Player : NetworkBehaviour
             return;
         }
 
-        SetChoosenBetActionServerRpc(betAction);
+        SetSelectedBetActionServerRpc(betAction);
     }
 
     public bool TryBet(uint value)
@@ -234,7 +234,7 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner == true)
         {
-            SetChoosenBetActionServerRpc(BetAction.Empty);
+            SetSelectedBetActionServerRpc(BetAction.Empty);
         }
         
         if (IsServer == false)
@@ -284,9 +284,9 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void SetChoosenBetActionServerRpc(BetAction betAction)
+    private void SetSelectedBetActionServerRpc(BetAction betAction)
     {
-        _choosenBetAction.Value = betAction;
+        _selectedBetAction.Value = betAction;
     }
     
     [ClientRpc]

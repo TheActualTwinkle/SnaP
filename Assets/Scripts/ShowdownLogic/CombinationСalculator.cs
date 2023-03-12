@@ -1,3 +1,4 @@
+// ReSharper disable IdentifierTypo
 /// <summary>
 /// Source https://github.com/ccqi/TexasHoldem
 /// </summary>

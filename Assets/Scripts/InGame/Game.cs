@@ -79,20 +79,20 @@ public class Game : NetworkBehaviour
             yield break;
         }
 
-        int[] turnSequensce = _boardButton.GetTurnSequence();
-        foreach (int index in turnSequensce)
+        int[] turnSequence = _boardButton.GetTurnSequence();
+        foreach (int index in turnSequence)
         {
             Player player = PlayerSeats.Players[index];
             SetPlayersPocketCardsClientRpc(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
         }
         
-        Player player1 = PlayerSeats.Players[turnSequensce[0]];
-        Player player2 = PlayerSeats.Players[turnSequensce[1]];
+        Player player1 = PlayerSeats.Players[turnSequence[0]];
+        Player player2 = PlayerSeats.Players[turnSequence[1]];
         yield return Betting.AutoBetBlinds(player1, player2);
 
-        int[] preflopTurnSequensce = _boardButton.GetPreflopTurnSequence();
+        int[] preflopTurnSequence = _boardButton.GetPreflopTurnSequence();
 
-        yield return Bet(preflopTurnSequensce);
+        yield return Bet(preflopTurnSequence);
         
         ChangeIsStageCoroutineOverValueServerRpc(true);
         EndStageClientRpc();
@@ -103,7 +103,7 @@ public class Game : NetworkBehaviour
     }
 
     // Stage like Flop, Turn and River
-    private IEnumerator StartMidgameStage()
+    private IEnumerator StartMidGameStage()
     {
         if (IsServer == false)
         {
@@ -113,8 +113,8 @@ public class Game : NetworkBehaviour
         
         if (Betting.IsAllIn == false)
         {
-            int[] turnSequensce = _boardButton.GetTurnSequence();
-            yield return Bet(turnSequensce);
+            int[] turnSequence = _boardButton.GetTurnSequence();
+            yield return Bet(turnSequence);
         }
 
         ChangeIsStageCoroutineOverValueServerRpc(true);
@@ -134,13 +134,13 @@ public class Game : NetworkBehaviour
             yield break;
         }
         
-        int[] turnSequensce = _boardButton.GetShowdownTurnSequence();
+        int[] turnSequence = _boardButton.GetShowdownTurnSequence();
         
         List<Player> winners = new();
         Hand winnerHand = new();
-        for (var i = 0; i < turnSequensce.Length; i++)
+        for (var i = 0; i < turnSequence.Length; i++)
         {
-            Player player = PlayerSeats.Players[turnSequensce[i]];
+            Player player = PlayerSeats.Players[turnSequence[i]];
             List<CardObject> completeCards = _board.Cards.ToList();
             completeCards.Add(player.PocketCard1); completeCards.Add(player.PocketCard2);
 
@@ -178,7 +178,7 @@ public class Game : NetworkBehaviour
         EndDealClientRpc(winnerInfo.ToArray());
     }
 
-    private IEnumerator Bet(int[] turnSequensce)
+    private IEnumerator Bet(int[] turnSequence)
     {
         if (IsServer == false)
         {
@@ -187,7 +187,7 @@ public class Game : NetworkBehaviour
         
         for (var i = 0;; i++)
         {
-            foreach (int index in turnSequensce)
+            foreach (int index in turnSequence)
             {
                 Player player = PlayerSeats.Players[index];
 
@@ -304,7 +304,7 @@ public class Game : NetworkBehaviour
             case GameStage.Flop:
             case GameStage.Turn:
             case GameStage.River:
-                _stageCoroutine = StartMidgameStage();
+                _stageCoroutine = StartMidGameStage();
                 break;
             
             case GameStage.Showdown:

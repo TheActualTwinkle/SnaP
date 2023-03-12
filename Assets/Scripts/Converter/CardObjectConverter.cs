@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-[System.Serializable]
+[Serializable]
 public static class CardObjectConverter
 {
     private const char Separator = ';';

@@ -13,7 +13,7 @@ public class Betting : NetworkBehaviour
 
     public Player LastBetRaiser { get; private set; }
     public Player CurrentBetter { get; private set; }
-    private readonly NetworkVariable<ulong> _currentBetterId = new(NullBettterId);
+    private readonly NetworkVariable<ulong> _currentBetterId = new(NullBetterId);
 
     public static bool IsAllIn => PlayerSeats.Players.Any(x => x != null && x.BetAction == BetAction.AllIn);
     public static uint CallAmount => PlayerSeats.Players.Where(x => x != null).Select(x => x.BetAmount).Max();
@@ -34,7 +34,7 @@ public class Betting : NetworkBehaviour
     
     private const float DelayBeforeStartBet = 1f;
     private const float DelayBeforeEndBet = 0.7f;
-    private const ulong NullBettterId = ulong.MaxValue;
+    private const ulong NullBetterId = ulong.MaxValue;
 
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
@@ -80,7 +80,7 @@ public class Betting : NetworkBehaviour
             yield break;
         }
 
-        yield return new WaitUntil(() => _currentBetterId.Value != NullBettterId);
+        yield return new WaitUntil(() => _currentBetterId.Value != NullBetterId);
         
         Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == _currentBetterId.Value);
         if (player == null)
@@ -146,7 +146,7 @@ public class Betting : NetworkBehaviour
         
         if (IsServer == true)
         {
-            SetTimePaasedSinceBetStartValueServerRpc(_betTime);
+            SetTimePassedSinceBetStartValueServerRpc(_betTime);
         }
     }
 
@@ -154,7 +154,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == true)
         {
-            SetCurrentBetterIdValueServerRpc(NullBettterId);
+            SetCurrentBetterIdValueServerRpc(NullBetterId);
         }
         
         CurrentBetter = null;
@@ -188,7 +188,7 @@ public class Betting : NetworkBehaviour
                 yield break;
             }
             
-            SetTimePaasedSinceBetStartValueServerRpc(_timePassedSinceBetStart.Value + Time.deltaTime);
+            SetTimePassedSinceBetStartValueServerRpc(_timePassedSinceBetStart.Value + Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
 
@@ -222,7 +222,7 @@ public class Betting : NetworkBehaviour
     #region RPC
 
     [ServerRpc]
-    private void SetTimePaasedSinceBetStartValueServerRpc(float value)
+    private void SetTimePassedSinceBetStartValueServerRpc(float value)
     {
         _timePassedSinceBetStart.Value = value;
     }
@@ -255,7 +255,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == true)
         {
-            SetTimePaasedSinceBetStartValueServerRpc(0);
+            SetTimePassedSinceBetStartValueServerRpc(0);
         }
 
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);

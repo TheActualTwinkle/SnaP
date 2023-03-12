@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _seatsUI: []
-  _waitingTransparecyAlpha: 0.5
+  _waitingTransparencyAlpha: 0.35
 --- !u!1001 &926770445965006891
 PrefabInstance:
   m_ObjectHideFlags: 0

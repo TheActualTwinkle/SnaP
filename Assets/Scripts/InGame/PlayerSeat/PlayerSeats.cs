@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
@@ -25,7 +24,7 @@ public class PlayerSeats : MonoBehaviour
     
     public int PlayersAmount => _players.Count(x => x != null);
 
-    [SerializeField] private float _conncetionLostCheckInterval;
+    [SerializeField] private float _connectionLostCheckInterval;
 
     private void OnValidate()
     {
@@ -58,7 +57,7 @@ public class PlayerSeats : MonoBehaviour
     private void Start()
     {
         #if !UNITY_EDITOR
-        StartCoroutine(CheckForConnectonLost());
+        StartCoroutine(CheckForConnectionLost());
         #endif
     }
 
@@ -168,7 +167,8 @@ public class PlayerSeats : MonoBehaviour
         return localPlayer;
     }
 
-    private IEnumerator CheckForConnectonLost()
+    // ReSharper disable once UnusedMember.Local
+    private IEnumerator CheckForConnectionLost()
     {
         while (true)
         {
@@ -176,7 +176,8 @@ public class PlayerSeats : MonoBehaviour
             {
                 try
                 {
-                    GameObject gameObjectName = _players[i].gameObject;
+                    // ReSharper disable once UnusedVariable
+                    GameObject checkGameObject = _players[i].gameObject;
                 }
                 catch (NullReferenceException)
                 {
@@ -191,7 +192,7 @@ public class PlayerSeats : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(_conncetionLostCheckInterval);
+            yield return new WaitForSeconds(_connectionLostCheckInterval);
         }
     }
 }

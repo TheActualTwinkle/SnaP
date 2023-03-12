@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
 public class OwnerBetUI : MonoBehaviour
@@ -20,9 +22,11 @@ public class OwnerBetUI : MonoBehaviour
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
 
     [SerializeField] private TMP_InputField _betInputField;
+    [SerializeField] private Slider _betSlider;
     [SerializeField] private TextMeshProUGUI _callText;
-    
+
     private Animator _animator;
+    
     private static readonly int BetTogglePointerEnter = Animator.StringToHash("BetTogglePointerEnter");
     private static readonly int BetTogglePointerExit = Animator.StringToHash("BetTogglePointerExit");
     private static readonly int CallTogglePointerEnter = Animator.StringToHash("CallTogglePointerEnter");
@@ -52,7 +56,8 @@ public class OwnerBetUI : MonoBehaviour
             toggle.Toggle.onValueChanged.AddListener(OnToggleValueChanged);
         }
 
-        _betInputField.onEndEdit.AddListener(OnBetInputFieldValueChanged);
+        _betInputField.onEndEdit.AddListener(OnBetInputFieldEndEdit);
+        _betSlider.onValueChanged.AddListener(OnBetSliderValueChanged);
     }
 
     private void OnDisable()
@@ -69,12 +74,13 @@ public class OwnerBetUI : MonoBehaviour
             toggle.Toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
         }
         
-        _betInputField.onEndEdit.AddListener(OnBetInputFieldValueChanged);
+        _betInputField.onEndEdit.RemoveListener(OnBetInputFieldEndEdit);
+        _betSlider.onValueChanged.RemoveListener(OnBetSliderValueChanged);
     }
 
     #region UnityEvents
 
-    // Uinty Event
+    // Unity Event
     private void OnBetTogglePointerEnter()
     {
         if (LocalPlayer == null)
@@ -87,21 +93,22 @@ public class OwnerBetUI : MonoBehaviour
             return;
         }
         
-        ClampBetToggleValue();
+        ClampBetInputFieldValue();
         BetInputFieldValueChangedEvent?.Invoke(uint.Parse(_betInputField.text));
-
+        _betInputField.onEndEdit?.Invoke(_betInputField.text);
+        
         _animator.ResetTrigger(BetTogglePointerExit);
         _animator.SetTrigger(BetTogglePointerEnter);
     }
 
-    // Uinty Event
+    // Unity Event
     private void OnBetTogglePointerExit()
     {
         _animator.ResetTrigger(BetTogglePointerEnter);
         _animator.SetTrigger(BetTogglePointerExit);
     }
 
-    // Uinty Event
+    // Unity Event
     private void OnCallTogglePointerEnter()
     {
         if (PlayerSeats.LocalPlayer == null)
@@ -127,7 +134,7 @@ public class OwnerBetUI : MonoBehaviour
         _animator.SetTrigger(CallTogglePointerEnter);
     }
 
-    // Uinty Event
+    // Unity Event
     private void OnCallTogglePointerExit()
     {
         _animator.ResetTrigger(CallTogglePointerEnter);
@@ -154,9 +161,17 @@ public class OwnerBetUI : MonoBehaviour
         }
     }
 
-    private void OnBetInputFieldValueChanged(string value)
+    private void OnBetInputFieldEndEdit(string value)
     {
-        ClampBetToggleValue();
+        ClampBetInputFieldValue();
+        BetInputFieldValueChangedEvent?.Invoke(uint.Parse(_betInputField.text));
+    }
+
+    private void OnBetSliderValueChanged(float value)
+    {
+        _betInputField.text = value.ToString(CultureInfo.InvariantCulture);
+
+        ClampBetInputFieldValue();
         BetInputFieldValueChangedEvent?.Invoke(uint.Parse(_betInputField.text));
     }
 
@@ -172,6 +187,7 @@ public class OwnerBetUI : MonoBehaviour
             return;
         }
         
+        SetupBetSliderStep();
         _toggles[2].gameObject.SetActive(true);
     }
     
@@ -232,7 +248,8 @@ public class OwnerBetUI : MonoBehaviour
         
         ShowToggles();
         EnableToggles();        
-        SetupTogglesUI();
+        SetupTogglesUI();        
+        SetupBetSliderEdges();
     }
     
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
@@ -384,7 +401,7 @@ public class OwnerBetUI : MonoBehaviour
         }
     }
 
-    private void ClampBetToggleValue()
+    private void ClampBetInputFieldValue()
     {
         uint minBetValue = Betting.BigBlind >= Betting.CallAmount ? Betting.BigBlind : Betting.CallAmount;
         uint maxBetValue = LocalPlayer.Stack >= Betting.GetAllInBetAmount(LocalPlayer) ? Betting.GetAllInBetAmount(LocalPlayer) : LocalPlayer.Stack;
@@ -407,6 +424,28 @@ public class OwnerBetUI : MonoBehaviour
         _betInputField.text = value.ToString();
     }
 
+    private void SetupBetSliderEdges()
+    {
+        if (LocalPlayer == null)
+        {
+            return;
+        }
+        
+        uint minBetValue = Betting.BigBlind >= Betting.CallAmount ? Betting.BigBlind : Betting.CallAmount - LocalPlayer.BetAmount;
+        uint maxBetValue = LocalPlayer.Stack >= Betting.GetAllInBetAmount(LocalPlayer) ? Betting.GetAllInBetAmount(LocalPlayer) : LocalPlayer.Stack;
+        
+        _betSlider.minValue = minBetValue;
+        _betSlider.maxValue = maxBetValue;
+    }
+
+    private void SetupBetSliderStep()
+    {
+        if (_betSlider.TryGetComponent(out ISliderSetter sliderSetter) == true)
+        {
+            sliderSetter.IntervalPerScroll = Betting.BigBlind;
+        }
+    }
+    
     private void ShowToggles()
     {
         _animator.ResetTrigger(Hide);

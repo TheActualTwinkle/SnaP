@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -8,7 +7,7 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
     private static readonly string SavePath = Application.persistentDataPath + "/saves";
     private const string SaveFileExtension = "df";
 
-    private static readonly BinaryFormatter BinatyFormatter = new();
+    private static readonly BinaryFormatter BinaryFormatter = new();
 
     public void Save(ISaveLoadData saveLoadData)
     {
@@ -20,7 +19,7 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
         var saveFileName = $"{SavePath}/{saveLoadData.GetType().Name}.{SaveFileExtension}";
         FileStream fileStream = new(saveFileName, FileMode.Create);
 
-        BinatyFormatter.Serialize(fileStream, saveLoadData);
+        BinaryFormatter.Serialize(fileStream, saveLoadData);
 
         fileStream.Close();
     }
@@ -37,7 +36,7 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
 
         try
         {
-            ISaveLoadData data = BinatyFormatter.Deserialize(fileStream) as ISaveLoadData;
+            ISaveLoadData data = BinaryFormatter.Deserialize(fileStream) as ISaveLoadData;
 
             fileStream.Close();
 
