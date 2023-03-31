@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Unity.Collections;
@@ -100,7 +101,16 @@ public class Player : NetworkBehaviour
         }
 
         PlayerData playerData = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
-        SetPlayerDataServerRpc(playerData);
+        
+        try
+        {
+            SetPlayerDataServerRpc(playerData); // todo Проверить!!!
+        }
+        catch
+        {
+            playerData.SetDefault();
+            SetPlayerDataServerRpc(playerData);
+        }
     }
     
     public void SetBetAction(BetAction betAction)
@@ -147,7 +157,7 @@ public class Player : NetworkBehaviour
     {
         ShutdownClientRpc();
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => NetworkManager.Singleton.ConnectedClients.Count <= 1);
 
         Shutdown();
     }
@@ -271,7 +281,7 @@ public class Player : NetworkBehaviour
 
     [ServerRpc]
     private void SetPlayerDataServerRpc(PlayerData data)
-    {
+    {            
         _nickName.Value = data.NickName;
         _avatarBase64String.Value = data.AvatarBase64String;
         _stack.Value = data.Stack;

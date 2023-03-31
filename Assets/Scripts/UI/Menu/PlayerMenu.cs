@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.Netcode;
 #if UNITY_EDITOR
     using UnityEditor;
 #endif
@@ -8,11 +9,12 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class PlayerMenu : MonoBehaviour
+public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 {
     [SerializeField] private TMP_InputField _nickNameInputField;
     [SerializeField] private Image _image;
     [SerializeField] private Slider _stackSlider;
+    [SerializeField] private float _sliderIntervalPerScroll;
 
     private ISaveLoadSystem _saveLoadSystem;
 
@@ -41,14 +43,7 @@ public class PlayerMenu : MonoBehaviour
 
         if (playerData.Equals(default(PlayerData)) == true)
         {
-            //playerData.NickName = "Player";
-            
-            byte[] texture = TextureConverter.GetRawTexture(Resources.Load<Sprite>("Sprites/ava").texture);
-            //playerData.AvatarBase64String = Convert.ToBase64String(texture);
-                
-            //playerData.Stack = (uint)_stackSlider.minValue;
-            
-            playerData = new PlayerData("Player", Convert.ToBase64String(texture), (uint)_stackSlider.minValue);
+            playerData.SetDefault();
         }
         
         _nickNameInputField.text = playerData.NickName;
@@ -65,7 +60,7 @@ public class PlayerMenu : MonoBehaviour
     {
         if (_stackSlider.TryGetComponent(out ISliderSetter sliderSetter) == true)
         {
-            sliderSetter.IntervalPerScroll = _stackSlider.maxValue / _stackSlider.minValue;
+            sliderSetter.IntervalPerScroll = _sliderIntervalPerScroll;
         }
     }
     
