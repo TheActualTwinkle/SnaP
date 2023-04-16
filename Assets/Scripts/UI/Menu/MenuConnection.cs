@@ -5,7 +5,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuConneсtion : MonoBehaviour
+public class MenuConnection : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _ipAddressInputField;
     [SerializeField] private TMP_InputField _portInputField;

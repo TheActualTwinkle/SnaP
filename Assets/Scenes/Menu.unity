@@ -207,7 +207,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &783912
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -224,7 +224,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &783913
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1336,7 +1337,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 198395788}
-        m_TargetAssemblyTypeName: Menu, Assembly-CSharp
+        m_TargetAssemblyTypeName: MenuConnection, Assembly-CSharp
         m_MethodName: StartHost
         m_Mode: 1
         m_Arguments:
@@ -2477,7 +2478,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 198395788}
-        m_TargetAssemblyTypeName: Menu, Assembly-CSharp
+        m_TargetAssemblyTypeName: MenuConnection, Assembly-CSharp
         m_MethodName: Join
         m_Mode: 1
         m_Arguments:
@@ -3944,7 +3945,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 198395788}
-        m_TargetAssemblyTypeName: Menu, Assembly-CSharp
+        m_TargetAssemblyTypeName: MenuConnection, Assembly-CSharp
         m_MethodName: Exit
         m_Mode: 1
         m_Arguments:
@@ -5150,7 +5151,24 @@ MonoBehaviour:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1881286010}
     PlayerPrefab: {fileID: 0}
-    NetworkPrefabs:
+    Prefabs:
+      NetworkPrefabsLists: []
+    TickRate: 30
+    ClientConnectionBufferTimeout: 10
+    ConnectionApproval: 0
+    ConnectionData: 
+    EnableTimeResync: 0
+    TimeResyncInterval: 30
+    EnsureNetworkVariableLengthSafety: 0
+    EnableSceneManagement: 1
+    ForceSamePrefabs: 1
+    RecycleNetworkIds: 1
+    NetworkIdRecycleDelay: 120
+    RpcHashSize: 0
+    LoadSceneTimeOut: 120
+    SpawnTimeout: 1
+    EnableNetworkLogs: 1
+    OldPrefabList:
     - Override: 0
       Prefab: {fileID: 6248572251698012179, guid: 4a33bc118c560d7489b9b9e36332fe2e, type: 3}
       SourcePrefabToOverride: {fileID: 6248572251698012179, guid: 4a33bc118c560d7489b9b9e36332fe2e, type: 3}
@@ -5171,21 +5189,6 @@ MonoBehaviour:
       SourcePrefabToOverride: {fileID: 6248572251698012179, guid: 4a33bc118c560d7489b9b9e36332fe2e, type: 3}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
-    TickRate: 30
-    ClientConnectionBufferTimeout: 10
-    ConnectionApproval: 0
-    ConnectionData: 
-    EnableTimeResync: 0
-    TimeResyncInterval: 30
-    EnsureNetworkVariableLengthSafety: 0
-    EnableSceneManagement: 1
-    ForceSamePrefabs: 1
-    RecycleNetworkIds: 1
-    NetworkIdRecycleDelay: 120
-    RpcHashSize: 0
-    LoadSceneTimeOut: 120
-    SpawnTimeout: 1
-    EnableNetworkLogs: 1
 --- !u!114 &1881286010
 MonoBehaviour:
   m_ObjectHideFlags: 0
