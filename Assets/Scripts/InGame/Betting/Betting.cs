@@ -247,7 +247,7 @@ public class Betting : NetworkBehaviour
         
         PlayerStartBettingEvent?.Invoke(player);
         
-        Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}', seat №{PlayerSeats.Players.IndexOf(player)} start betting");
+        Log.WriteToFile($"Player ({player}), seat №{PlayerSeats.Players.IndexOf(player)} start betting");
     }
 
     [ClientRpc]
@@ -271,7 +271,7 @@ public class Betting : NetworkBehaviour
 
         BetActionInfo betActionInfo = new(player, betAction, betAmount);
         
-        Log.WriteToFile($"Player nick: '{player.NickName}', id: '{player.OwnerClientId}'; {betAction}; {betAmount}");
+        Log.WriteToFile($"Player ({player}); {betAction}; {betAmount}");
         PlayerEndBettingEvent?.Invoke(betActionInfo);
 
         if (betAction == BetAction.Check)

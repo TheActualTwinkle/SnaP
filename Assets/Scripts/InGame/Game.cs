@@ -102,7 +102,7 @@ public class Game : NetworkBehaviour
         StartNextStageClientRpc();
     }
 
-    // Stage like Flop, Turn and River
+    // Stage like Flop, Turn and River.
     private IEnumerator StartMidGameStage()
     {
         if (IsServer == false)
@@ -396,7 +396,9 @@ public class Game : NetworkBehaviour
         }
         
         EndDealEvent?.Invoke(winnerInfo);
-        Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'");
+        
+        string winnerHand = winnerInfo[0].Combination;
+        Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'. {winnerHand}");
 
         if (_startDealAfterRoundsInterval != null)
         {

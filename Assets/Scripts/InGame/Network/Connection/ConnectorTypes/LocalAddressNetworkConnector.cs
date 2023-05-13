@@ -1,27 +1,28 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuConnection : MonoBehaviour
+public class LocalAddressNetworkConnector : INetworkConnector
 {
-    [SerializeField] private TMP_InputField _ipAddressInputField;
-    [SerializeField] private TMP_InputField _portInputField;
+    public IEnumerable<string> ConnectionData => new [] { _ipAddress, _port };
+    
+    private string _ipAddress;
+    private string _port;
 
     private IEnumerator _connectRoutine;
 
-    private void Update()
+    public LocalAddressNetworkConnector(IReadOnlyList<string> connectionData)
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            NetworkManager.Singleton.Shutdown();
-        }
+        _ipAddress = connectionData[0];
+        _port = connectionData[1];
     }
-
-    // Button.
-    private void StartHost()
+    
+    public void CreateGame()
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
@@ -30,11 +31,11 @@ public class MenuConnection : MonoBehaviour
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
-        if (ushort.TryParse(_portInputField.text, out ushort port) == false)
+        if (ushort.TryParse(_port, out ushort port) == false)
         {
             return;
         }
-        unityTransport.SetConnectionData(_ipAddressInputField.text, port);
+        unityTransport.SetConnectionData(_ipAddress, port);
 
         NetworkManager.Singleton.Shutdown();
 
@@ -42,8 +43,7 @@ public class MenuConnection : MonoBehaviour
         NetworkManager.Singleton.SceneManager.LoadScene("Desk", LoadSceneMode.Single);
     }
 
-    // Button.
-    private void Join()
+    public void JoinGame()
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
@@ -51,13 +51,13 @@ public class MenuConnection : MonoBehaviour
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        unityTransport.SetConnectionData(_ipAddressInputField.text, ushort.Parse(_portInputField.text));
+        unityTransport.SetConnectionData(_ipAddress, ushort.Parse(_port));
         
         NetworkManager.Singleton.Shutdown();
         
         NetworkManager.Singleton.StartClient();
     }
-
+    
     // Button.
     private void Exit()
     {

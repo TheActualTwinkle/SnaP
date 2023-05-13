@@ -13,7 +13,17 @@ public static class Log
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
 
-    private static bool _appendLogFile;
+    static Log()
+    {
+        if (File.Exists(LogFilePath) == false)
+        {
+            File.Create(LogFilePath).Close();
+        }
+        else
+        {
+            File.WriteAllText(LogFilePath, string.Empty);
+        }
+    }
     
     public static void WriteToFile(object message)
     {
@@ -23,15 +33,10 @@ public static class Log
 
         try
         {
-            if (File.Exists(LogFilePath) == false)
-            {
-                File.Create(LogFilePath);
-            }
-        
-            using StreamWriter sw = new(LogFilePath, _appendLogFile);
-            _appendLogFile = true;
+            using StreamWriter sw = new(LogFilePath, true);
 
-            message = $"[{DateTime}] {message} Platform: {Platform}. IP: {GetIp()}";
+            string ip = IPAddressPresenter.Address.Replace("\n", string.Empty).Replace("\r", string.Empty);
+            message = $"[{DateTime}] {message} Platform: {Platform}. IP: {ip}";
             sw.WriteLine(message);
         }
         catch (Exception e)
@@ -39,12 +44,11 @@ public static class Log
             Debug.LogError($"{nameof(e)} {e.Message}");
         }
         
-
 #endif
     }
 
-    private static string GetIp()
+    public static byte[] ReadAllBytes()
     {
-        return Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToString();
+        return File.ReadAllBytes(LogFilePath);
     }
 }

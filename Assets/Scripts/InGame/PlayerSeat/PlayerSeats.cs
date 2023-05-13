@@ -65,7 +65,7 @@ public class PlayerSeats : MonoBehaviour
     {
         if (_players[seatNumber] != null || _waitingPlayers[seatNumber] != null)
         {
-            Log.WriteToFile($"Player ('{player.NickName}') can`t take the {seatNumber} seat, its already taken by some Player.'");
+            Log.WriteToFile($"Player ({player}) can`t take the №{seatNumber} seat, its already taken by Player ({player}).");
             return false;
         }
 
@@ -75,7 +75,7 @@ public class PlayerSeats : MonoBehaviour
         {
             _players[seatNumber] = player;
 
-            Log.WriteToFile($"Player ('{player.NickName}') sit on №{seatNumber} seat.");
+            Log.WriteToFile($"Player ({player}) sit on №{seatNumber} seat.");
 
             PlayerSitEvent?.Invoke(player, seatNumber);
             return true;
@@ -106,7 +106,7 @@ public class PlayerSeats : MonoBehaviour
             _waitingPlayers[seatNumber] = null;
         }
         
-        Log.WriteToFile($"Player ('{player.NickName}') leave from {seatNumber} seat.");
+        Log.WriteToFile($"Player ({player}) leave from {seatNumber} seat.");
 
         PlayerLeaveEvent?.Invoke(player, seatNumber);
         return true;
@@ -123,7 +123,7 @@ public class PlayerSeats : MonoBehaviour
 
             if (_players.Contains(_waitingPlayers[i]) == true)
             {
-                Log.WriteToFile($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ('{_waitingPlayers[i].NickName}')");
+                Log.WriteToFile($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ({_waitingPlayers[i]}).");
                 continue;
             }
 

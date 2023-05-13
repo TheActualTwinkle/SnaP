@@ -32,7 +32,7 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 
     private void Start()
     {
-        _saveLoadSystem = SaveLoadSystemFactory.Instance.Get();
+        _saveLoadSystem = ReadonlySaveLoadSystemFactory.Instance.Get();
         SetupUI();
         SetupBetSliderStep();
     }
@@ -104,7 +104,7 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 
         if (webRequest.result == UnityWebRequest.Result.ConnectionError)
         {
-            Log.WriteToFile(webRequest.error);
+            Log.WriteToFile($"An exception occurred while trying to set image. {webRequest.error}");
         }
         else
         {

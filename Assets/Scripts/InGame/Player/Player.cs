@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using Unity.Collections;
@@ -100,7 +99,7 @@ public class Player : NetworkBehaviour
             return;
         }
 
-        PlayerData playerData = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
+        PlayerData playerData = ReadonlySaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
         
         try
         {
@@ -269,6 +268,11 @@ public class Player : NetworkBehaviour
     private void LeaveSeat()
     {
         PlayerSeats.TryLeave(this);
+    }
+
+    public override string ToString()
+    {
+        return $"Nick: {_nickName.Value}, ID: {OwnerClientId}.";
     }
 
     #region RPC
