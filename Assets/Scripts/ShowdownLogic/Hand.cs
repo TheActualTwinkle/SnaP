@@ -39,7 +39,7 @@ public class Hand
             3 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3]},
             4 => new List<CardObject> {_hand[0], _hand[1], _hand[2]},
             5 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},
-            6 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3]},
+            6 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},
             7 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},
             8 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3]},
             9 => new List<CardObject> {_hand[0], _hand[1], _hand[2], _hand[3], _hand[4]},

@@ -35,7 +35,7 @@ public static class Log
         {
             using StreamWriter sw = new(LogFilePath, true);
 
-            string ip = IPAddressPresenter.Address.Replace("\n", string.Empty).Replace("\r", string.Empty);
+            string ip = "";//IPAddressPresenter.Address.Replace("\n", string.Empty).Replace("\r", string.Empty);
             message = $"[{DateTime}] {message} Platform: {Platform}. IP: {ip}";
             sw.WriteLine(message);
         }
