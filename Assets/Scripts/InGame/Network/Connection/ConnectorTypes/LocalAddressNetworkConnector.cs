@@ -11,8 +11,8 @@ public class LocalAddressNetworkConnector : INetworkConnector
 {
     public IEnumerable<string> ConnectionData => new [] { _ipAddress, _port };
     
-    private string _ipAddress;
-    private string _port;
+    private readonly string _ipAddress;
+    private readonly string _port;
 
     private IEnumerator _connectRoutine;
 

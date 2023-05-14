@@ -23,6 +23,11 @@ public class UnityRelayNetworkConnector : INetworkConnector
 
     public async void CreateGame() 
     {
+        if (NetworkManager.Singleton.IsListening == true)
+        {
+            return;
+        }
+        
         await TryAuthenticate();
         
         Allocation allocation = await RelayService.Instance.CreateAllocationAsync((int)NetworkConnectorHandler.MaxPlayersAmount);
@@ -39,10 +44,15 @@ public class UnityRelayNetworkConnector : INetworkConnector
     
     public async void JoinGame() 
     {
+        if (NetworkManager.Singleton.IsListening == true)
+        {
+            return;
+        }
+        
         await TryAuthenticate();
         
         JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(_joinCode);
-        
+
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
         unityTransport.SetClientRelayData(allocation.RelayServer.IpV4, 
             (ushort)allocation.RelayServer.Port, 

@@ -1,0 +1,17 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class PopupObject : MonoBehaviour
+{
+    [SerializeField] private TMP_Text _text;
+
+    public float TimeOfLife => _timeOfLife;
+    [SerializeField] private float _timeOfLife;
+    
+    public void SetText(string text)
+    {
+        _text.text = text;
+    }
+}

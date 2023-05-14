@@ -4,10 +4,10 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
-public class NetworkConnectorHandler : MonoBehaviour
+public static class NetworkConnectorHandler
 {
     public const uint MaxPlayersAmount = 5;
-
+    
     public static INetworkConnector CurrentConnector { get; private set; }
     
     private static ConnectionInputFields ConnectionInputFields => ConnectionInputFields.Instance;

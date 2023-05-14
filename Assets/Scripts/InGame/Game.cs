@@ -15,7 +15,7 @@ public class Game : NetworkBehaviour
     public event Action<WinnerInfo[]> EndDealEvent;
 
     public string CodedBoardCardsString => _codedBoardCardsString.Value.ToString();
-    private readonly NetworkVariable<FixedString32Bytes> _codedBoardCardsString = new();
+    private readonly NetworkVariable<FixedString64Bytes> _codedBoardCardsString = new();
 
     public List<CardObject> BoardCards => _board.Cards.ToList();
 
@@ -388,6 +388,8 @@ public class Game : NetworkBehaviour
             SetCurrentGameStageValueServerRpc(GameStage.Empty);
             SetIsPlayingValueServerRpc(false);
             SetCodedBoardCardsValueServerRpc(string.Empty);
+
+            Log.WriteToFile($""); // todo. Null ref if log in client side. 
         }
 
         if (_stageCoroutine != null)
@@ -397,8 +399,7 @@ public class Game : NetworkBehaviour
         
         EndDealEvent?.Invoke(winnerInfo);
         
-        string winnerHand = winnerInfo[0].Combination;
-        Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'. {winnerHand}");
+        Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'. Winner hand: {winnerInfo[0].Combination}");
 
         if (_startDealAfterRoundsInterval != null)
         {

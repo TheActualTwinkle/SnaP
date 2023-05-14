@@ -479,6 +479,9 @@ GameObject:
   - component: {fileID: 773801516633519425}
   - component: {fileID: 2441943935884345429}
   - component: {fileID: 8359559236823561989}
+  - component: {fileID: 424824610080802660}
+  - component: {fileID: 1013186126220222633}
+  - component: {fileID: 789741314937511598}
   m_Layer: 5
   m_Name: ConnectionDataText
   m_TagString: Untagged
@@ -616,6 +619,75 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 2441943935884345429}
+  _dataSeparator: ':'
+--- !u!114 &424824610080802660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905116577679781656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca1aa9494b82144fa462c20e79d0261, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: {fileID: 2441943935884345429}
+--- !u!114 &1013186126220222633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905116577679781656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e4d8cf52f25e2409444d1a532f9c6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _prefab: {fileID: 4086865190642257906, guid: d46449eb428f93c48b898560cea52bb7, type: 3}
+  _text: Copied!
+--- !u!114 &789741314937511598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905116577679781656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 424824610080802660}
+          m_TargetAssemblyTypeName: TextBufferCopier, Assembly-CSharp
+          m_MethodName: CopyTextFromTextObject
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1013186126220222633}
+          m_TargetAssemblyTypeName: PopupTextSpawner, Assembly-CSharp
+          m_MethodName: SpawnOnMousePosition
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &6998209636611837309
 GameObject:
   m_ObjectHideFlags: 0

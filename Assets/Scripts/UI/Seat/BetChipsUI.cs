@@ -81,7 +81,6 @@ public class BetChipsUI : MonoBehaviour
     
     private void OnBetValueChanged(uint oldValue, uint newValue)
     {
-        print("OnBetValueChanged");
         if (newValue <= 0)
         {
             return;
