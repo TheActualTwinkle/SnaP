@@ -388,8 +388,6 @@ public class Game : NetworkBehaviour
             SetCurrentGameStageValueServerRpc(GameStage.Empty);
             SetIsPlayingValueServerRpc(false);
             SetCodedBoardCardsValueServerRpc(string.Empty);
-
-            Log.WriteToFile($""); // todo. Null ref if log in client side. 
         }
 
         if (_stageCoroutine != null)

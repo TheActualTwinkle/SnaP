@@ -155,7 +155,7 @@ public class OwnerBetUI : MonoBehaviour
             DisableToggles();
         }
 
-        if (LocalPlayer != null) 
+        if (LocalPlayer != null && LocalPlayer.BetAction != BetAction.Fold) 
         {
             LocalPlayer.SetBetAction(ChosenBetAction);
         }
@@ -297,6 +297,11 @@ public class OwnerBetUI : MonoBehaviour
                 PushBackToggles();
             }
 
+            if (GetChosenBetActionRaw() == BetAction.Call && betActionInfo.BetAction is BetAction.Bet or BetAction.Raise)
+            {
+                PushBackToggles();   
+            }
+
             if (betAction is not (BetAction.Empty or BetAction.Cancel))
             {
                 DisableToggles();
@@ -315,14 +320,13 @@ public class OwnerBetUI : MonoBehaviour
         HideToggles();
     }
 
+    /// <summary>
+    /// Returns transformed states from 'CallAny', 'Check/Fold' and 'Check'. e.g. method will transform 'CallAny' to 'Call' or 'Cancel' depending on betting context.
+    /// </summary>
+    /// <returns></returns>
     private BetAction GetChosenBetAction()
     {
-        if (_toggles.Count(x => x.Toggle.isOn == true) == 0)
-        {
-            return BetAction.Empty;
-        }
-
-        BetAction betAction = _toggles.First(x => x.Toggle.isOn == true).BetAction;
+        BetAction betAction = GetChosenBetActionRaw();
 
         if (betAction == BetAction.CheckFold)
         {
@@ -349,6 +353,20 @@ public class OwnerBetUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Returns exactly what pressed e.g. 'CallAny' or 'Check/Fold'. Opposite 'GetChosenBetAction' method will transform 'CallAny' to 'Call' or 'Cancel' depending on betting context.
+    /// </summary>
+    /// <returns></returns>
+    private BetAction GetChosenBetActionRaw()
+    {
+        if (_toggles.Count(x => x.Toggle.isOn == true) == 0)
+        {
+            return BetAction.Empty;
+        }
+
+        return _toggles.First(x => x.Toggle.isOn == true).BetAction;
+    }
+    
     private void SetupTogglesUI()
     {
         Player player = LocalPlayer;

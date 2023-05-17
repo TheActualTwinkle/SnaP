@@ -118,7 +118,7 @@ public class Player : NetworkBehaviour
         {
             return;
         }
-
+        print(betAction);
         SetSelectedBetActionServerRpc(betAction);
     }
 
