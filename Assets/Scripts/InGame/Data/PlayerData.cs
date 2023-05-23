@@ -1,37 +1,31 @@
-using System;
 using Unity.Netcode;
-using UnityEngine;
 
 // ReSharper disable InconsistentNaming
 
 [System.Serializable]
 public struct PlayerData : ISaveLoadData, INetworkSerializable
 {
-    public string NickName;
-    public string AvatarBase64String;
-    public uint Stack;
+    public string NickName => _nickName;
+    private string _nickName;
 
-    public PlayerData(string nickName, string avatarBase64String, uint stack)
+    public uint Stack => _stack;
+    private uint _stack;
+
+    public PlayerData(string nickName, uint stack)
     {
-        NickName = nickName;
-        AvatarBase64String = avatarBase64String;
-        Stack = stack;
+        _nickName = nickName;
+        _stack = stack;
     }
 
-    public void SetDefault()
+    public void SetDefaultValues()
     {
-        NickName = "Player";
-        
-        byte[] texture = TextureConverter.GetRawTexture(Resources.Load<Sprite>("Sprites/ava").texture);
-        AvatarBase64String = Convert.ToBase64String(texture);
-
-        Stack = 0;
+        _nickName = "Player";
+        _stack = 100;
     }
-    
+
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
-        serializer.SerializeValue(ref NickName);
-        serializer.SerializeValue(ref AvatarBase64String);
-        serializer.SerializeValue(ref Stack);
+        serializer.SerializeValue(ref _nickName);
+        serializer.SerializeValue(ref _stack);
     }
 }

@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ConnectionInputFields : MonoBehaviour
+public class ConnectionInputField : MonoBehaviour
 {
-    public static ConnectionInputFields Instance { get; private set; }
+    public static ConnectionInputField Instance { get; private set; }
 
     [SerializeField] private TMP_InputField _ipAddressInputField;
     [SerializeField] private TMP_InputField _portInputField;

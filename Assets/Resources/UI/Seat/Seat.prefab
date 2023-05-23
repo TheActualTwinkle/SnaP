@@ -172,7 +172,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &7547011042309484728
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -189,7 +189,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8004363553720597212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -629,7 +630,7 @@ MonoBehaviour:
   _animator: {fileID: 6422631279959915370}
 --- !u!95 &6422631279959915370
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -646,7 +647,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3697262162965988142
 GameObject:
   m_ObjectHideFlags: 0
@@ -886,6 +888,7 @@ GameObject:
   - component: {fileID: 5597228465117885304}
   - component: {fileID: 5597228465117885306}
   - component: {fileID: 328052938876750744}
+  - component: {fileID: 3391234491456563518}
   m_Layer: 5
   m_Name: Seat
   m_TagString: Untagged
@@ -944,9 +947,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerImage: {fileID: 5681092452131566889}
+  _avatarLoadingSprite: {fileID: 21300000, guid: 563c3bad130cd5948bc205f03e9a7a23, type: 3}
   _nickNameText: {fileID: 8076024403278709569}
   _pocketCards: {fileID: 6648614148782940300}
   _nickNameBackgroundImage: {fileID: 6588139272083517065}
+  _animator: {fileID: 3391234491456563518}
+--- !u!95 &3391234491456563518
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5597228465117885303}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 51f5cc4cb25598d46a901c0657be4a61, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6648614148782940300
 GameObject:
   m_ObjectHideFlags: 0
@@ -984,7 +1010,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8062709047056504017
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1001,7 +1027,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7718901892273406111
 MonoBehaviour:
   m_ObjectHideFlags: 0

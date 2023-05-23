@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
-using UnityEngine;
 
 public static class NetworkConnectorHandler
 {
@@ -10,7 +7,7 @@ public static class NetworkConnectorHandler
     
     public static INetworkConnector CurrentConnector { get; private set; }
     
-    private static ConnectionInputFields ConnectionInputFields => ConnectionInputFields.Instance;
+    private static ConnectionInputField ConnectionInputField => ConnectionInputField.Instance;
     
     public static void CreateGame(NetworkConnectorType connectorType)
     {
@@ -26,7 +23,7 @@ public static class NetworkConnectorHandler
 
     private static INetworkConnector GetConnector(NetworkConnectorType connectorType)
     {
-        IReadOnlyList<string> connectionData = ConnectionInputFields.GetConnectionData(connectorType);
+        IReadOnlyList<string> connectionData = ConnectionInputField.GetConnectionData(connectorType);
         
         INetworkConnector connector = connectorType switch
         {

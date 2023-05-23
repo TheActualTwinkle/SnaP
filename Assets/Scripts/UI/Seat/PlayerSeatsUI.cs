@@ -1,13 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerSeatsUI : MonoBehaviour
 {
     public static PlayerSeatsUI Instance { get; private set; }
 
-    public event Action<int> PlayerClickTakeButton;
+    public event Action<int> PlayerClickTakeButtonEvent;
 
     public List<SeatUI> Seats => _seatsUI.ToList();
     [ReadOnly] [SerializeField] private List<SeatUI> _seatsUI;
@@ -17,6 +19,8 @@ public class PlayerSeatsUI : MonoBehaviour
     [Range(0f, 1f)] [SerializeField] private float _waitingTransparencyAlpha;
 
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
+    
+    private IEnumerator _waitForPlayerAvatarImageLoadedRoutine;
 
     private void OnEnable()
     {
@@ -55,13 +59,19 @@ public class PlayerSeatsUI : MonoBehaviour
         
     private void OnPlayerSit(Player player, int seatNumber)
     {
-        byte[] rawData = Convert.FromBase64String(player.AvatarBase64String);
-        _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(rawData);
         _seatsUI[seatNumber].NickNameText.text = player.NickName;
         _seatsUI[seatNumber].NickNameBackgroundImage.enabled = true;
         
         ChangeSeatImageTransparency(seatNumber, 1f);
 
+        if (_waitForPlayerAvatarImageLoadedRoutine != null)
+        {
+            StopCoroutine(_waitForPlayerAvatarImageLoadedRoutine);
+        }
+
+        _waitForPlayerAvatarImageLoadedRoutine = WaitForPlayerAvatarImageLoaded(player);
+        StartCoroutine(_waitForPlayerAvatarImageLoadedRoutine);
+        
         if (player.IsOwner == false)
         {
             return;
@@ -84,6 +94,11 @@ public class PlayerSeatsUI : MonoBehaviour
         _seatsUI[seatNumber].NickNameBackgroundImage.enabled = false; 
 
         ChangeSeatImageTransparency(seatNumber, 1f);
+
+        if (_waitForPlayerAvatarImageLoadedRoutine != null)
+        {
+            StopCoroutine(_waitForPlayerAvatarImageLoadedRoutine);
+        }
     }
     
     private void ChangeSeatImageTransparency(int seatNumber, float alpha)
@@ -118,6 +133,39 @@ public class PlayerSeatsUI : MonoBehaviour
         return centredIndexes.ToArray();
     }
 
+    private IEnumerator WaitForPlayerAvatarImageLoaded(Player player)
+    {
+        int playerIndex = PlayerSeats.Players.IndexOf(player);
+        _seatsUI[playerIndex].EnableLoadingImage();
+        
+        yield return new WaitUntil(() => player.IsAvatarImageReady == true);
+        
+        _seatsUI[playerIndex].DisableLoadingImage();
+        
+        TrySetPlayerAvatarImage(player);
+    }
+
+    private bool TrySetPlayerAvatarImage(Player player)
+    {
+        int indexOfPlayerSeat = PlayerSeats.Players.IndexOf(player);
+
+        Image seatImage = _seatsUI[indexOfPlayerSeat].PlayerImage;
+        var imageWidth = (int)seatImage.rectTransform.rect.width;
+        var imageHeight = (int)seatImage.rectTransform.rect.height;
+        return TrySetImage(indexOfPlayerSeat, TextureConverter.GetSprite(player.AvatarData.CodedValue, imageWidth, imageHeight));
+    }
+
+    private bool TrySetImage(int seatIndex, Sprite sprite)
+    {
+        if (seatIndex == -1)
+        {
+            return false;
+        }
+        
+        _seatsUI[seatIndex].PlayerImage.sprite = sprite;
+        return true;
+    }
+    
     private void SetupPocketCardsVisibility(int centralSeatNumber)
     {
         foreach (SeatUI seatUI in _seatsUI)
@@ -131,6 +179,6 @@ public class PlayerSeatsUI : MonoBehaviour
     // Button.
     private void OnPlayerClickTakeButton(int seatNumber)
     {
-        PlayerClickTakeButton?.Invoke(seatNumber);
+        PlayerClickTakeButtonEvent?.Invoke(seatNumber);
     }
 }

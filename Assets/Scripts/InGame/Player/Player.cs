@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using Unity.Netcode;
@@ -14,8 +16,8 @@ public class Player : NetworkBehaviour
     public string NickName => _nickName.Value.ToString();
     private readonly NetworkVariable<FixedString32Bytes> _nickName = new();
 
-    public string AvatarBase64String => _avatarBase64String.Value.ToString();
-    private readonly NetworkVariable<FixedString4096Bytes> _avatarBase64String = new();
+    public PlayerAvatarData AvatarData => _avatarData.Value;
+    private readonly NetworkVariable<PlayerAvatarData> _avatarData = new();
 
     public BetAction BetAction => _selectedBetAction.Value;
     private readonly NetworkVariable<BetAction> _selectedBetAction = new();
@@ -31,6 +33,9 @@ public class Player : NetworkBehaviour
     public uint Stack => _stack.Value;
     private readonly NetworkVariable<uint> _stack = new();
 
+    public bool IsAvatarImageReady => _isAvatarImageReady.Value;
+    private readonly NetworkVariable<bool> _isAvatarImageReady = new();
+
     public CardObject PocketCard1 { get; private set; }
     public CardObject PocketCard2 { get; private set; }
 
@@ -45,7 +50,7 @@ public class Player : NetworkBehaviour
         Game.EndDealEvent += OnEndDeal;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
         OwnerBetUI.BetInputFieldValueChangedEvent += OnBetInputFieldValueChanged;
-        PlayerSeatUI.PlayerClickTakeButton += OnPlayerClickTakeSeatButton;
+        PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButtonEvent;
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
     }
 
@@ -55,7 +60,7 @@ public class Player : NetworkBehaviour
         Game.EndDealEvent -= OnEndDeal;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
         OwnerBetUI.BetInputFieldValueChangedEvent -= OnBetInputFieldValueChanged;
-        PlayerSeatUI.PlayerClickTakeButton -= OnPlayerClickTakeSeatButton; 
+        PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButtonEvent; 
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
     }
 
@@ -99,16 +104,22 @@ public class Player : NetworkBehaviour
             return;
         }
 
+        SetIsImageReadyServerRpc(false);
+        
         PlayerData playerData = ReadonlySaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
+        PlayerAvatarData avatarData = ReadonlySaveLoadSystemFactory.Instance.Get().Load<PlayerAvatarData>();
         
         try
         {
-            SetPlayerDataServerRpc(playerData); // todo Проверить!!!
+            SetPlayerDataServerRpc(playerData);
+            StartCoroutine(SetAvatar(avatarData.CodedValue));
         }
         catch
         {
-            playerData.SetDefault();
+            playerData.SetDefaultValues();
+            avatarData.SetDefaultValues();
             SetPlayerDataServerRpc(playerData);
+            StartCoroutine(SetAvatar(avatarData.CodedValue));
         }
     }
     
@@ -172,7 +183,7 @@ public class Player : NetworkBehaviour
     }
     
     // Set data to owner players.
-    private void OnPlayerClickTakeSeatButton(int seatNumber)
+    private void OnPlayerClickTakeSeatButtonEvent(int seatNumber)
     {
         if (IsOwner == false)
         {
@@ -270,6 +281,46 @@ public class Player : NetworkBehaviour
         PlayerSeats.TryLeave(this);
     }
 
+    private IEnumerator SetAvatar(byte[] allBytes)
+    {
+        if (allBytes == null)
+        {
+            yield break;
+        }
+        
+        ClearAvatarDataServerRpc();
+        
+        yield return new WaitUntil(() => _avatarData.Value.CodedValue.Length == 0);
+        
+        const int maxBytesPerRpc = PlayerAvatarData.MaxBytesPerRpc;
+        int packageAmount = Mathf.CeilToInt((float)allBytes.Length / maxBytesPerRpc);
+
+        List<byte[]> packages = new();
+        for (var i = 0; i < packageAmount; i++)
+        {
+            int startIndex = i * maxBytesPerRpc;
+            int length = Mathf.Min(maxBytesPerRpc, allBytes.Length - startIndex);
+            
+            var package = new byte[length];
+            Array.Copy(allBytes, startIndex, package, 0, length);
+            packages.Add(package);
+        }
+        
+        for (var i = 0; i < packageAmount - 1; i++)
+        {
+            AppendAvatarDataServerRpc(packages[i]);
+            yield return new WaitUntil(() => _avatarData.Value.CodedValue.Length == (i+1) * maxBytesPerRpc); // Wait for RPC to apply.
+            Debug.Log($"Loading player avatar. {i+1}/{packageAmount} done.");
+        }
+        
+        AppendAvatarDataServerRpc(packages[packageAmount - 1]);
+        yield return new WaitUntil(() => _avatarData.Value.CodedValue.Length == allBytes.Length); // Wait for RPC to apply.
+        
+        Debug.Log($"Player avatar loaded.");
+
+        SetIsImageReadyServerRpc(true);
+    }
+    
     public override string ToString()
     {
         return $"Nick: {_nickName.Value}, ID: {OwnerClientId}.";
@@ -287,8 +338,22 @@ public class Player : NetworkBehaviour
     private void SetPlayerDataServerRpc(PlayerData data)
     {            
         _nickName.Value = data.NickName;
-        _avatarBase64String.Value = data.AvatarBase64String;
         _stack.Value = data.Stack;
+    }
+
+    [ServerRpc]
+    private void ClearAvatarDataServerRpc()
+    {
+        _avatarData.Value = new PlayerAvatarData(Array.Empty<byte>());
+    }
+    
+    [ServerRpc]
+    private void AppendAvatarDataServerRpc(byte[] data)
+    {
+        List<byte> allBytes = new(_avatarData.Value.CodedValue);
+        allBytes.AddRange(data);
+
+        _avatarData.Value = new PlayerAvatarData(allBytes.ToArray());
     }
 
     [ServerRpc]
@@ -301,6 +366,12 @@ public class Player : NetworkBehaviour
     private void SetSelectedBetActionServerRpc(BetAction betAction)
     {
         _selectedBetAction.Value = betAction;
+    }
+
+    [ServerRpc]
+    private void SetIsImageReadyServerRpc(bool value)
+    {
+        _isAvatarImageReady.Value = value;
     }
     
     [ClientRpc]

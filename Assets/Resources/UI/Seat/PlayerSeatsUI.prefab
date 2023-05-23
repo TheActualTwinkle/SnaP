@@ -57,6 +57,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _seatsUI: []
   _waitingTransparencyAlpha: 0.35
+  _avatarLoadingSprite: {fileID: 21300000, guid: 04d2abeb7bcd28a4dab695a12aeea340, type: 3}
 --- !u!1001 &926770445965006891
 PrefabInstance:
   m_ObjectHideFlags: 0
