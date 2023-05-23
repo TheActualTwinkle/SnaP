@@ -1,9 +1,8 @@
 using System.Collections;
+using System.Linq;
 using TMPro;
 using Unity.Netcode;
-#if UNITY_EDITOR
-    using UnityEditor;
-#endif
+using SFB;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -42,24 +41,24 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
     private void SetupUI()
     {
         PlayerData playerData = _saveLoadSystem.Load<PlayerData>();
-
         if (playerData.Equals(default(PlayerData)) == true)
         {
             playerData.SetDefaultValues();
-            SavePlayerData();
         }
-        
-        _nickNameInputField.text = playerData.NickName;
-        _stackSlider.value = playerData.Stack;
         
         PlayerAvatarData avatarData = _saveLoadSystem.Load<PlayerAvatarData>();
         if (avatarData.Equals(default(PlayerAvatarData)) == true)
         {
             avatarData.SetDefaultValues();
-            SavePlayerAvatar();
         }
         
-        _image.sprite = TextureConverter.GetSprite(avatarData.CodedValue, (int)AvatarImageWidth, (int)AvatarImageHeight);
+        _nickNameInputField.text = playerData.NickName;
+        _stackSlider.value = playerData.Stack;
+
+        _image.sprite = TextureConverter.GetSprite(avatarData.CodedValue, AvatarImageWidth, AvatarImageHeight);
+
+        SavePlayerData();
+        SavePlayerAvatarData();
     }
 
     private void SetupBetSliderStep()
@@ -92,12 +91,17 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 
     private IEnumerator ChangeImage()
     {
-#if UNITY_EDITOR // todo
-        string filePath = EditorUtility.OpenFilePanel("Select avatar", "", "jpg,png");
+        string[] imagesPath = StandaloneFileBrowser.OpenFilePanel("Chose avatar", "", "png,jpg,jpeg", false);
+
+        if (imagesPath == null || imagesPath.Length == 0)
+        {
+            yield break;
+        }
+        
+        string filePath = imagesPath.First();
         yield return StartCoroutine(SetImageFromLocalFIle(filePath));
 
         SavePlayerData();
-#endif
 
         yield return null;
     }
@@ -106,18 +110,25 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
     {
         using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(filePath);
         
-        yield return webRequest.SendWebRequest();
+        yield return webRequest.SendWebRequest(); // todo There is an error when trying load .png pics with big size.
 
-        if (webRequest.result == UnityWebRequest.Result.ConnectionError)
+        switch (webRequest.result)
         {
-            Log.WriteToFile($"An error occurred while trying to set image. {webRequest.error}");
-            yield break;
+            case UnityWebRequest.Result.DataProcessingError:
+            case UnityWebRequest.Result.ConnectionError:
+                // todo make a error window.
+                Log.WriteToFile($"An error occurred while trying to set image. {webRequest.error}.");
+                PlayerAvatarData avatarData = new();
+                avatarData.SetDefaultValues();
+                _image.sprite = TextureConverter.GetSprite(avatarData.CodedValue, AvatarImageWidth, AvatarImageHeight);
+                break;
+            case UnityWebRequest.Result.Success:
+                Texture2D texture = DownloadHandlerTexture.GetContent(webRequest);
+                _image.sprite = TextureConverter.GetSprite(texture, AvatarImageWidth, AvatarImageHeight);
+                break;
         }
 
-        Texture2D texture = DownloadHandlerTexture.GetContent(webRequest);
-        _image.sprite = TextureConverter.GetSprite(texture, AvatarImageWidth, AvatarImageHeight);
-
-        SavePlayerAvatar();
+        SavePlayerAvatarData();
     }
 
     private void SavePlayerData()
@@ -126,7 +137,7 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
         _saveLoadSystem.Save(playerData);
     }
 
-    private void SavePlayerAvatar()
+    private void SavePlayerAvatarData()
     {
         byte[] rawTexture = TextureConverter.GetRawTexture(_image.sprite.texture);
         PlayerAvatarData avatarData = new(rawTexture);
