@@ -18,5 +18,6 @@ Project for learn Unity multiplayer. Using Texas hold 'em as one of the most pop
 
 ## **References:**
 * [Holdem Combination Сalculator](https://github.com/ccqi/TexasHoldem)
+* [Standalone File Browser](https://github.com/gkngkc/UnityStandaloneFileBrowser)
 * [Cards UI](https://drawsgood.itch.io/8bit-deck-card-assets)
 * [Chips UI](https://www.freepik.com/premium-vector/cards-chips-dice-pixel-art-set-poker-game-casino-gambling-elements-collection-8-bit_31890168.htm)
