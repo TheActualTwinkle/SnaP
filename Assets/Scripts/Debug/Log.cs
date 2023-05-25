@@ -28,7 +28,7 @@ public static class Log
     public static void WriteToFile(object message)
     {
         Debug.Log(message);
-
+        
 #if !UNITY_EDITOR
 
         try
