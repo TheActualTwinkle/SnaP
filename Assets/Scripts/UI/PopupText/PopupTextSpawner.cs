@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(TMP_Text))]
 public class PopupTextSpawner : MonoBehaviour
 {
     [SerializeField] private PopupObject _prefab;
@@ -14,8 +13,13 @@ public class PopupTextSpawner : MonoBehaviour
         _camera = Camera.main;
     }
 
+    public void SetText(string text)
+    {
+        _text = text;
+    }
+    
     // Button.
-    private void SpawnOnMousePosition()
+    public void SpawnOnMousePosition()
     {
         Vector3 mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0;
@@ -26,7 +30,7 @@ public class PopupTextSpawner : MonoBehaviour
     {
         PopupObject popupObject = Instantiate(_prefab, position, Quaternion.identity, transform);
         popupObject.SetText(_text);
-        
+
         Destroy(popupObject.gameObject, popupObject.TimeOfLife);
     }
 }

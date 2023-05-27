@@ -6,6 +6,12 @@ using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
 {
+    public enum DeniedReason
+    {
+        SeatOccupiedByOtherPlayer,
+        StackTooSmall,
+    }
+    
     public static PlayerSeats Instance { get; private set; }
 
     public const int MaxSeats = 5;
@@ -13,7 +19,8 @@ public class PlayerSeats : MonoBehaviour
     public event Action<Player, int> PlayerSitEvent;
     public event Action<Player, int> PlayerWaitForSitEvent;
     public event Action<Player, int> PlayerLeaveEvent;
-    
+    public event Action<DeniedReason, int> PlayerSitDeniedEvent;
+
     public List<Player> Players => _players.ToList();
     [ReadOnly] [SerializeField] private List<Player> _players;
 
@@ -63,9 +70,17 @@ public class PlayerSeats : MonoBehaviour
 
     public bool TryTake(Player player, int seatNumber, bool forceToSeat = false)
     {
-        if (_players[seatNumber] != null || _waitingPlayers[seatNumber] != null)
+        if (IsFree(seatNumber) == false)
         {
+            PlayerSitDeniedEvent?.Invoke(DeniedReason.SeatOccupiedByOtherPlayer, seatNumber);
             Log.WriteToFile($"Player ({player}) can`t take the №{seatNumber} seat, its already taken by Player ({player}).");
+            return false;
+        }
+
+        if (player.Stack < Betting.Instance.BigBlind)
+        {
+            PlayerSitDeniedEvent?.Invoke(DeniedReason.StackTooSmall, seatNumber);
+            Log.WriteToFile($"Player ({player}) can`t take the №{seatNumber} seat, stack smaller then Big blind.");
             return false;
         }
 
@@ -150,8 +165,8 @@ public class PlayerSeats : MonoBehaviour
             PlayerWaitForSitEvent?.Invoke(player, i);
         }
     }
-    
-    public bool IsFree(int seatNumber)
+
+    private bool IsFree(int seatNumber)
     {
         return _players[seatNumber] == null && _waitingPlayers[seatNumber] == null;
     }

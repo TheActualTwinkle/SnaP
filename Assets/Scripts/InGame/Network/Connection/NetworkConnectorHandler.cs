@@ -12,12 +12,18 @@ public static class NetworkConnectorHandler
     public static void CreateGame(NetworkConnectorType connectorType)
     {
         INetworkConnector connector = GetConnector(connectorType);
+        
+        CurrentConnector = connector;
+
         connector.CreateGame();
     }
 
     public static void JoinGame(NetworkConnectorType connectorType)
     {
         INetworkConnector connector = GetConnector(connectorType);
+        
+        CurrentConnector = connector;
+
         connector.JoinGame();
     }
 
@@ -31,8 +37,6 @@ public static class NetworkConnectorHandler
             NetworkConnectorType.UnityRelay => new UnityRelayNetworkConnector(connectionData),
             _ => throw new ArgumentOutOfRangeException(nameof(connectorType), connectorType, null)
         };
-
-        CurrentConnector = connector;
         
         return connector;
     }

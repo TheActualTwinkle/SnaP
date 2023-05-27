@@ -20,7 +20,7 @@ public class PlayerSeatsUI : MonoBehaviour
 
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     
-    private IEnumerator _waitForPlayerAvatarImageLoadedRoutine;
+    private IEnumerator _setPlayerAvatarImageWhenLoadedRoutine;
 
     private void OnEnable()
     {
@@ -64,13 +64,8 @@ public class PlayerSeatsUI : MonoBehaviour
         
         ChangeSeatImageTransparency(seatNumber, 1f);
 
-        if (_waitForPlayerAvatarImageLoadedRoutine != null)
-        {
-            StopCoroutine(_waitForPlayerAvatarImageLoadedRoutine);
-        }
-
-        _waitForPlayerAvatarImageLoadedRoutine = WaitForPlayerAvatarImageLoaded(player);
-        StartCoroutine(_waitForPlayerAvatarImageLoadedRoutine);
+        _setPlayerAvatarImageWhenLoadedRoutine = SetPlayerAvatarImageWhenLoaded(player, seatNumber);
+        StartCoroutine(_setPlayerAvatarImageWhenLoadedRoutine);
         
         if (player.IsOwner == false)
         {
@@ -95,9 +90,9 @@ public class PlayerSeatsUI : MonoBehaviour
 
         ChangeSeatImageTransparency(seatNumber, 1f);
 
-        if (_waitForPlayerAvatarImageLoadedRoutine != null)
+        if (_setPlayerAvatarImageWhenLoadedRoutine != null)
         {
-            StopCoroutine(_waitForPlayerAvatarImageLoadedRoutine);
+            StopCoroutine(_setPlayerAvatarImageWhenLoadedRoutine);
         }
     }
     
@@ -133,36 +128,26 @@ public class PlayerSeatsUI : MonoBehaviour
         return centredIndexes.ToArray();
     }
 
-    private IEnumerator WaitForPlayerAvatarImageLoaded(Player player)
+    private IEnumerator SetPlayerAvatarImageWhenLoaded(Player player, int seatNumber)
     {
-        int playerIndex = PlayerSeats.Players.IndexOf(player);
-        _seatsUI[playerIndex].EnableLoadingImage();
+        _seatsUI[seatNumber].EnableLoadingImage();
         
+        print(player.IsAvatarImageReady);
         yield return new WaitUntil(() => player.IsAvatarImageReady == true);
         
-        _seatsUI[playerIndex].DisableLoadingImage();
+        _seatsUI[seatNumber].DisableLoadingImage();
         
-        TrySetPlayerAvatarImage(player);
+        TrySetPlayerAvatarImage(player, seatNumber);
     }
 
-    private bool TrySetPlayerAvatarImage(Player player)
+    private bool TrySetPlayerAvatarImage(Player player, int seatNumber)
     {
-        int indexOfPlayerSeat = PlayerSeats.Players.IndexOf(player);
 
-        Image seatImage = _seatsUI[indexOfPlayerSeat].PlayerImage;
+        Image seatImage = _seatsUI[seatNumber].PlayerImage;
         var imageWidth = (int)seatImage.rectTransform.rect.width;
         var imageHeight = (int)seatImage.rectTransform.rect.height;
-        return TrySetImage(indexOfPlayerSeat, TextureConverter.GetSprite(player.AvatarData.CodedValue, imageWidth, imageHeight));
-    }
-
-    private bool TrySetImage(int seatIndex, Sprite sprite)
-    {
-        if (seatIndex == -1)
-        {
-            return false;
-        }
         
-        _seatsUI[seatIndex].PlayerImage.sprite = sprite;
+        _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(player.AvatarData.CodedValue, imageWidth, imageHeight);
         return true;
     }
     

@@ -6,15 +6,15 @@ using UnityEngine;
 public class ConnectionButton : MonoBehaviour
 {
     [SerializeField] private NetworkConnectorType _connectorType;
-    
+
     // Button.
-    public void CreateGame()
+    private void CreateGame()
     {
         NetworkConnectorHandler.CreateGame(_connectorType);
     }
-    
+
     // Button.
-    public void JoinGame()
+    private void JoinGame()
     {
         NetworkConnectorHandler.JoinGame(_connectorType);
     }

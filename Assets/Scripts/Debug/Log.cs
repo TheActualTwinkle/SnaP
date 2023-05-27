@@ -46,9 +46,4 @@ public static class Log
         
 #endif
     }
-
-    public static byte[] ReadAllBytes()
-    {
-        return File.ReadAllBytes(LogFilePath);
-    }
 }

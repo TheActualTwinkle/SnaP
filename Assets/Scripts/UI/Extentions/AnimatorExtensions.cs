@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public static class AnimatorCleaner
+public static class AnimatorExtensions
 {
     public static void ResetAllTriggers(this Animator animator)
     {

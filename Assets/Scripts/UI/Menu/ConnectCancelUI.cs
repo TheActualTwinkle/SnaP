@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 
 [RequireComponent(typeof(Animator), typeof(Button))]
-public class ConnectingUI : MonoBehaviour
+public class ConnectCancelUI : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
     [SerializeField] private Button _createButton;

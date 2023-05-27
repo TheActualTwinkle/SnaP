@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5628031383675477280}
   - component: {fileID: 4086865190642257906}
   m_Layer: 5
-  m_Name: CopyPopupUI
+  m_Name: ErrorPopupUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,8 +59,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eb45c7f9c1144e4e89e5645af3948f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 8394665099026709744}
   _text: {fileID: 2091311109722745967}
-  _timeOfLife: 1
+  _timeOfLife: 2
 --- !u!1 &3164818193502446718
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,7 +129,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Copied!
+  m_text: Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
   m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
@@ -137,8 +138,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4280821948
+  m_fontColor: {r: 0.735849, g: 0.15619439, b: 0.15619439, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -155,8 +156,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

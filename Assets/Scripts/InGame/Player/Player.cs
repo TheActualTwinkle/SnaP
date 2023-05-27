@@ -69,7 +69,7 @@ public class Player : NetworkBehaviour
         // Set data and UI to non owner players.
         if (IsOwner == false && _seatNumber.Value != NullSeatNumber)
         {
-            TakeSeat(_seatNumber.Value, true);
+            TakeSeat(_seatNumber.Value, true); // go to false todo
         }
     }
 
@@ -182,20 +182,10 @@ public class Player : NetworkBehaviour
         SetBetInputFieldValueServerRpc(value);
     }
     
-    // Set data to owner players.
+    // Set data to owner.
     private void OnPlayerClickTakeSeatButtonEvent(int seatNumber)
     {
         if (IsOwner == false)
-        {
-            return;
-        }
-
-        if (PlayerSeats.IsFree(seatNumber) == false)
-        {
-            return;
-        }
-
-        if (_stack.Value < Betting.BigBlind)
         {
             return;
         }
