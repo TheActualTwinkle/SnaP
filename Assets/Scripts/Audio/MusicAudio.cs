@@ -23,8 +23,7 @@ public class MusicAudio : MonoBehaviour
         }
     }
 
-    // Animator
-    public void Start()
+    private void Start()
     {
         if (_audioSource.isPlaying == true)
         {
