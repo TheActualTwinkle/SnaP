@@ -14,8 +14,10 @@ public class UnityRelayNetworkConnector : INetworkConnector
     
     private string _joinCode;
 
-    public UnityRelayNetworkConnector(IReadOnlyList<string> connectionData)
+    public void Init()
     {
+        IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.LocalAddress);
+
         _joinCode = connectionData[0];
     }
 

@@ -9,13 +9,16 @@ public class LocalAddressNetworkConnector : INetworkConnector
 {
     public IEnumerable<string> ConnectionData => new [] { _ipAddress, _port };
     
-    private readonly string _ipAddress;
-    private readonly string _port;
+    private string _ipAddress;
+    private string _port;
 
     private IEnumerator _connectRoutine;
 
-    public LocalAddressNetworkConnector(IReadOnlyList<string> connectionData)
+
+    public void Init()
     {
+        IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.LocalAddress);
+
         _ipAddress = connectionData[0];
         _port = connectionData[1];
     }
@@ -56,7 +59,7 @@ public class LocalAddressNetworkConnector : INetworkConnector
         NetworkManager.Singleton.StartClient();
     }
     
-    // Button.
+    // Button. todo: Maybe it`s useless?
     private void Exit()
     {
         Application.Quit();

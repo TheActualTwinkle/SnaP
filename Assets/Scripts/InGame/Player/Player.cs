@@ -50,8 +50,9 @@ public class Player : NetworkBehaviour
         Game.EndDealEvent += OnEndDeal;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
         OwnerBetUI.BetInputFieldValueChangedEvent += OnBetInputFieldValueChanged;
-        PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButtonEvent;
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
+        
+        PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton;
     }
 
     private void OnDisable()
@@ -60,8 +61,9 @@ public class Player : NetworkBehaviour
         Game.EndDealEvent -= OnEndDeal;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
         OwnerBetUI.BetInputFieldValueChangedEvent -= OnBetInputFieldValueChanged;
-        PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButtonEvent; 
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
+        
+        PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButton;
     }
 
     private void Start()
@@ -94,6 +96,11 @@ public class Player : NetworkBehaviour
                     Shutdown();
                 }
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton; // todo Delete
         }
     }
 
@@ -183,7 +190,7 @@ public class Player : NetworkBehaviour
     }
     
     // Set data to owner.
-    private void OnPlayerClickTakeSeatButtonEvent(int seatNumber)
+    private void OnPlayerClickTakeSeatButton(int seatNumber)
     {
         if (IsOwner == false)
         {

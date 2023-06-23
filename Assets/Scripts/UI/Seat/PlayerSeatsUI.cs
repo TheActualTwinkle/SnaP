@@ -46,6 +46,7 @@ public class PlayerSeatsUI : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        
         _seatsUI = GetComponentsInChildren<SeatUI>().ToList();
     }
 
@@ -132,7 +133,6 @@ public class PlayerSeatsUI : MonoBehaviour
     {
         _seatsUI[seatNumber].EnableLoadingImage();
         
-        print(player.IsAvatarImageReady);
         yield return new WaitUntil(() => player.IsAvatarImageReady == true);
         
         _seatsUI[seatNumber].DisableLoadingImage();

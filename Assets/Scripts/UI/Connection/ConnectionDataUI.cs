@@ -10,6 +10,12 @@ public class ConnectionDataUI : MonoBehaviour
     
     private void Start()
     {
+        if (NetworkConnectorHandler.CurrentConnector == null)
+        {
+            _text.text = "Null";
+            return;
+        }
+        
         IEnumerable<string> connectionData = NetworkConnectorHandler.CurrentConnector.ConnectionData;
         _text.text = string.Join(_dataSeparator, connectionData);
     }

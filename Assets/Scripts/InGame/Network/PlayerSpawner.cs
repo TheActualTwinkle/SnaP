@@ -20,6 +20,11 @@ public class PlayerSpawner : NetworkBehaviour
     {
         if (sceneName.Contains("Desk") == true && IsServer == true)
         {
+            if (clientId == 0) // todo: Maybe fixed as 'NetworkManager.Singleton.LocalClientId == clientId' but if so there is an error on dedicated server.
+            {
+                return;
+            }
+            
             NetworkObjectSpawner.SpawnNetworkObjectChangeOwnershipToClient(_playerPrefab.gameObject, Vector3.zero, clientId, true).GetComponent<Player>();
         }
     }
