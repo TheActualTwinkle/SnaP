@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using TMPro;
 using UnityEngine;
 
@@ -21,6 +23,11 @@ public class ConnectionInputField : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        _ipAddressInputField.text = Dns.GetHostEntry(Dns.GetHostName())
+            .AddressList.First(
+                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            .ToString();
     }
 
     public IReadOnlyList<string> GetConnectionData(NetworkConnectorType connectorType)

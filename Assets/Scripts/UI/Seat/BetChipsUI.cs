@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Animator), typeof(Image), typeof(TextMeshProUGUI))]
+[RequireComponent(typeof(Animator), typeof(Image))]
 public class BetChipsUI : MonoBehaviour
 {
     [SerializeField] private int _index;
