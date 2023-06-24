@@ -50,6 +50,7 @@ public class OwnerBetUI : MonoBehaviour
         PlayerSeats.PlayerLeaveEvent += OnPlayerLeave;
         Betting.PlayerStartBettingEvent += OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
+        Betting.CurrentBetterIdNetworkVariable.OnValueChanged += OnBetterIdValueChanged;
 
         foreach (BetActionToggle toggle in _toggles)
         {
@@ -68,6 +69,8 @@ public class OwnerBetUI : MonoBehaviour
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
         Betting.PlayerStartBettingEvent -= OnPlayerStartBetting;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
+        Betting.CurrentBetterIdNetworkVariable.OnValueChanged -= OnBetterIdValueChanged;
+
         
         foreach (BetActionToggle toggle in _toggles)
         {
@@ -87,7 +90,7 @@ public class OwnerBetUI : MonoBehaviour
         {
             return;
         }
-        
+
         if (Betting.CurrentBetter != LocalPlayer)
         {
             return;
@@ -115,7 +118,7 @@ public class OwnerBetUI : MonoBehaviour
         {
             return;
         }
-        
+
         if (Betting.GetBetSituation(LocalPlayer.BetAmount) != BetSituation.CallOrFold)
         {
             return;
@@ -142,6 +145,16 @@ public class OwnerBetUI : MonoBehaviour
     }
 
     #endregion
+
+    private void OnBetterIdValueChanged(ulong oldValue, ulong newValue)
+    {
+        if (newValue == Betting.NullBetterId)
+        {
+            return;
+        }
+        
+        SetupTogglesUI();
+    }
     
     private void OnToggleValueChanged(bool value)
     {
