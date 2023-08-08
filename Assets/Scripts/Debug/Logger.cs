@@ -13,20 +13,20 @@ using Application = UnityEngine.Application;
 
 public static class Logger
 {
-    private static readonly string LogFilePath = $"{Application.persistentDataPath}\\StringLog.log";
+    private static readonly string PokerLogReaderFilePath = $"{Application.persistentDataPath}\\Log.plr";
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
 
     static Logger()
     {
-        if (File.Exists(LogFilePath) == false)
+        if (File.Exists(PokerLogReaderFilePath) == false)
         {
-            File.Create(LogFilePath).Close();
+            File.Create(PokerLogReaderFilePath).Close();
         }
         else
         {
-            File.WriteAllText(LogFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
+            File.WriteAllText(PokerLogReaderFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
         }
     }
     
@@ -44,7 +44,7 @@ public static class Logger
     {
         try
         {
-            using StreamWriter sw = new(LogFilePath, true);
+            using StreamWriter sw = new(PokerLogReaderFilePath, true);
             sw.WriteLine(new LogMessage(DateTime, message, level).ToString());
         }
         catch (Exception e)
