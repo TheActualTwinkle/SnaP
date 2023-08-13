@@ -41,7 +41,7 @@ public class LocalAddressNetworkConnector : INetworkConnector
         NetworkManager.Singleton.Shutdown();
 
         NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.LoadScene("Desk", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene("Desk_d", LoadSceneMode.Single);
     }
 
     public void JoinGame()

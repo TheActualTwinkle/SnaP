@@ -257,7 +257,7 @@ public class Betting : NetworkBehaviour
         {
             return;
         }
-        
+
         _currentBetterId.Value = player.OwnerClientId;
         Log.WriteToFile($"Player ({player}), seat №{PlayerSeats.Players.IndexOf(player)} start betting");
         
@@ -296,8 +296,6 @@ public class Betting : NetworkBehaviour
         {
             LastBetRaiser = player;
         }
-        
-        //BetClientRpc(playerId, betAction, betAmount);
     }
     
     #endregion
@@ -338,12 +336,6 @@ public class Betting : NetworkBehaviour
         {
             SfxAudio.Instance.Play(3);
         }
-    }
-
-    [ClientRpc]
-    private void BetClientRpc(ulong playerId, BetAction betAction, uint betAmount)
-    {
-        throw new NotImplementedException();
     }
 
     #endregion

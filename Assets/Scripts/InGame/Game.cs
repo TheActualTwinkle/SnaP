@@ -80,6 +80,12 @@ public class Game : NetworkBehaviour
         foreach (int index in turnSequence)
         {
             Player player = PlayerSeats.Players[index];
+
+            if (IsHost == false)
+            {
+                _SetPlayersPocketCards(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
+            }
+            
             SetPlayersPocketCardsClientRpc(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
         }
         
@@ -116,6 +122,8 @@ public class Game : NetworkBehaviour
         S_EndStage();
 
         yield return new WaitForSeconds(_roundsInterval);
+        
+        S_StartNextStage();
     }
 
     private IEnumerator StartShowdown()
@@ -240,7 +248,7 @@ public class Game : NetworkBehaviour
         
         if (_isPlaying.Value == false)
         {
-            return; 
+            return;
         }
 
         if (PlayerSeats.Players.Count(x => x != null && x.BetAction != BetAction.Fold) != 1)
@@ -282,7 +290,7 @@ public class Game : NetworkBehaviour
         _startDealWhenСonditionTrueCoroutine = null;
     }
 
-    private void GetStageCoroutine(GameStage gameStage)
+    private void SetStageCoroutine(GameStage gameStage)
     {
         switch (gameStage)
         {
@@ -322,15 +330,18 @@ public class Game : NetworkBehaviour
         Log.WriteToFile("Starting Deal.");
         
         _cardDeck = new CardDeck();
-
+        
+        if (IsHost == false)
+        {
+            _StartDeal(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
+        }
+        
         StartDealClientRpc(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
 
-        _board = new Board(_cardDeck.PullCards(5).ToList());
-
         _boardButton.Move();
-        
-        SetCodedBoardCardsValueServerRpc(CardObjectConverter.GetCodedCardsString(_board.Cards));
-        SetIsPlayingValueServerRpc(true);
+
+        _codedBoardCardsString.Value = CardObjectConverter.GetCodedCardsString(_board.Cards);
+        _isPlaying.Value = true;
 
         S_StartNextStage();
     }
@@ -341,21 +352,23 @@ public class Game : NetworkBehaviour
         {
             return;
         }
-        
-        SetCurrentGameStageValueServerRpc(GameStage.Empty);
-        SetIsPlayingValueServerRpc(false);
-        SetCodedBoardCardsValueServerRpc(string.Empty);
+
+        _currentGameStage.Value = GameStage.Empty;
+        _isPlaying.Value = false;
+        _codedBoardCardsString.Value = string.Empty;
         
         Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'. Winner hand: {winnerInfo[0].Combination}");
 
-        if (_startDealAfterRoundsInterval != null)
+        if (_stageCoroutine != null)
         {
-            StopCoroutine(_startDealAfterRoundsInterval);
+            StopCoroutine(_stageCoroutine);
         }
-
-        _startDealAfterRoundsInterval = StartDealAfterRoundsInterval();
-        StartCoroutine(_startDealAfterRoundsInterval);
-
+        
+        if (IsHost == false)
+        {
+            _EndDeal(winnerInfo);
+        }
+        
         EndDealClientRpc(winnerInfo);
     }
     
@@ -367,10 +380,15 @@ public class Game : NetworkBehaviour
         }
 
         GameStage stage = _currentGameStage.Value + 1;
-        
-        SetCurrentGameStageValueServerRpc(stage);
-        GetStageCoroutine(stage);
+
+        _currentGameStage.Value = stage;
+        SetStageCoroutine(stage);
         StartCoroutine(_stageCoroutine);
+        
+        if (IsHost == false)
+        {
+            _StartNextStage(stage);
+        }
         
         StartNextStageClientRpc(stage);
         
@@ -384,33 +402,53 @@ public class Game : NetworkBehaviour
             return;
         }
 
-        EndStageClientRpc();
+        if (IsHost == false)
+        {
+            _EndStage(_currentGameStage.Value);
+        }
+        
+        EndStageClientRpc(_currentGameStage.Value);
     }
     
     #endregion
     
     #region RPC
 
-    [ServerRpc]
-    private void SetIsPlayingValueServerRpc(bool value)
+    [ClientRpc]
+    private void SetPlayersPocketCardsClientRpc(ulong playerId, CardObject card1, CardObject card2)
     {
-        _isPlaying.Value = value;
-    }
-
-    [ServerRpc]
-    private void SetCurrentGameStageValueServerRpc(GameStage value)
-    {
-        _currentGameStage.Value = value;
-    }
-
-    [ServerRpc]
-    private void SetCodedBoardCardsValueServerRpc(string value)
-    {
-        _codedBoardCardsString.Value = value;
+        _SetPlayersPocketCards(playerId, card1, card2);
     }
 
     [ClientRpc]
-    private void SetPlayersPocketCardsClientRpc(ulong playerId, CardObject card1, CardObject card2)
+    private void StartDealClientRpc(int[] cardDeck)
+    {
+        _StartDeal(cardDeck);
+    }
+
+    [ClientRpc]
+    private void EndDealClientRpc(WinnerInfo[] winnerInfo)
+    {
+        _EndDeal(winnerInfo);
+    }
+
+    [ClientRpc]
+    private void StartNextStageClientRpc(GameStage stage)
+    {
+        _StartNextStage(stage);
+    }
+
+    [ClientRpc]
+    private void EndStageClientRpc(GameStage stage)
+    {
+        _EndStage(stage);
+    }
+    
+    #endregion
+
+    #region Methods that has to be called both on Server and Client.
+
+    private void _SetPlayersPocketCards(ulong playerId, CardObject card1, CardObject card2)
     {
         Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == playerId);
         if (player == null)
@@ -420,31 +458,35 @@ public class Game : NetworkBehaviour
         
         player.SetPocketCards(card1, card2);
     }
-
-    [ClientRpc]
-    private void StartDealClientRpc(int[] cardDeck)
+    
+    private void _StartDeal(int[] cardDeck)
     {
         _cardDeck = new CardDeck(cardDeck);
         _board = new Board(_cardDeck.PullCards(5).ToList());
     }
-
-    [ClientRpc]
-    private void EndDealClientRpc(WinnerInfo[] winnerInfo)
+    
+    private void _EndDeal(WinnerInfo[] winnerInfo)
     {
+        if (_startDealAfterRoundsInterval != null)
+        {
+            StopCoroutine(_startDealAfterRoundsInterval);
+        }
+
+        _startDealAfterRoundsInterval = StartDealAfterRoundsInterval();
+        StartCoroutine(_startDealAfterRoundsInterval);
+        
         EndDealEvent?.Invoke(winnerInfo);
     }
-
-    [ClientRpc]
-    private void StartNextStageClientRpc(GameStage stage)
+    
+    private void _StartNextStage(GameStage stage)
     {
         GameStageBeganEvent?.Invoke(stage);
     }
 
-    [ClientRpc]
-    private void EndStageClientRpc()
+    private void _EndStage(GameStage stage)
     {
-        GameStageOverEvent?.Invoke(GameStage.Showdown);
+        GameStageOverEvent?.Invoke(stage);
     }
-    
+
     #endregion
 }
