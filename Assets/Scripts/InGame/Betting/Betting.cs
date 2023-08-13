@@ -275,6 +275,14 @@ public class Betting : NetworkBehaviour
         Log.WriteToFile($"Player ({player}); {betAction}; {betAmount}");
 
         EndBetClientRpc(player.OwnerClientId, betAction, betAmount);
+
+        if (IsHost == true)
+        {
+            return;
+        }
+
+        BetActionInfo betActionInfo = new(player, betAction, betAmount);
+        InvokePlayerEndBettingEvent(betActionInfo);
     }
 
     private void S_Bet(ulong playerId, BetAction betAction, uint betAmount)
@@ -336,6 +344,15 @@ public class Betting : NetworkBehaviour
         {
             SfxAudio.Instance.Play(3);
         }
+    }
+
+    #endregion
+
+    #region Methods that has to be called both on Server and Client.
+
+    private void InvokePlayerEndBettingEvent(BetActionInfo betActionInfo)
+    {
+        PlayerEndBettingEvent?.Invoke(betActionInfo);
     }
 
     #endregion

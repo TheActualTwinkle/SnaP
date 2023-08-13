@@ -83,7 +83,7 @@ public class Game : NetworkBehaviour
 
             if (IsHost == false)
             {
-                _SetPlayersPocketCards(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
+                SetPlayersPocketCards(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
             }
             
             SetPlayersPocketCardsClientRpc(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
@@ -333,7 +333,7 @@ public class Game : NetworkBehaviour
         
         if (IsHost == false)
         {
-            _StartDeal(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
+            InitDeckAndBoard(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
         }
         
         StartDealClientRpc(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
@@ -357,7 +357,7 @@ public class Game : NetworkBehaviour
         _isPlaying.Value = false;
         _codedBoardCardsString.Value = string.Empty;
         
-        Log.WriteToFile($"End deal. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'. Winner hand: {winnerInfo[0].Combination}");
+        Log.WriteToFile($"End deal. Pot {winnerInfo.Select(x => x.Chips).FirstOrDefault()}. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'. Winner hand: {winnerInfo[0].Combination}");
 
         if (_stageCoroutine != null)
         {
@@ -366,7 +366,7 @@ public class Game : NetworkBehaviour
         
         if (IsHost == false)
         {
-            _EndDeal(winnerInfo);
+            InitEndDealRoutine(winnerInfo);
         }
         
         EndDealClientRpc(winnerInfo);
@@ -387,7 +387,7 @@ public class Game : NetworkBehaviour
         
         if (IsHost == false)
         {
-            _StartNextStage(stage);
+            InvokeGameStageBeganEvent(stage);
         }
         
         StartNextStageClientRpc(stage);
@@ -404,7 +404,7 @@ public class Game : NetworkBehaviour
 
         if (IsHost == false)
         {
-            _EndStage(_currentGameStage.Value);
+            InvokeGameStageOverEvent(_currentGameStage.Value);
         }
         
         EndStageClientRpc(_currentGameStage.Value);
@@ -417,38 +417,38 @@ public class Game : NetworkBehaviour
     [ClientRpc]
     private void SetPlayersPocketCardsClientRpc(ulong playerId, CardObject card1, CardObject card2)
     {
-        _SetPlayersPocketCards(playerId, card1, card2);
+        SetPlayersPocketCards(playerId, card1, card2);
     }
 
     [ClientRpc]
     private void StartDealClientRpc(int[] cardDeck)
     {
-        _StartDeal(cardDeck);
+        InitDeckAndBoard(cardDeck);
     }
 
     [ClientRpc]
     private void EndDealClientRpc(WinnerInfo[] winnerInfo)
     {
-        _EndDeal(winnerInfo);
+        InitEndDealRoutine(winnerInfo);
     }
 
     [ClientRpc]
     private void StartNextStageClientRpc(GameStage stage)
     {
-        _StartNextStage(stage);
+        InvokeGameStageBeganEvent(stage);
     }
 
     [ClientRpc]
     private void EndStageClientRpc(GameStage stage)
     {
-        _EndStage(stage);
+        InvokeGameStageOverEvent(stage);
     }
     
     #endregion
 
     #region Methods that has to be called both on Server and Client.
 
-    private void _SetPlayersPocketCards(ulong playerId, CardObject card1, CardObject card2)
+    private void SetPlayersPocketCards(ulong playerId, CardObject card1, CardObject card2)
     {
         Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == playerId);
         if (player == null)
@@ -459,13 +459,13 @@ public class Game : NetworkBehaviour
         player.SetPocketCards(card1, card2);
     }
     
-    private void _StartDeal(int[] cardDeck)
+    private void InitDeckAndBoard(int[] cardDeck)
     {
         _cardDeck = new CardDeck(cardDeck);
         _board = new Board(_cardDeck.PullCards(5).ToList());
     }
     
-    private void _EndDeal(WinnerInfo[] winnerInfo)
+    private void InitEndDealRoutine(WinnerInfo[] winnerInfo)
     {
         if (_startDealAfterRoundsInterval != null)
         {
@@ -478,12 +478,12 @@ public class Game : NetworkBehaviour
         EndDealEvent?.Invoke(winnerInfo);
     }
     
-    private void _StartNextStage(GameStage stage)
+    private void InvokeGameStageBeganEvent(GameStage stage)
     {
         GameStageBeganEvent?.Invoke(stage);
     }
 
-    private void _EndStage(GameStage stage)
+    private void InvokeGameStageOverEvent(GameStage stage)
     {
         GameStageOverEvent?.Invoke(stage);
     }
