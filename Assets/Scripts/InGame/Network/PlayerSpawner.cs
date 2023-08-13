@@ -20,6 +20,11 @@ public class PlayerSpawner : NetworkBehaviour
     {
         if (sceneName.Contains("Desk") == true && IsServer == true)
         {
+            if (IsHost == false && NetworkManager.Singleton.LocalClientId == clientId)
+            {
+                return;
+            }
+            
             NetworkObjectSpawner.SpawnNetworkObjectChangeOwnershipToClient(_playerPrefab.gameObject, Vector3.zero, clientId, true).GetComponent<Player>();
         }
     }

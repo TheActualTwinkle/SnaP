@@ -49,4 +49,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 881676041b63ef24d94513e119bf1b13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _combinationCards: []
+  _combinationCards:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

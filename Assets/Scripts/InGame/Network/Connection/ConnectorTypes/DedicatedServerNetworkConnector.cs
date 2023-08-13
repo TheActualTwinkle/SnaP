@@ -1,28 +1,17 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LocalAddressNetworkConnector : INetworkConnector
+public class DedicatedServerNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData => new [] { _ipAddress, _port };
-    
-    private string _ipAddress;
-    private string _port;
-
-    private IEnumerator _connectRoutine;
-
-
+    public IEnumerable<string> ConnectionData => new [] {"N/A"};
+        
     public void Init()
     {
-        IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.LocalAddress);
-
-        _ipAddress = connectionData[0];
-        _port = connectionData[1];
+        return;
     }
-    
+
     public void CreateGame()
     {
         if (NetworkManager.Singleton.IsListening == true)
@@ -32,36 +21,26 @@ public class LocalAddressNetworkConnector : INetworkConnector
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
-        if (ushort.TryParse(_port, out ushort port) == false)
-        {
-            return;
-        }
-        unityTransport.SetConnectionData(_ipAddress, port);
+        unityTransport.SetConnectionData("192.168.0.14", 4792, "0.0.0.0"); // todo real server IP
 
         NetworkManager.Singleton.Shutdown();
 
-        NetworkManager.Singleton.StartHost();
+        NetworkManager.Singleton.StartServer();
         NetworkManager.Singleton.SceneManager.LoadScene("Desk_d", LoadSceneMode.Single);
     }
 
     public void JoinGame()
-    {
+    {        
         if (NetworkManager.Singleton.IsListening == true)
         {
             return;
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        unityTransport.SetConnectionData(_ipAddress, ushort.Parse(_port));
+        unityTransport.SetConnectionData("192.168.0.14", 4792); // todo
         
         NetworkManager.Singleton.Shutdown();
         
         NetworkManager.Singleton.StartClient();
-    }
-    
-    // Button. todo: Maybe it`s useless?
-    private void Exit()
-    {
-        Application.Quit();
     }
 }

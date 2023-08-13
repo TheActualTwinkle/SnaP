@@ -50,8 +50,9 @@ public class Player : NetworkBehaviour
         Game.EndDealEvent += OnEndDeal;
         Betting.PlayerEndBettingEvent += OnPlayerEndBetting;
         OwnerBetUI.BetInputFieldValueChangedEvent += OnBetInputFieldValueChanged;
-        PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButtonEvent;
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
+        
+        PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton;
     }
 
     private void OnDisable()
@@ -60,8 +61,9 @@ public class Player : NetworkBehaviour
         Game.EndDealEvent -= OnEndDeal;
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
         OwnerBetUI.BetInputFieldValueChangedEvent -= OnBetInputFieldValueChanged;
-        PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButtonEvent; 
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
+        
+        PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButton;
     }
 
     private void Start()
@@ -94,6 +96,11 @@ public class Player : NetworkBehaviour
                     Shutdown();
                 }
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton; // todo Delete
         }
     }
 
@@ -146,8 +153,8 @@ public class Player : NetworkBehaviour
             return false;
         }
         
-        SetStackAmountClientRpc(_stack.Value - value);
-        SetBetAmountClientRpc(_betAmount.Value + value);
+        _stack.Value -= value;
+        _betAmount.Value += value;
         return true;
     }
     
@@ -183,7 +190,7 @@ public class Player : NetworkBehaviour
     }
     
     // Set data to owner.
-    private void OnPlayerClickTakeSeatButtonEvent(int seatNumber)
+    private void OnPlayerClickTakeSeatButton(int seatNumber)
     {
         if (IsOwner == false)
         {
@@ -237,7 +244,7 @@ public class Player : NetworkBehaviour
             return;
         }
         
-        SetBetAmountClientRpc(0);
+        _betAmount.Value = 0;
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
@@ -255,10 +262,10 @@ public class Player : NetworkBehaviour
         if (winnerInfo.Select(x => x.WinnerId).Contains(OwnerClientId) == true)
         {        
             WinnerInfo info = winnerInfo.FirstOrDefault(x => x.WinnerId == OwnerClientId);
-            SetStackAmountClientRpc(_stack.Value + info.Chips);
+            _stack.Value += info.Chips;
         }
-
-        SetBetAmountClientRpc(0);
+        
+        _betAmount.Value = 0;
     } 
     
     private void TakeSeat(int seatNumber, bool forceToSeat = false)
@@ -363,37 +370,10 @@ public class Player : NetworkBehaviour
     {
         _isAvatarImageReady.Value = value;
     }
-    
-    [ClientRpc]
-    private void SetStackAmountClientRpc(uint value)
-    {
-        if (IsServer == false)
-        {
-            return;
-        }
-        
-        _stack.Value = value;
-    }
-    
-    [ClientRpc]
-    private void SetBetAmountClientRpc(uint value)
-    {
-        if (IsServer == false)
-        {
-            return;
-        }   
-        
-        _betAmount.Value = value;
-    }
-    
+
     [ClientRpc]
     private void ShutdownClientRpc()
     {
-        if (IsServer)
-        {
-            return;
-        }
-
         Shutdown();
     }
     

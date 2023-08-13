@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,8 +9,8 @@ public class Pot : MonoBehaviour
 
     public uint Value => (uint)_bets.Sum(x => x.Value);
 
-    private Dictionary<Player, uint> StageBets { get; } = new();
-    private Dictionary<Player, uint> _bets;
+    private readonly Dictionary<Player, uint> _stageBets = new();
+    private Dictionary<Player, uint> _bets = new();
 
     private static Betting Betting => Betting.Instance;
     private static Game Game => Game.Instance;
@@ -67,36 +68,36 @@ public class Pot : MonoBehaviour
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
         _bets?.Clear();
-        StageBets?.Clear();
+        _stageBets?.Clear();
     }
 
     private void GameStageOverEvent(GameStage gameStage)
     {
         UpdateBets();
-        StageBets?.Clear();
+        _stageBets?.Clear();
     }
         
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
         Player player = betActionInfo.Player;
         
-        if (StageBets.TryGetValue(player, out uint _) == false)
+        if (_stageBets.TryGetValue(player, out uint _) == false)
         {
-            StageBets.Add(player, 0);
+            _stageBets.Add(player, 0);
         }
         
-        StageBets[player] = player.BetAmount;
+        _stageBets[player] = player.BetAmount;
     }
 
     private void UpdateBets()
     {
         if (_bets == null)
         {
-            _bets = new Dictionary<Player, uint>(StageBets);
+            _bets = new Dictionary<Player, uint>(_stageBets);
             return;
         }
 
-        foreach (KeyValuePair<Player,uint> bet in StageBets)
+        foreach (KeyValuePair<Player,uint> bet in _stageBets)
         {
             if (_bets.TryGetValue(bet.Key, out uint _) == false)
             {

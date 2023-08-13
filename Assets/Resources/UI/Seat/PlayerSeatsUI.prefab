@@ -55,9 +55,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3a2e7c3f527ad4a8a188eafc170bb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _seatsUI: []
+  _seatsUI:
+  - {fileID: 3885941531537800790}
+  - {fileID: 599531425176654771}
+  - {fileID: 2341529009681738220}
+  - {fileID: 2608408088419388738}
+  - {fileID: 6903732577238005361}
   _waitingTransparencyAlpha: 0.35
-  _avatarLoadingSprite: {fileID: 21300000, guid: 04d2abeb7bcd28a4dab695a12aeea340, type: 3}
 --- !u!1001 &926770445965006891
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -65,6 +69,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 1694960791105978638, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _index
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_fontSize
       value: 14.9
@@ -162,6 +170,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 3
       objectReference: {fileID: 0}
@@ -170,12 +182,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7859571473029312708}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PlayerSeatUI, Assembly-CSharp
+      value: PlayerSeatsUI, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
@@ -223,6 +239,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 1694960791105978638, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _index
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_fontSize
       value: 14.9
@@ -316,6 +336,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 3
       objectReference: {fileID: 0}
@@ -324,12 +348,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7859571473029312708}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PlayerSeatUI, Assembly-CSharp
+      value: PlayerSeatsUI, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
@@ -377,6 +405,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 1694960791105978638, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _index
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_fontSize
       value: 14.9
@@ -470,6 +502,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 3
       objectReference: {fileID: 0}
@@ -478,12 +514,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7859571473029312708}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PlayerSeatUI, Assembly-CSharp
+      value: PlayerSeatsUI, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
@@ -750,29 +790,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7859571473029312708}
-    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnPlayerClickTakeButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PlayerSeatUI, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 8909204005329319029, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_text
       value: 0
@@ -803,6 +823,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7859571473029312711}
     m_Modifications:
+    - target: {fileID: 1694960791105978638, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: _index
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 2205559514257080277, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_fontSize
       value: 14.9
@@ -896,16 +920,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7859571473029312708}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnPlayerClickTakeButton
       objectReference: {fileID: 0}
     - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerSeatsUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409379489497490210, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7718901892273406111, guid: cc70c3eaf0be97f4dacabe4df60e3253, type: 3}
       propertyPath: _position

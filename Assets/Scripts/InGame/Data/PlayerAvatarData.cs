@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 [System.Serializable]
 public struct PlayerAvatarData : ISaveLoadData, INetworkSerializable
