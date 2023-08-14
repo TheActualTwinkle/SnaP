@@ -11,12 +11,12 @@ public class PotUI : MonoBehaviour
     
     private void OnEnable()
     {
-        Pot.ValueNetworkVariable.OnValueChanged += OnPotValueNetworkVariableValueChanged;
+        Pot.ValueNetworkVariable.OnValueChanged += OnPotNetworkVariableValueChanged;
     }
 
     private void OnDisable()
     {
-        Pot.ValueNetworkVariable.OnValueChanged -= OnPotValueNetworkVariableValueChanged;
+        Pot.ValueNetworkVariable.OnValueChanged -= OnPotNetworkVariableValueChanged;
     }
 
     private void Start()
@@ -30,7 +30,7 @@ public class PotUI : MonoBehaviour
         Show(potValue);
     }
 
-    private void OnPotValueNetworkVariableValueChanged(uint previousValue, uint newValue)
+    private void OnPotNetworkVariableValueChanged(uint previousValue, uint newValue)
     {
         if (newValue == 0)
         {

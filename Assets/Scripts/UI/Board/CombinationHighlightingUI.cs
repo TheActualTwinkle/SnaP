@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CombinationHighlightingUI : MonoBehaviour
@@ -8,7 +9,7 @@ public class CombinationHighlightingUI : MonoBehaviour
 
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
-    private static Player LocalPlayer => PlayerSeats.Instance.LocalPlayer;
+    private static Player LocalPlayer => PlayerSeats.LocalPlayer;
     
     private void OnEnable()
     {

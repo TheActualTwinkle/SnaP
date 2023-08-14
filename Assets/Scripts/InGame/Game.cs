@@ -77,17 +77,6 @@ public class Game : NetworkBehaviour
         }
 
         int[] turnSequence = _boardButton.GetTurnSequence();
-        foreach (int index in turnSequence)
-        {
-            Player player = PlayerSeats.Players[index];
-
-            if (IsHost == false)
-            {
-                SetPlayersPocketCards(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
-            }
-            
-            SetPlayersPocketCardsClientRpc(player.OwnerClientId, _cardDeck.PullCard(), _cardDeck.PullCard());
-        }
         
         Player player1 = PlayerSeats.Players[turnSequence[0]];
         Player player2 = PlayerSeats.Players[turnSequence[1]];
@@ -109,7 +98,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: MidGame stage wanted to performed on client.");
+            Log.WriteToFile("Error: MidGame stage wanted to be performed on client.");
             yield break;
         }
         
@@ -330,13 +319,15 @@ public class Game : NetworkBehaviour
         Log.WriteToFile("Starting Deal.");
         
         _cardDeck = new CardDeck();
+
+        StartDealClientRpc(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
         
         if (IsHost == false)
         {
-            InitDeckAndBoard(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
+            InitDeck(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
+            InitPocketCards();
+            InitBoard();
         }
-        
-        StartDealClientRpc(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
 
         _boardButton.Move();
 
@@ -423,7 +414,9 @@ public class Game : NetworkBehaviour
     [ClientRpc]
     private void StartDealClientRpc(int[] cardDeck)
     {
-        InitDeckAndBoard(cardDeck);
+        InitDeck(cardDeck);
+        InitPocketCards();
+        InitBoard();
     }
 
     [ClientRpc]
@@ -459,12 +452,50 @@ public class Game : NetworkBehaviour
         player.SetPocketCards(card1, card2);
     }
     
-    private void InitDeckAndBoard(int[] cardDeck)
+    private void InitDeck(int[] cardDeck)
     {
         _cardDeck = new CardDeck(cardDeck);
-        _board = new Board(_cardDeck.PullCards(5).ToList());
+
+        if (IsServer == true)
+        {
+            Log.WriteToFile($"Deck created: {string.Join(" ,", cardDeck)}.");
+        }
     }
-    
+
+
+    private void InitPocketCards()
+    {
+        int[] turnSequence = _boardButton.GetTurnSequence();
+        foreach (int index in turnSequence)
+        {
+            Player player = PlayerSeats.Players[index];
+            CardObject card1 =  _cardDeck.PullCard();
+            CardObject card2 =  _cardDeck.PullCard();
+            
+            if (IsHost == false)
+            {
+                SetPlayersPocketCards(player.OwnerClientId, card1, card2);
+            }
+            
+            SetPlayersPocketCardsClientRpc(player.OwnerClientId, card1, card2);
+
+            if (IsServer == true)
+            {            
+                Log.WriteToFile($"Player ('{player}') received: {card1}, {card2}.");
+            }
+        }
+    }
+
+    private void InitBoard()
+    {
+        _board = new Board(_cardDeck.PullCards(5).ToList());
+
+        if (IsServer == true)
+        {
+            Log.WriteToFile($"Board created: {string.Join(", ", _board.Cards)}.");
+        }
+    }
+        
     private void InitEndDealRoutine(WinnerInfo[] winnerInfo)
     {
         if (_startDealAfterRoundsInterval != null)

@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bigBlind: 20
   _smallBlind: 10
-  _betTime: 180
+  _betTime: 30
   _timePassedSinceBetStart:
     m_InternalValue: 0
 --- !u!114 &7601867426863410299
