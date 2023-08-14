@@ -201,7 +201,7 @@ public class Game : NetworkBehaviour
                 if (notFoldPlayers.Count == 1)
                 {
                     ulong winnerId = notFoldPlayers[0].OwnerClientId;
-                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}))};
+                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}), "opponent folded")};
                     S_EndDeal(winnerInfo);
                     yield break;
                 }
@@ -258,7 +258,7 @@ public class Game : NetworkBehaviour
         
         Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
         ulong winnerId = winner!.OwnerClientId; 
-        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{winner}))};
+        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{winner}), "opponent folded.")};
         S_EndDeal(winnerInfo);
     }
 

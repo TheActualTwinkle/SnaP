@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Unity.Netcode;
 
-public class Pot : MonoBehaviour
+public class Pot : NetworkBehaviour
 {
     public static Pot Instance { get; private set; }
 
-    public uint Value => (uint)_bets.Sum(x => x.Value);
+    public NetworkVariable<uint> ValueNetworkVariable { get; } = new();
 
     private readonly Dictionary<Player, uint> _stageBets = new();
     private Dictionary<Player, uint> _bets = new();
@@ -69,6 +68,13 @@ public class Pot : MonoBehaviour
     {
         _bets?.Clear();
         _stageBets?.Clear();
+
+        if (IsServer == false)
+        {
+            return;
+        }
+
+        ValueNetworkVariable.Value = 0;
     }
 
     private void GameStageOverEvent(GameStage gameStage)
@@ -94,19 +100,27 @@ public class Pot : MonoBehaviour
         if (_bets == null)
         {
             _bets = new Dictionary<Player, uint>(_stageBets);
+        }
+        else
+        {
+            foreach (KeyValuePair<Player,uint> bet in _stageBets)
+            {
+                if (_bets.TryGetValue(bet.Key, out uint _) == false)
+                {
+                    _bets.Add(bet.Key, bet.Value);
+                }
+                else
+                {
+                    _bets[bet.Key] += bet.Value;
+                }
+            }
+        }
+
+        if (IsServer == false)
+        {
             return;
         }
 
-        foreach (KeyValuePair<Player,uint> bet in _stageBets)
-        {
-            if (_bets.TryGetValue(bet.Key, out uint _) == false)
-            {
-                _bets.Add(bet.Key, bet.Value);
-            }
-            else
-            {
-                _bets[bet.Key] += bet.Value;
-            }
-        }
+        ValueNetworkVariable.Value = (uint)_bets.Sum(x => x.Value);
     }
 }
