@@ -27,7 +27,7 @@ public class ConnectionInputField : MonoBehaviour
         _ipAddressInputField.text = Dns.GetHostEntry(Dns.GetHostName())
             .AddressList.First(
                 f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            .ToString();
+            .ToString(); // todo: Can be Deleted.
     }
 
     public IReadOnlyList<string> GetConnectionData(NetworkConnectorType connectorType)

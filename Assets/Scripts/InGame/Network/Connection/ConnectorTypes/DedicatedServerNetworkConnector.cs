@@ -1,11 +1,17 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class DedicatedServerNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData => new [] {"N/A"};
+    public IEnumerable<string> ConnectionData => new [] {Dns.GetHostEntry(Dns.GetHostName())
+        .AddressList.First(
+            f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+        .ToString(), "4792"};
         
     public void Init()
     {
@@ -21,7 +27,13 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
-        unityTransport.SetConnectionData("192.168.0.14", 4792, "0.0.0.0"); // todo real server IP
+        var ipAddress = Dns.GetHostEntry(Dns.GetHostName())
+            .AddressList.First(
+                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            .ToString();
+        
+        unityTransport.SetConnectionData(ipAddress, 4792, "0.0.0.0"); // todo real server IP
+        Debug.Log("Starting at: " + string.Join(':', ConnectionData));
 
         NetworkManager.Singleton.Shutdown();
 
