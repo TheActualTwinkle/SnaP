@@ -19,7 +19,7 @@ public class SceneLoader : MonoBehaviour
         }
     }
 
-    public void LoadScene(SceneName sceneToLoad, bool isNetworkSessionActive = true)
+    public void LoadScene(string sceneToLoad, bool isNetworkSessionActive = true)
     {
         if (isNetworkSessionActive)
         {
@@ -34,13 +34,13 @@ public class SceneLoader : MonoBehaviour
         }
     }
 
-    private void LoadSceneLocal(SceneName sceneToLoad)
+    private void LoadSceneLocal(string sceneToLoad)
     {
-        SceneManager.LoadScene(sceneToLoad.ToString());
+        SceneManager.LoadScene(sceneToLoad);
     }
 
-    private void LoadSceneNetwork(SceneName sceneToLoad)
+    private void LoadSceneNetwork(string sceneToLoad)
     {
-        NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad.ToString(), LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
     }
 }

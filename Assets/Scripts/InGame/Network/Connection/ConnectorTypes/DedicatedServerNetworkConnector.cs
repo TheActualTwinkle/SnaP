@@ -11,11 +11,18 @@ public class DedicatedServerNetworkConnector : INetworkConnector
     public IEnumerable<string> ConnectionData => new [] {Dns.GetHostEntry(Dns.GetHostName())
         .AddressList.First(
             f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-        .ToString(), "4792"};
+        .ToString(), _port};
         
+    private string _ipAddress;
+    private string _port;
+
     public void Init()
     {
-        return;
+        _ipAddress = Dns.GetHostEntry(Dns.GetHostName())
+            .AddressList.First(
+                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            .ToString();
+        _port = "4792";
     }
 
     public void CreateGame()
@@ -27,18 +34,17 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
-        var ipAddress = Dns.GetHostEntry(Dns.GetHostName())
-            .AddressList.First(
-                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            .ToString();
-        
-        unityTransport.SetConnectionData(ipAddress, 4792, "0.0.0.0"); // todo real server IP
+        if (ushort.TryParse(_port, out ushort port) == false)
+        {
+            return;
+        }
+        unityTransport.SetConnectionData(_ipAddress, port, "0.0.0.0");
         Debug.Log("Starting at: " + string.Join(':', ConnectionData));
 
         NetworkManager.Singleton.Shutdown();
 
         NetworkManager.Singleton.StartServer();
-        NetworkManager.Singleton.SceneManager.LoadScene("Desk_d", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
     }
 
     public void JoinGame()
@@ -47,9 +53,14 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         {
             return;
         }
-        
+
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        unityTransport.SetConnectionData("192.168.0.14", 4792); // todo
+        
+        if (ushort.TryParse(_port, out ushort port) == false)
+        {
+            return;
+        }
+        unityTransport.SetConnectionData(_ipAddress, port);
         
         NetworkManager.Singleton.Shutdown();
         

@@ -191,7 +191,6 @@ public class PlayerSeats : MonoBehaviour
             {
                 try
                 {
-                    // ReSharper disable once UnusedVariable
                     GameObject checkGameObject = _players[i].gameObject;
                 }
                 catch (NullReferenceException)
@@ -199,14 +198,27 @@ public class PlayerSeats : MonoBehaviour
                     try
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
-                        string nick = _players[i].NickName;
-                        Log.WriteToFile($"Connection lost on player ('{nick}') on {i} seat.");
+                        Log.WriteToFile($"Connection lost on player ('{_players[i]}') on {i} seat.");
                         TryLeave(_players[i]);
                     }
                     catch (NullReferenceException) { }
                 }
-            }
 
+                try
+                {
+                    GameObject checkGameObject = _waitingPlayers[i].gameObject;
+                }
+                catch (NullReferenceException)
+                {
+                    try
+                    {
+                        Log.WriteToFile($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.");
+                        TryLeave(_waitingPlayers[i]);
+                    }
+                    catch (NullReferenceException) { }
+                }
+            }
+            
             yield return new WaitForSeconds(_connectionLostCheckInterval);
         }
     }

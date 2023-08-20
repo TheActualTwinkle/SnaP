@@ -76,7 +76,7 @@ public class BoardUI : MonoBehaviour
     
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
-        ResetAllAnimatorTriggers();
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(EndDeal);
 
         foreach (Image image in _cardImages)
@@ -86,9 +86,9 @@ public class BoardUI : MonoBehaviour
     }
 
     // Animator
-    private void PlaySound(int index)
+    private void PlaySound(Constants.Sound.Sfx.Type type)
     {
-        SfxAudio.Instance.Play(index);
+        SfxAudio.Instance.Play(type);
     }
     
     // Animator
@@ -96,23 +96,12 @@ public class BoardUI : MonoBehaviour
     {
         _combinationHighlighting.Highlight(gameStage);
     }
-    
-    private void ResetAllAnimatorTriggers()
-    {
-        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
-        {
-            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
-            {
-                _animator.ResetTrigger(controllerParameter.name);
-            }
-        }
-    }
 
     private IEnumerator LoadFrontSpriteForCards()
     {
         _cardSprites.Clear();
 
-        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length >= 9);
+        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length >= 8); // At lest more or equals then length of e.g. "2;3;4;5;" (coded 2,3,4,5 of Clubs).
         
         List<CardObject> cards = CardObjectConverter.GetCards(Game.CodedBoardCardsString).ToList();
         foreach (CardObject card in cards)

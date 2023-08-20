@@ -7,7 +7,7 @@ public class SfxAudio : MonoBehaviour
     public static SfxAudio Instance { get; private set; }
 
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private List<AudioClip> _audioClips;
+    private readonly Dictionary<Constants.Sound.Sfx.Type, AudioClip> _audioClips = new();
 
     private void Awake()
     {
@@ -21,20 +21,30 @@ public class SfxAudio : MonoBehaviour
         }
     }
 
-    // Animator
-    public void Play(int audioClipId)
+    private void OnValidate()
     {
-        if (audioClipId >= _audioClips.Count)
+        foreach (KeyValuePair<Constants.Sound.Sfx.Type, string> keyValuePair in Constants.Sound.Sfx.Paths)
         {
-            return;
-        }
+            AudioClip audioClip = Resources.Load<AudioClip>(keyValuePair.Value);
 
+            if (audioClip == null)
+            {
+                Log.WriteToFile($"Error: Audio Clip named '{keyValuePair.Value}' not found!");
+                continue;
+            }
+            
+            _audioClips.Add(keyValuePair.Key, audioClip);
+        }
+    }
+
+    public void Play(Constants.Sound.Sfx.Type audioClipType)
+    {
         if (_audioSource.isPlaying == true)
         {
             _audioSource.Stop();
         }
         
-        _audioSource.clip = _audioClips[audioClipId];
+        _audioSource.clip = _audioClips[audioClipType];
         _audioSource.Play();
     }
 }

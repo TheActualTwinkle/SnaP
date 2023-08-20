@@ -39,7 +39,7 @@ public class UnityRelayNetworkConnector : INetworkConnector
         NetworkManager.Singleton.Shutdown();
 
         NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.LoadScene("Desk", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
     }
     
     public async void JoinGame() 

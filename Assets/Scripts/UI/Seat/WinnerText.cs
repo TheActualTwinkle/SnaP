@@ -37,20 +37,9 @@ public class WinnerText : MonoBehaviour
             }
 
             _text.text = $"Winner! +{winnerInfo[i].Chips}";
-            ResetAllAnimatorTriggers();
+            _animator.ResetAllTriggers();
             _animator.SetTrigger(Show);
             return;
-        }
-    }
-
-    private void ResetAllAnimatorTriggers()
-    {
-        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
-        {
-            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
-            {
-                _animator.ResetTrigger(controllerParameter.name);
-            }
         }
     }
 }

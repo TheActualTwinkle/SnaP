@@ -190,7 +190,7 @@ public class Game : NetworkBehaviour
                 if (notFoldPlayers.Count == 1)
                 {
                     ulong winnerId = notFoldPlayers[0].OwnerClientId;
-                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}), "opponent folded")};
+                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}), "opponent(`s) folded")};
                     S_EndDeal(winnerInfo);
                     yield break;
                 }
@@ -247,7 +247,7 @@ public class Game : NetworkBehaviour
         
         Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
         ulong winnerId = winner!.OwnerClientId; 
-        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{winner}), "opponent folded.")};
+        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{winner}), "opponent(`s) folded.")};
         S_EndDeal(winnerInfo);
     }
 
@@ -348,7 +348,9 @@ public class Game : NetworkBehaviour
         _isPlaying.Value = false;
         _codedBoardCardsString.Value = string.Empty;
         
-        Log.WriteToFile($"End deal. Pot {winnerInfo.Select(x => x.Chips).FirstOrDefault()}. Winner id(`s): '{string.Join(", ", winnerInfo.Select(x => x.WinnerId))}'. Winner hand: {winnerInfo[0].Combination}");
+        List<Player> winners = PlayerSeats.Players.Where(x => x != null && winnerInfo.Select(info => info.WinnerId).Contains(x.OwnerClientId)).ToList();
+
+        Log.WriteToFile($"End deal. Pot {winnerInfo[0].Chips}. Winner(`s): ({string.Join(", ", winners)}). Winner hand: {winnerInfo[0].Combination}");
 
         if (_stageCoroutine != null)
         {
@@ -458,7 +460,7 @@ public class Game : NetworkBehaviour
 
         if (IsServer == true)
         {
-            Log.WriteToFile($"Deck created: {string.Join(" ,", cardDeck)}.");
+            Log.WriteToFile($"Deck created: {string.Join(", ", cardDeck)}.");
         }
     }
 

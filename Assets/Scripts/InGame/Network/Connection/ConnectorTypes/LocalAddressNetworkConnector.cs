@@ -13,8 +13,7 @@ public class LocalAddressNetworkConnector : INetworkConnector
     private string _port;
 
     private IEnumerator _connectRoutine;
-
-
+    
     public void Init()
     {
         IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.LocalAddress);
@@ -41,7 +40,7 @@ public class LocalAddressNetworkConnector : INetworkConnector
         NetworkManager.Singleton.Shutdown();
 
         NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.LoadScene("Desk_d", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
     }
 
     public void JoinGame()
@@ -52,7 +51,12 @@ public class LocalAddressNetworkConnector : INetworkConnector
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        unityTransport.SetConnectionData(_ipAddress, ushort.Parse(_port));
+        
+        if (ushort.TryParse(_port, out ushort port) == false)
+        {
+            return;
+        }
+        unityTransport.SetConnectionData(_ipAddress, port);
         
         NetworkManager.Singleton.Shutdown();
         

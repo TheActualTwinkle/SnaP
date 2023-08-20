@@ -56,13 +56,13 @@ public class PocketCardsUI : MonoBehaviour
                 _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
                 _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
         
-                ResetAllAnimatorTriggers();
+                _animator.ResetAllTriggers();
                 _animator.SetTrigger(GetCards);
                 break;
             }
             case GameStage.Showdown:
             {
-                ResetAllAnimatorTriggers();
+                _animator.ResetAllTriggers();
                 _animator.SetTrigger(OpenCards);
                 break;
             }
@@ -70,7 +70,7 @@ public class PocketCardsUI : MonoBehaviour
             {
                 if (Betting.IsAllIn == true)
                 {
-                    ResetAllAnimatorTriggers();
+                    _animator.ResetAllTriggers();;
                     _animator.SetTrigger(OpenCards);
                 }
                 break;
@@ -80,7 +80,7 @@ public class PocketCardsUI : MonoBehaviour
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
-        ResetAllAnimatorTriggers();
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);
     }
 
@@ -95,8 +95,8 @@ public class PocketCardsUI : MonoBehaviour
         {
             return;
         }
-
-        ResetAllAnimatorTriggers();
+        
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(Fold);
     }
 
@@ -106,18 +106,7 @@ public class PocketCardsUI : MonoBehaviour
         
         _cardSprite1 = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit.ToString()}");
         _cardSprite2 = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit.ToString()}");
-    }
-    
-    private void ResetAllAnimatorTriggers()
-    {
-        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
-        {
-            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
-            {
-                _animator.ResetTrigger(controllerParameter.name);
-            }
-        }
-    }    
+    }  
     
     // Animator
     private void OpenCard(int index)

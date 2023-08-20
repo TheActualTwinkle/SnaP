@@ -40,7 +40,7 @@ public class PotUI : MonoBehaviour
         
         if (_valueText.text != newValue.ToString())
         {
-            SfxAudio.Instance.Play(2);
+            SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.ToPot);
         }
         
         Show(newValue);

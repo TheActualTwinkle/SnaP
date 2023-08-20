@@ -5,8 +5,7 @@ public static class NetworkConnectorHandler
     public const uint MaxPlayersAmount = 5;
     
     public static INetworkConnector CurrentConnector { get; private set; }
-    
-    
+
     public static void CreateGame(NetworkConnectorType connectorType)
     {
         INetworkConnector connector = GetConnector(connectorType);

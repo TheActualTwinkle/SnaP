@@ -18,7 +18,7 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
     {
-        if (sceneName.Contains("Desk") == true && IsServer == true)
+        if (sceneName.Contains(Constants.SceneNames.Desk) == true && IsServer == true)
         {
             if (IsHost == false && NetworkManager.Singleton.LocalClientId == clientId)
             {

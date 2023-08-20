@@ -167,7 +167,7 @@ public class Player : NetworkBehaviour
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        SceneLoader.Instance.LoadScene(SceneName.Menu, false);
+        SceneLoader.Instance.LoadScene(Constants.SceneNames.Menu, false);
     }
 
     private IEnumerator HostShutdown()
@@ -320,7 +320,7 @@ public class Player : NetworkBehaviour
     
     public override string ToString()
     {
-        return $"Nick: {_nickName.Value}, ID: {OwnerClientId}.";
+        return $"Nick: '{_nickName.Value}', ID: '{OwnerClientId}'";
     }
 
     #region RPC

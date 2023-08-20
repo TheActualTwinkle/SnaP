@@ -61,7 +61,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
     {
-        ResetAllAnimatorTriggers();
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);
     }
     
@@ -103,18 +103,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
         _cardImage1.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit.ToString()}");
         _cardImage2.sprite = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit.ToString()}");
 
-        ResetAllAnimatorTriggers();
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(GetCards);
-    }
-    
-    private void ResetAllAnimatorTriggers()
-    {
-        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
-        {
-            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
-            {
-                _animator.ResetTrigger(controllerParameter.name);
-            }
-        }
     }
 }
