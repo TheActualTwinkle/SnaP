@@ -5,19 +5,13 @@ using System.Threading.Tasks;
 
 public static class IpAddressProvider
 {
-    public static async Task<string> Get()
-    {
-        return await GetLocal();
-        return await GetPublic();
-    }
-
-    private static async Task<string> GetPublic()
+    public static async Task<string> GetPublic()
     {
         return (await new HttpClient().GetStringAsync("http://icanhazip.com"))
             .Replace("\\r\\n", "").Replace("\\n", "").Trim();
     }
 
-    private static async Task<string> GetLocal()
+    public static async Task<string> GetLocal()
     {
         return (await Dns.GetHostEntryAsync(Dns.GetHostName()))
             .AddressList.First(

@@ -458,7 +458,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2901580917387164277, guid: 7181c7029ceac7d4ba42e6f3d3b76439, type: 3}
       propertyPath: m_text
-      value: "4792\u200B"
+      value: "47924\u200B"
       objectReference: {fileID: 0}
     - target: {fileID: 2901580917434446155, guid: 7181c7029ceac7d4ba42e6f3d3b76439, type: 3}
       propertyPath: m_Enabled

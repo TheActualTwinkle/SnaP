@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -14,8 +15,18 @@ public class DedicatedServerNetworkConnector : INetworkConnector
 
     public async Task Init()
     {
-        _ipAddress = await IpAddressProvider.Get();
-        _port = "4792";
+        string[] args = Environment.GetCommandLineArgs();
+        if (args.Contains("-pubip") == true)
+        {
+            _ipAddress = await IpAddressProvider.GetPublic();
+        }
+        else
+        {
+            _ipAddress = await IpAddressProvider.GetLocal();
+        }
+
+        int portArgIndex = Array.IndexOf(args, "-port");
+        _port = portArgIndex != -1 ? args[portArgIndex + 1] : "47924";
 
         ConnectionData = new[] {_ipAddress, _port};
     }
