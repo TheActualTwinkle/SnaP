@@ -73,14 +73,14 @@ public class PlayerSeats : MonoBehaviour
         if (IsFree(seatNumber) == false)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.SeatOccupiedByOtherPlayer, seatNumber);
-            Log.WriteToFile($"Player ({player}) can`t take the №{seatNumber} seat, its already taken by Player ({player}).");
+            Log.WriteToFile($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).");
             return false;
         }
 
         if (player.Stack < Betting.Instance.BigBlind)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.StackTooSmall, seatNumber);
-            Log.WriteToFile($"Player ({player}) can`t take the №{seatNumber} seat, stack smaller then Big blind.");
+            Log.WriteToFile($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.");
             return false;
         }
 
@@ -90,7 +90,7 @@ public class PlayerSeats : MonoBehaviour
         {
             _players[seatNumber] = player;
 
-            Log.WriteToFile($"Player ({player}) sit on №{seatNumber} seat.");
+            Log.WriteToFile($"Player ({player}) sit on {seatNumber} seat.");
 
             PlayerSitEvent?.Invoke(player, seatNumber);
             return true;

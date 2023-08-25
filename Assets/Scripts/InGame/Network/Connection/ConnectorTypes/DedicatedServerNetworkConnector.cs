@@ -15,34 +15,27 @@ public class DedicatedServerNetworkConnector : INetworkConnector
 
     public async Task Init()
     {
-        string[] args = Environment.GetCommandLineArgs();
-        if (args.Contains("-pubip") == true)
-        {
-            _ipAddress = await IpAddressProvider.GetPublic();
-        }
-        else
-        {
-            _ipAddress = await IpAddressProvider.GetLocal();
-        }
+        _ipAddress = await IpAddressProvider.GetLocal();
 
+        string[] args = Environment.GetCommandLineArgs();
         int portArgIndex = Array.IndexOf(args, "-port");
         _port = portArgIndex != -1 ? args[portArgIndex + 1] : "47924";
 
         ConnectionData = new[] {_ipAddress, _port};
     }
 
-    public Task<bool> TryCreateGame()
+    public async Task<bool> TryCreateGame()
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
-            return Task.FromResult(false);
+            return false;
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
         if (ushort.TryParse(_port, out ushort port) == false)
         {
-            return Task.FromResult(false);
+            return false;
         }
         unityTransport.SetConnectionData(_ipAddress, port);
 
@@ -55,10 +48,13 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         }
         catch (Exception)
         {
-            return Task.FromResult(false);
+            return false;
         }
+ 
+        Log.WriteToFile("Forwarding to public IP...");
+        ConnectionData = new[] {await IpAddressProvider.GetPublic(), _port};
         
-        return Task.FromResult(true);
+        return true;
     }
 
     public Task<bool> TryJoinGame()
