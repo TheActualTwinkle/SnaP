@@ -23,22 +23,8 @@ public class MusicAudio : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
-
-    private void OnValidate()
-    {
-        foreach (KeyValuePair<Constants.Sound.Music.Type, string> keyValuePair in Constants.Sound.Music.Paths)
-        {
-            AudioClip audioClip = Resources.Load<AudioClip>(keyValuePair.Value);
-
-            if (audioClip == null)
-            {
-                Log.WriteToFile($"Error: Audio Clip named '{keyValuePair.Value}' not found!");
-                continue;
-            }
-            
-            _audioClips.Add(keyValuePair.Key, audioClip);
-        }
+        
+        SetupAudioClips();
     }
 
     private void Start()
@@ -73,5 +59,21 @@ public class MusicAudio : MonoBehaviour
     {
         System.Random random = new();
         dictionary = dictionary.OrderBy(x => random.Next()).ToDictionary(item => item.Key, item => item.Value); 
+    }
+
+    private void SetupAudioClips()
+    {
+        foreach (KeyValuePair<Constants.Sound.Music.Type, string> keyValuePair in Constants.Sound.Music.Paths)
+        {
+            AudioClip audioClip = Resources.Load<AudioClip>(keyValuePair.Value);
+
+            if (audioClip == null)
+            {
+                Log.WriteToFile($"Error: Audio Clip named '{keyValuePair.Value}' not found!");
+                continue;
+            }
+            
+            _audioClips.Add(keyValuePair.Key, audioClip);
+        }
     }
 }

@@ -7,7 +7,7 @@ public class SfxAudio : MonoBehaviour
     public static SfxAudio Instance { get; private set; }
 
     [SerializeField] private AudioSource _audioSource;
-    private readonly Dictionary<Constants.Sound.Sfx.Type, AudioClip> _audioClips = new();
+    [SerializeField] private Dictionary<Constants.Sound.Sfx.Type, AudioClip> _audioClips = new();
 
     private void Awake()
     {
@@ -19,9 +19,22 @@ public class SfxAudio : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        SetupAudioClips();
     }
 
-    private void OnValidate()
+    public void Play(Constants.Sound.Sfx.Type audioClipType)
+    {
+        if (_audioSource.isPlaying == true)
+        {
+            _audioSource.Stop();
+        }
+        
+        _audioSource.clip = _audioClips[audioClipType];
+        _audioSource.Play();
+    }
+    
+    private void SetupAudioClips()
     {
         foreach (KeyValuePair<Constants.Sound.Sfx.Type, string> keyValuePair in Constants.Sound.Sfx.Paths)
         {
@@ -35,16 +48,5 @@ public class SfxAudio : MonoBehaviour
             
             _audioClips.Add(keyValuePair.Key, audioClip);
         }
-    }
-
-    public void Play(Constants.Sound.Sfx.Type audioClipType)
-    {
-        if (_audioSource.isPlaying == true)
-        {
-            _audioSource.Stop();
-        }
-        
-        _audioSource.clip = _audioClips[audioClipType];
-        _audioSource.Play();
     }
 }

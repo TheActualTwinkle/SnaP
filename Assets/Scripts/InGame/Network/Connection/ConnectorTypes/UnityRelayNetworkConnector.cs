@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -14,18 +15,20 @@ public class UnityRelayNetworkConnector : INetworkConnector
     
     private string _joinCode;
 
-    public void Init()
+    public Task Init()
     {
-        IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.LocalAddress);
+        IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.UnityRelay);
 
         _joinCode = connectionData[0];
+        
+        return Task.CompletedTask;
     }
 
-    public async void CreateGame() 
+    public async Task<bool> TryCreateGame() 
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
-            return;
+            return false;
         }
         
         await TryAuthenticate();
@@ -38,15 +41,24 @@ public class UnityRelayNetworkConnector : INetworkConnector
         
         NetworkManager.Singleton.Shutdown();
 
-        NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
+        try
+        {
+            NetworkManager.Singleton.StartHost();
+            NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        
+        return true;
     }
     
-    public async void JoinGame() 
+    public async Task<bool> TryJoinGame() 
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
-            return;
+            return false;
         }
         
         await TryAuthenticate();
@@ -62,8 +74,17 @@ public class UnityRelayNetworkConnector : INetworkConnector
             allocation.HostConnectionData);
         
         NetworkManager.Singleton.Shutdown();
-        
-        NetworkManager.Singleton.StartClient();
+
+        try
+        {
+            NetworkManager.Singleton.StartClient();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
     }    
     
     private static async Task TryAuthenticate() 

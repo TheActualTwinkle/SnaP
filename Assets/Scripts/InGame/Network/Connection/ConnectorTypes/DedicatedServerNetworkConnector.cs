@@ -1,69 +1,81 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class DedicatedServerNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData => new [] {Dns.GetHostEntry(Dns.GetHostName())
-        .AddressList.First(
-            f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-        .ToString(), _port};
+    public IEnumerable<string> ConnectionData { get; private set; }
         
     private string _ipAddress;
     private string _port;
 
-    public void Init()
+    public async Task Init()
     {
-        _ipAddress = Dns.GetHostEntry(Dns.GetHostName())
-            .AddressList.First(
-                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            .ToString();
+        _ipAddress = await IpAddressProvider.Get();
         _port = "4792";
+
+        ConnectionData = new[] {_ipAddress, _port};
     }
 
-    public void CreateGame()
+    public Task<bool> TryCreateGame()
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
-            return;
+            return Task.FromResult(false);
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
         if (ushort.TryParse(_port, out ushort port) == false)
         {
-            return;
+            return Task.FromResult(false);
         }
-        unityTransport.SetConnectionData(_ipAddress, port, "0.0.0.0");
-        Debug.Log("Starting at: " + string.Join(':', ConnectionData));
+        unityTransport.SetConnectionData(_ipAddress, port);
 
         NetworkManager.Singleton.Shutdown();
 
-        NetworkManager.Singleton.StartServer();
-        NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
+        try
+        {
+            NetworkManager.Singleton.StartServer();
+            NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
+        }
+        catch (Exception)
+        {
+            return Task.FromResult(false);
+        }
+        
+        return Task.FromResult(true);
     }
 
-    public void JoinGame()
+    public Task<bool> TryJoinGame()
     {        
         if (NetworkManager.Singleton.IsListening == true)
         {
-            return;
+            return Task.FromResult(false);
         }
 
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
         
         if (ushort.TryParse(_port, out ushort port) == false)
         {
-            return;
+            return Task.FromResult(false);
         }
         unityTransport.SetConnectionData(_ipAddress, port);
         
         NetworkManager.Singleton.Shutdown();
+
+        try
+        {
+            NetworkManager.Singleton.StartClient();
+        }
+        catch (Exception)
+        {
+            return Task.FromResult(false);
+        }
         
-        NetworkManager.Singleton.StartClient();
+        return Task.FromResult(true);
     }
 }

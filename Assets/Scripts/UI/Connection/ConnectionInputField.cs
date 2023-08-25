@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using TMPro;
 using UnityEngine;
 
@@ -13,7 +11,7 @@ public class ConnectionInputField : MonoBehaviour
     [SerializeField] private TMP_InputField _portInputField;
     [SerializeField] private TMP_InputField _joinCodeInputField;
     
-    private void Awake()
+    private async void Awake()
     {
         if (Instance == null)
         {
@@ -24,10 +22,7 @@ public class ConnectionInputField : MonoBehaviour
             Destroy(gameObject);
         }
 
-        _ipAddressInputField.text = Dns.GetHostEntry(Dns.GetHostName())
-            .AddressList.First(
-                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            .ToString(); // todo: Can be Deleted.
+        _ipAddressInputField.text = await IpAddressProvider.Get();
     }
 
     public IReadOnlyList<string> GetConnectionData(NetworkConnectorType connectorType)
