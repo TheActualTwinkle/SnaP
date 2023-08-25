@@ -198,8 +198,11 @@ public class PlayerSeats : MonoBehaviour
                     try
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
+                        string nick = _players[i].NickName;
                         Log.WriteToFile($"Connection lost on player ('{_players[i]}') on {i} seat.");
                         TryLeave(_players[i]);
+                        
+                        continue;
                     }
                     catch (NullReferenceException) { }
                 }
@@ -212,6 +215,8 @@ public class PlayerSeats : MonoBehaviour
                 {
                     try
                     {
+                        // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
+                        string nick = _waitingPlayers[i].NickName;
                         Log.WriteToFile($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.");
                         TryLeave(_waitingPlayers[i]);
                     }
