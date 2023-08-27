@@ -8,6 +8,8 @@ public static class NetworkConnectorHandler
     
     public static INetworkConnector CurrentConnector { get; private set; }
 
+    private static bool _isSubscribedToUserConnectionEvents; 
+    
     public static async Task CreateGame(NetworkConnectorType connectorType)
     {
         INetworkConnector connector = GetConnector(connectorType);
@@ -26,8 +28,13 @@ public static class NetworkConnectorHandler
             Log.WriteToFile("Successfully started at " + string.Join(':', connector.ConnectionData));
         }
 
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+        if (_isSubscribedToUserConnectionEvents == false)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+            
+            _isSubscribedToUserConnectionEvents = true;
+        }
     }
 
     public static async Task JoinGame(NetworkConnectorType connectorType)
@@ -65,12 +72,12 @@ public static class NetworkConnectorHandler
 
     private static void OnClientConnected(ulong id)
     {
-        Log.WriteToFile($"Client connected. ID: '{id}'");
+        Log.WriteToFile($"User connected. ID: '{id}'");
     }
 
     private static void OnClientDisconnected(ulong id)
     {
-        Log.WriteToFile($"Client disconnected. ID: '{id}'");
+        Log.WriteToFile($"User disconnected. ID: '{id}'");
     }
     
     private static INetworkConnector GetConnector(NetworkConnectorType connectorType)
