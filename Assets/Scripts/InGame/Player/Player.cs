@@ -53,6 +53,8 @@ public class Player : NetworkBehaviour
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
         
         PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton;
+        
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
     }
 
     private void OnDisable()
@@ -64,6 +66,8 @@ public class Player : NetworkBehaviour
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
         
         PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButton;
+        
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
     }
 
     private void Start()
@@ -179,6 +183,16 @@ public class Player : NetworkBehaviour
         Shutdown();
     }
 
+    private void OnClientDisconnected(ulong id)
+    {
+        if (id != 0 || OwnerClientId == 0)
+        {
+            return;
+        }
+        
+        Shutdown();
+    }
+    
     private void OnBetInputFieldValueChanged(uint value)
     {
         if (IsOwner == false)
