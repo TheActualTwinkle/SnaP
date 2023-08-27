@@ -34,10 +34,8 @@ namespace SFB {
         /// <param name="extension">Allowed extension</param>
         /// <param name="multiselect">Allow multiple file selection</param>
         /// <returns>Returns array of chosen paths. Zero length array when cancelled</returns>
-        public static string[] OpenFilePanel(string title, string directory, string extension, bool multiselect)
-        {
-            string[] extensionsString = extension.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            var extensions = string.IsNullOrEmpty(extension) ? null : new [] { new ExtensionFilter("", extensionsString) };
+        public static string[] OpenFilePanel(string title, string directory, string extension, bool multiselect) {
+            var extensions = string.IsNullOrEmpty(extension) ? null : new [] { new ExtensionFilter("", extension) };
             return OpenFilePanel(title, directory, extensions, multiselect);
         }
 
@@ -148,7 +146,7 @@ namespace SFB {
         /// <param name="defaultName">Default file name</param>
         /// <param name="extensions">List of extension filters. Filter Example: new ExtensionFilter("Image Files", "jpg", "png")</param>
         /// <param name="cb">Callback")</param>
-        private static void SaveFilePanelAsync(string title, string directory, string defaultName, ExtensionFilter[] extensions, Action<string> cb) {
+        public static void SaveFilePanelAsync(string title, string directory, string defaultName, ExtensionFilter[] extensions, Action<string> cb) {
             _platformWrapper.SaveFilePanelAsync(title, directory, defaultName, extensions, cb);
         }
     }
