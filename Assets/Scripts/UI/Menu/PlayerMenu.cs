@@ -91,7 +91,8 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 
     private IEnumerator ChangeImage()
     {
-        string[] imagesPath = StandaloneFileBrowser.OpenFilePanel("Chose avatar", "", "png,jpg,jpeg", false);
+        ExtensionFilter[] extensions = { new("Image Files", "png", "jpg", "jpeg") };
+        string[] imagesPath = StandaloneFileBrowser.OpenFilePanel("Chose avatar", "", extensions, false);
 
         if (imagesPath == null || imagesPath.Length == 0)
         {
@@ -102,12 +103,12 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
         yield return StartCoroutine(SetImageFromLocalFIle(filePath));
 
         SavePlayerData();
-
-        yield return null;
     }
 
     private IEnumerator SetImageFromLocalFIle(string filePath)
     {
+        filePath = "file://" + filePath;
+        
         using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(filePath);
         
         yield return webRequest.SendWebRequest(); // todo There is an error when trying load .png pics with big size.
