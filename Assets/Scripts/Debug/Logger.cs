@@ -37,7 +37,21 @@ public static class Logger
         WriteToFile(message, level);
         
 #endif
-        Debug.Log(message);
+
+        switch (level)
+        {
+            case Level.Info:
+                Debug.Log(message);
+                break;
+            case Level.Warning:
+                Debug.LogWarning(message);
+                break;
+            case Level.Error:
+                Debug.LogError(message);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(level), level, null);
+        }
     }
 
     private static void WriteToFile(object message, Level level)
