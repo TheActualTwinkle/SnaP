@@ -327,7 +327,7 @@ public class Player : NetworkBehaviour
         AppendAvatarDataServerRpc(packages[packageAmount - 1]);
         yield return new WaitUntil(() => _avatarData.Value.CodedValue.Length == allBytes.Length); // Wait for RPC to apply.
         
-        Debug.Log($"Player avatar loaded.");
+        Logger.Log("Player avatar loaded.");
 
         SetIsImageReadyServerRpc(true);
     }

@@ -15,9 +15,14 @@ namespace PokerLogs
             _logLevel = logLevel;
         }
 
+        public LogMessage Parse(string str)
+        {
+            return new LogMessage(); // todo:
+        }
+        
         public override string ToString()
         {
-            return $"[{_dateTime}] Log level: {_logLevel}. {_message}";
+            return $"[{_dateTime}] {_logLevel}: {_message}";
         }
     }   
 }
