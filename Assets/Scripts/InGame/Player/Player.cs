@@ -53,6 +53,8 @@ public class Player : NetworkBehaviour
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
         
         PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton;
+        
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
     }
 
     private void OnDisable()
@@ -64,6 +66,8 @@ public class Player : NetworkBehaviour
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
         
         PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButton;
+        
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
     }
 
     private void Start()
@@ -167,7 +171,7 @@ public class Player : NetworkBehaviour
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
-        SceneLoader.Instance.LoadScene(SceneName.Menu, false);
+        SceneLoader.Instance.LoadScene(Constants.SceneNames.Menu, false);
     }
 
     private IEnumerator HostShutdown()
@@ -179,6 +183,16 @@ public class Player : NetworkBehaviour
         Shutdown();
     }
 
+    private void OnClientDisconnected(ulong id)
+    {
+        if (id != 0 || OwnerClientId == 0)
+        {
+            return;
+        }
+        
+        Shutdown();
+    }
+    
     private void OnBetInputFieldValueChanged(uint value)
     {
         if (IsOwner == false)
@@ -320,7 +334,7 @@ public class Player : NetworkBehaviour
     
     public override string ToString()
     {
-        return $"Nick: {_nickName.Value}, ID: {OwnerClientId}.";
+        return $"Nick: '{_nickName.Value}', ID: '{OwnerClientId}'";
     }
 
     #region RPC

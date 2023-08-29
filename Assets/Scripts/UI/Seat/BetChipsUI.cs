@@ -63,10 +63,10 @@ public class BetChipsUI : MonoBehaviour
         _betValueText.text = player.BetAmount.ToString();
         SetImage(player.BetAmount);
         
-        ResetAllAnimatorTriggers();
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(Bet);
 
-        SfxAudio.Instance.Play(1);
+        SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
     }
 
     private void OnPlayerLeave(Player player, int index)
@@ -89,17 +89,17 @@ public class BetChipsUI : MonoBehaviour
         _betValueText.text = newValue.ToString();
         SetImage(newValue);
         
-        ResetAllAnimatorTriggers();
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(Bet);
 
-        SfxAudio.Instance.Play(1);
+        SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
     }
     
     private IEnumerator DelayToPotAnimation(float delay)
     {
         yield return new WaitForSeconds(delay);
         
-        ResetAllAnimatorTriggers();
+        _animator.ResetAllTriggers();
         _animator.SetTrigger(ToPot);
     }
 
@@ -140,16 +140,5 @@ public class BetChipsUI : MonoBehaviour
         
         _image.sprite = Resources.Load<Sprite>("Sprites/ChipsStack_" + imageId);
         _image.SetNativeSize();
-    }
-
-    private void ResetAllAnimatorTriggers()
-    {
-        foreach (AnimatorControllerParameter controllerParameter in _animator.parameters)
-        {
-            if (controllerParameter.type == AnimatorControllerParameterType.Trigger)
-            {
-                _animator.ResetTrigger(controllerParameter.name);
-            }
-        }
     }
 }

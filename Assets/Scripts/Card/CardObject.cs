@@ -33,6 +33,11 @@ public class CardObject : INetworkSerializable
 
     #region Overrides
 
+    public override string ToString()
+    {
+        return $"{_value} of {_suit}";
+    }
+
     public static bool operator ==(CardObject a, CardObject b)
     {
         return a.Value == b.Value;

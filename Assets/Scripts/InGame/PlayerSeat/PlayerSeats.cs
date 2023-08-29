@@ -73,14 +73,14 @@ public class PlayerSeats : MonoBehaviour
         if (IsFree(seatNumber) == false)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.SeatOccupiedByOtherPlayer, seatNumber);
-            Log.WriteToFile($"Player ({player}) can`t take the №{seatNumber} seat, its already taken by Player ({player}).");
+            Log.WriteToFile($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).");
             return false;
         }
 
         if (player.Stack < Betting.Instance.BigBlind)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.StackTooSmall, seatNumber);
-            Log.WriteToFile($"Player ({player}) can`t take the №{seatNumber} seat, stack smaller then Big blind.");
+            Log.WriteToFile($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.");
             return false;
         }
 
@@ -90,7 +90,7 @@ public class PlayerSeats : MonoBehaviour
         {
             _players[seatNumber] = player;
 
-            Log.WriteToFile($"Player ({player}) sit on №{seatNumber} seat.");
+            Log.WriteToFile($"Player ({player}) sit on {seatNumber} seat.");
 
             PlayerSitEvent?.Invoke(player, seatNumber);
             return true;
@@ -191,7 +191,6 @@ public class PlayerSeats : MonoBehaviour
             {
                 try
                 {
-                    // ReSharper disable once UnusedVariable
                     GameObject checkGameObject = _players[i].gameObject;
                 }
                 catch (NullReferenceException)
@@ -200,13 +199,31 @@ public class PlayerSeats : MonoBehaviour
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _players[i].NickName;
-                        Log.WriteToFile($"Connection lost on player ('{nick}') on {i} seat.");
+                        Log.WriteToFile($"Connection lost on player ('{_players[i]}') on {i} seat.");
                         TryLeave(_players[i]);
+                        
+                        continue;
+                    }
+                    catch (NullReferenceException) { }
+                }
+
+                try
+                {
+                    GameObject checkGameObject = _waitingPlayers[i].gameObject;
+                }
+                catch (NullReferenceException)
+                {
+                    try
+                    {
+                        // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
+                        string nick = _waitingPlayers[i].NickName;
+                        Log.WriteToFile($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.");
+                        TryLeave(_waitingPlayers[i]);
                     }
                     catch (NullReferenceException) { }
                 }
             }
-
+            
             yield return new WaitForSeconds(_connectionLostCheckInterval);
         }
     }

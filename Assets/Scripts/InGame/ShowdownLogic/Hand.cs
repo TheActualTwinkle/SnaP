@@ -172,8 +172,8 @@ public class Hand
         return _combinationId[0] switch
         {
             1 => CardObject.RankToString(_combinationId[1]) + " High. Others: " + string.Join(", ", _combinationId.Skip(2)),
-            2 => "Pair of " + CardObject.RankToString(_combinationId[1]) + "`s. Others: " + string.Join(", ", _combinationId.Skip(2)),
-            3 => "Two Pair: " + CardObject.RankToString(_combinationId[1]) + "s over " + CardObject.RankToString(_combinationId[2]) + "s. Kicker: " + CardObject.RankToString(_combinationId[3]),
+            2 => "One Pair of " + CardObject.RankToString(_combinationId[1]) + "`s. Others: " + string.Join(", ", _combinationId.Skip(2)),
+            3 => "Two Pairs: " + CardObject.RankToString(_combinationId[1]) + "s over " + CardObject.RankToString(_combinationId[2]) + "s. Kicker: " + CardObject.RankToString(_combinationId[3]),
             4 => "Three " + CardObject.RankToString(_combinationId[1]) + "`s. Others: " + string.Join(", ", _combinationId.Skip(2)),
             5 => CardObject.RankToString(_combinationId[1]) + " High Straight",
             6 => CardObject.RankToString(_combinationId[1]) + " High Flush. Kicker: " + _combinationId[2],

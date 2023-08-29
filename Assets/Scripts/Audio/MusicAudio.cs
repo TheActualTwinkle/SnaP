@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MusicAudio : MonoBehaviour
@@ -7,7 +8,8 @@ public class MusicAudio : MonoBehaviour
     private static MusicAudio Instance { get; set; }
 
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private List<AudioClip> _audioClips;
+    private Dictionary<Constants.Sound.Music.Type, AudioClip> _audioClips = new();
+
     [SerializeField] private float _musicInterval;
 
     private void Awake()
@@ -21,6 +23,8 @@ public class MusicAudio : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        
+        SetupAudioClips();
     }
 
     private void Start()
@@ -37,11 +41,10 @@ public class MusicAudio : MonoBehaviour
     {
         while (true)
         {
-            Shuffle(_audioClips);
+            Shuffle(ref _audioClips);
             
-            foreach (AudioClip audioClip in _audioClips)
+            foreach (AudioClip audioClip in _audioClips.Values)
             {
-
                 _audioSource.clip = audioClip;
                 _audioSource.Play();
 
@@ -52,15 +55,25 @@ public class MusicAudio : MonoBehaviour
         // ReSharper disable once IteratorNeverReturns
     }
 
-    private static void Shuffle<T>(IList<T> list)
+    private static void Shuffle<T1, T2>(ref Dictionary<T1, T2> dictionary)
     {
         System.Random random = new();
-        
-        int length = list.Count;  
-        while (length > 1) {  
-            length--;  
-            int k = random.Next(length + 1);  
-            (list[k], list[length]) = (list[length], list[k]);
-        }  
+        dictionary = dictionary.OrderBy(x => random.Next()).ToDictionary(item => item.Key, item => item.Value); 
+    }
+
+    private void SetupAudioClips()
+    {
+        foreach (KeyValuePair<Constants.Sound.Music.Type, string> keyValuePair in Constants.Sound.Music.Paths)
+        {
+            AudioClip audioClip = Resources.Load<AudioClip>(keyValuePair.Value);
+
+            if (audioClip == null)
+            {
+                Log.WriteToFile($"Error: Audio Clip named '{keyValuePair.Value}' not found!");
+                continue;
+            }
+            
+            _audioClips.Add(keyValuePair.Key, audioClip);
+        }
     }
 }

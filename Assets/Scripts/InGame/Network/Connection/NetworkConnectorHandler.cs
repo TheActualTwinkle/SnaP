@@ -1,32 +1,85 @@
 using System;
+using System.Threading.Tasks;
+using Unity.Netcode;
 
 public static class NetworkConnectorHandler
 {
     public const uint MaxPlayersAmount = 5;
     
     public static INetworkConnector CurrentConnector { get; private set; }
+
+    private static bool _isSubscribedToUserConnectionEvents; 
     
-    
-    public static void CreateGame(NetworkConnectorType connectorType)
+    public static async Task CreateGame(NetworkConnectorType connectorType)
     {
         INetworkConnector connector = GetConnector(connectorType);
         
         CurrentConnector = connector;
-        connector.Init();
+        await connector.Init();
 
-        connector.CreateGame();
+        Log.WriteToFile($"====== STARTING AT: {string.Join(':', connector.ConnectionData)} ======");
+
+        if (await connector.TryCreateGame() == false)
+        {
+            Log.WriteToFile("Error: fail to start at " + string.Join(':', connector.ConnectionData));
+        }
+        else
+        {
+            Log.WriteToFile("Successfully started at " + string.Join(':', connector.ConnectionData));
+        }
+
+        if (_isSubscribedToUserConnectionEvents == false)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+            
+            _isSubscribedToUserConnectionEvents = true;
+        }
     }
 
-    public static void JoinGame(NetworkConnectorType connectorType)
+    public static async Task JoinGame(NetworkConnectorType connectorType)
     {
         INetworkConnector connector = GetConnector(connectorType);
         
         CurrentConnector = connector;
-        connector.Init();
+        await connector.Init();
 
-        connector.JoinGame();
+        Log.WriteToFile($"==== JOINING TO: {string.Join(':', connector.ConnectionData)} ====");
+
+        if (await connector.TryJoinGame() == false)
+        {
+            Log.WriteToFile("Error: Failed to join to " + string.Join(':', connector.ConnectionData));
+        }
+        
+        NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent += OnNetworkTransportEvent;
     }
 
+    // For clients only.
+    private static void OnNetworkTransportEvent(NetworkEvent eventType, ulong clientId, ArraySegment<byte> payload, float receiveTime)
+    {
+        switch (eventType)
+        {
+            case NetworkEvent.Connect:
+                Log.WriteToFile($"Successfully connected to {string.Join(':', CurrentConnector.ConnectionData)}");
+                break;
+            case NetworkEvent.Disconnect:
+                Log.WriteToFile($"Error: Failed to connect to {string.Join(':', CurrentConnector.ConnectionData)}");
+                break;
+        }
+        
+        NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent -= OnNetworkTransportEvent;
+    }
+
+    private static void OnClientConnected(ulong id)
+    {
+        Log.WriteToFile($"User connected. ID: '{id}'");
+    }
+
+    private static void OnClientDisconnected(ulong id)
+    {
+        Log.WriteToFile($"User disconnected. ID: '{id}'");
+    }
+    
     private static INetworkConnector GetConnector(NetworkConnectorType connectorType)
     {
         INetworkConnector connector = connectorType switch

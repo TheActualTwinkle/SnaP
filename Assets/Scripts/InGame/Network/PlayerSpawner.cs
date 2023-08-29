@@ -18,9 +18,9 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
     {
-        if (sceneName.Contains("Desk") == true && IsServer == true)
+        if (sceneName.Contains(Constants.SceneNames.Desk) == true && IsServer == true)
         {
-            if (clientId == 0) // todo: Maybe fixed as 'NetworkManager.Singleton.LocalClientId == clientId' but if so there is an error on dedicated server.
+            if (IsHost == false && NetworkManager.Singleton.LocalClientId == clientId)
             {
                 return;
             }

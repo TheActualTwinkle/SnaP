@@ -6,34 +6,53 @@ public class PotUI : MonoBehaviour
 {
     [SerializeField] private Image _chipsImage;
     [SerializeField] private TextMeshProUGUI _valueText;
-    
-    private static Game Game => Game.Instance;
+
     private static Pot Pot => Pot.Instance;
     
     private void OnEnable()
     {
-        Game.EndDealEvent += OnEndDeal;
-        Game.GameStageOverEvent += OnGameStageOver;
+        Pot.ValueNetworkVariable.OnValueChanged += OnPotNetworkVariableValueChanged;
     }
 
     private void OnDisable()
     {
-        Game.EndDealEvent -= OnEndDeal;
-        Game.GameStageOverEvent -= OnGameStageOver;
+        Pot.ValueNetworkVariable.OnValueChanged -= OnPotNetworkVariableValueChanged;
     }
 
-    private void OnGameStageOver(GameStage gameStage)
+    private void Start()
     {
-        if (_valueText.text != Pot.Value.ToString())
+        uint potValue = Pot.ValueNetworkVariable.Value;
+        if (potValue == 0)
         {
-            SfxAudio.Instance.Play(2);
+            return;
         }
         
-        _chipsImage.enabled = true;
-        _valueText.text = Pot.Value.ToString();
+        Show(potValue);
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnPotNetworkVariableValueChanged(uint previousValue, uint newValue)
+    {
+        if (newValue == 0)
+        {
+            Hide();
+            return;
+        }
+        
+        if (_valueText.text != newValue.ToString())
+        {
+            SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.ToPot);
+        }
+        
+        Show(newValue);
+    }
+
+    private void Show(uint value)
+    {
+        _chipsImage.enabled = true;
+        _valueText.text = value.ToString();
+    }
+    
+    private void Hide()
     {
         _valueText.text = string.Empty;
         _chipsImage.enabled = false;

@@ -8,14 +8,14 @@ public class ConnectionButton : MonoBehaviour
     [SerializeField] private NetworkConnectorType _connectorType;
 
     // Button.
-    private void CreateGame()
+    private async void CreateGame()
     {
-        NetworkConnectorHandler.CreateGame(_connectorType);
+        await NetworkConnectorHandler.CreateGame(_connectorType);
     }
 
     // Button.
-    private void JoinGame()
+    private async void JoinGame()
     {
-        NetworkConnectorHandler.JoinGame(_connectorType);
+        await NetworkConnectorHandler.JoinGame(_connectorType);
     }
 }

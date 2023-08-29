@@ -1067,7 +1067,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Join Code:'
+  m_text: 'Join Code (Unity Relay):'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
   m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
@@ -1357,7 +1357,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "4792\u200B"
+  m_text: "47924\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
   m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
@@ -3572,7 +3572,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 4792
+  m_Text: 47924
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -3651,7 +3651,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Server Multiplayer
+  m_text: Unity Relay
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
   m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
@@ -6065,7 +6065,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: LAN
+  m_text: IP:Port
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
   m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}

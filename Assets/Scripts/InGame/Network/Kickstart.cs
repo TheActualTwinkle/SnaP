@@ -4,8 +4,8 @@ public class Kickstart : MonoBehaviour
 {
     [SerializeField] private NetworkConnectorType _connectorType;
 
-    private void Start()
+    private async void Start()
     {
-        NetworkConnectorHandler.CreateGame(_connectorType);
+        await NetworkConnectorHandler.CreateGame(_connectorType);
     }
 }
