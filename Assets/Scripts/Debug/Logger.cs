@@ -27,34 +27,36 @@ public static class Logger
     
     public static void Log(object message, Level level = Level.Info)
     {
+        LogMessage logMessage = new(DateTime, message, level);
+        
 #if !UNITY_EDITOR
 
-        WriteToFile(message, level);
+        WriteToFile(logMessage, level);
         
 #endif
 
         switch (level)
         {
             case Level.Info:
-                Debug.Log(message);
+                Debug.Log(logMessage);
                 break;
             case Level.Warning:
-                Debug.LogWarning(message);
+                Debug.LogWarning(logMessage);
                 break;
             case Level.Error:
-                Debug.LogError(message);
+                Debug.LogError(logMessage);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(level), level, null);
         }
     }
 
-    private static void WriteToFile(object message, Level level)
+    private static void WriteToFile(LogMessage message, Level level)
     {
         try
         {
             using StreamWriter sw = new(PokerLogReaderFilePath, true);
-            sw.WriteLine(new LogMessage(DateTime, message, level).ToString());
+            sw.WriteLine(message.ToString());
         }
         catch (Exception e)
         {

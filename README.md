@@ -9,8 +9,7 @@ Using [Texas Hold 'em](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) as 
 ```bash
 $ git clone https://github.com/Twinkllle/PokerMultiplayerBuild.git
 ```
-## Also you can checkout the [`Setup Guide`](https://github.com/Twinkllle/PokerMultiplayerBuild/tree/main#setup-guide) and make your own PokerMultiplayer server.
-## For nowadays we have only Windows and Linux standalone client and dedicated server support.
+## Also you can checkout the [`Setup Guide`](https://github.com/Twinkllle/PokerMultiplayerBuild/tree/main#setup-guide) and make your own PokerMultiplayer server. <br/> For nowadays we have only Windows and Linux standalone client and dedicated server support.
 ## **Requirements**:
  - Unity Version [**2021.3**](https://unity3d.com/get-unity/download) or newer
 ## **Services implemented:**
