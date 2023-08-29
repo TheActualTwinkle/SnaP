@@ -42,7 +42,7 @@ public class SfxAudio : MonoBehaviour
 
             if (audioClip == null)
             {
-                Log.WriteToFile($"Error: Audio Clip named '{keyValuePair.Value}' not found!");
+                Logger.Log($"Audio Clip named '{keyValuePair.Value}' not found!", Logger.Level.Error);
                 continue;
             }
             

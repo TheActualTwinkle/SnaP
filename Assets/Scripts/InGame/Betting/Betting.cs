@@ -108,7 +108,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: trying to bet blinds on client.");
+            Logger.Log("Trying to bet blinds on client. Aborting...", Logger.Level.Error);
             yield break;
         }
         
@@ -139,7 +139,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: trying to bet on client.");
+            Logger.Log("Trying to bet on client. Aborting...", Logger.Level.Error);
             yield break;
         }
         
@@ -202,7 +202,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: trying to StartBetCountdown on client.");
+            Logger.Log("Trying to StartBetCountdown on client. Aborting...", Logger.Level.Error);
             yield break;
         }
         
@@ -259,7 +259,7 @@ public class Betting : NetworkBehaviour
         }
 
         _currentBetterId.Value = player.OwnerClientId;
-        Log.WriteToFile($"Player ({player}), seat №{PlayerSeats.Players.IndexOf(player)} start betting");
+        Logger.Log($"Player ({player}), seat №{PlayerSeats.Players.IndexOf(player)} start betting");
         
         StartBetClientRpc(player.OwnerClientId);
     }
@@ -272,7 +272,7 @@ public class Betting : NetworkBehaviour
         }
         
         SetTimePassedSinceBetStartValueServerRpc(0);
-        Log.WriteToFile($"Player ({player}); {betAction}; {betAmount}");
+        Logger.Log($"Player ({player}); {betAction}; {betAmount}");
 
         EndBetClientRpc(player.OwnerClientId, betAction, betAmount);
 

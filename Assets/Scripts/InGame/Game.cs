@@ -72,7 +72,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: Preflop stage wanted to performed on client.");
+            Logger.Log("Preflop stage wanted to performed on client. Aborting...", Logger.Level.Error);
             yield break;
         }
 
@@ -98,7 +98,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: MidGame stage wanted to be performed on client.");
+            Logger.Log("MidGame stage wanted to be performed on client. Aborting...", Logger.Level.Error);
             yield break;
         }
         
@@ -119,7 +119,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: Showdown stage wanted to performed on client.");
+            Logger.Log("Showdown stage wanted to performed on client. Aborting...", Logger.Level.Error);
             yield break;
         }
         
@@ -169,7 +169,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Log.WriteToFile("Error: Betting wanted to performed on client.");
+            Logger.Log("Betting wanted to performed on client. Aborting...", Logger.Level.Error);
             yield break;
         }
         
@@ -316,7 +316,7 @@ public class Game : NetworkBehaviour
             return;
         }
         
-        Log.WriteToFile("Starting Deal.");
+        Logger.Log("Starting Deal.");
         
         _cardDeck = new CardDeck();
 
@@ -350,7 +350,7 @@ public class Game : NetworkBehaviour
         
         List<Player> winners = PlayerSeats.Players.Where(x => x != null && winnerInfo.Select(info => info.WinnerId).Contains(x.OwnerClientId)).ToList();
 
-        Log.WriteToFile($"End deal. Pot {winnerInfo[0].Chips}. Winner(`s): ({string.Join(", ", winners)}). Winner hand: {winnerInfo[0].Combination}");
+        Logger.Log($"End deal. Pot {winnerInfo[0].Chips}. Winner(`s): ({string.Join(", ", winners)}). Winner hand: {winnerInfo[0].Combination}");
 
         if (_stageCoroutine != null)
         {
@@ -385,7 +385,7 @@ public class Game : NetworkBehaviour
         
         StartNextStageClientRpc(stage);
         
-        Log.WriteToFile($"Starting {stage} stage.");
+        Logger.Log($"Starting {stage} stage.");
     }
 
     private void S_EndStage()
@@ -460,7 +460,7 @@ public class Game : NetworkBehaviour
 
         if (IsServer == true)
         {
-            Log.WriteToFile($"Deck created: {string.Join(", ", cardDeck)}.");
+            Logger.Log($"Deck created: {string.Join(", ", cardDeck)}.");
         }
     }
 
@@ -483,7 +483,7 @@ public class Game : NetworkBehaviour
 
             if (IsServer == true)
             {            
-                Log.WriteToFile($"Player ('{player}') received: {card1}, {card2}.");
+                Logger.Log($"Player ('{player}') received: {card1}, {card2}.");
             }
         }
     }
@@ -494,7 +494,7 @@ public class Game : NetworkBehaviour
 
         if (IsServer == true)
         {
-            Log.WriteToFile($"Board created: {string.Join(", ", _board.Cards)}.");
+            Logger.Log($"Board created: {string.Join(", ", _board.Cards)}.");
         }
     }
         

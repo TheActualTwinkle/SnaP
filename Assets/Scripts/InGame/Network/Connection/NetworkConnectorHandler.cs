@@ -17,15 +17,15 @@ public static class NetworkConnectorHandler
         CurrentConnector = connector;
         await connector.Init();
 
-        Log.WriteToFile($"====== STARTING AT: {string.Join(':', connector.ConnectionData)} ======");
+        Logger.Log($"====== STARTING AT: {string.Join(':', connector.ConnectionData)} ======");
 
         if (await connector.TryCreateGame() == false)
         {
-            Log.WriteToFile("Error: fail to start at " + string.Join(':', connector.ConnectionData));
+            Logger.Log("Fail to start at " + string.Join(':', connector.ConnectionData), Logger.Level.Error);
         }
         else
         {
-            Log.WriteToFile("Successfully started at " + string.Join(':', connector.ConnectionData));
+            Logger.Log("Successfully started at " + string.Join(':', connector.ConnectionData));
         }
 
         if (_isSubscribedToUserConnectionEvents == false)
@@ -44,11 +44,11 @@ public static class NetworkConnectorHandler
         CurrentConnector = connector;
         await connector.Init();
 
-        Log.WriteToFile($"==== JOINING TO: {string.Join(':', connector.ConnectionData)} ====");
+        Logger.Log($"==== JOINING TO: {string.Join(':', connector.ConnectionData)} ====");
 
         if (await connector.TryJoinGame() == false)
         {
-            Log.WriteToFile("Error: Failed to join to " + string.Join(':', connector.ConnectionData));
+            Logger.Log("Failed to join to " + string.Join(':', connector.ConnectionData), Logger.Level.Error);
         }
         
         NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent += OnNetworkTransportEvent;
@@ -60,10 +60,10 @@ public static class NetworkConnectorHandler
         switch (eventType)
         {
             case NetworkEvent.Connect:
-                Log.WriteToFile($"Successfully connected to {string.Join(':', CurrentConnector.ConnectionData)}");
+                Logger.Log($"Successfully connected to {string.Join(':', CurrentConnector.ConnectionData)}");
                 break;
             case NetworkEvent.Disconnect:
-                Log.WriteToFile($"Error: Failed to connect to {string.Join(':', CurrentConnector.ConnectionData)}");
+                Logger.Log($"Failed to connect to {string.Join(':', CurrentConnector.ConnectionData)}", Logger.Level.Error);
                 break;
         }
         
@@ -72,12 +72,12 @@ public static class NetworkConnectorHandler
 
     private static void OnClientConnected(ulong id)
     {
-        Log.WriteToFile($"User connected. ID: '{id}'");
+        Logger.Log($"User connected. ID: '{id}'");
     }
 
     private static void OnClientDisconnected(ulong id)
     {
-        Log.WriteToFile($"User disconnected. ID: '{id}'");
+        Logger.Log($"User disconnected. ID: '{id}'");
     }
     
     private static INetworkConnector GetConnector(NetworkConnectorType connectorType)

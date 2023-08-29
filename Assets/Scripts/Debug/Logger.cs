@@ -1,10 +1,5 @@
-// ReSharper disable RedundantUsingDirective
 using System;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Windows.Forms;
 using PokerLogs;
 using UnityEngine;
 using Application = UnityEngine.Application;
@@ -30,7 +25,7 @@ public static class Logger
         }
     }
     
-    public static void Log(object message, Level level)
+    public static void Log(object message, Level level = Level.Info)
     {
 #if !UNITY_EDITOR
 
