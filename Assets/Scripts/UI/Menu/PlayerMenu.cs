@@ -118,7 +118,7 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
             case UnityWebRequest.Result.DataProcessingError:
             case UnityWebRequest.Result.ConnectionError:
                 // todo make a error window.
-                Log.WriteToFile($"An error occurred while trying to set image. {webRequest.error}.");
+                Logger.Log($"An error occurred while trying to set image. {webRequest.error}.", Logger.Level.Error);
                 PlayerAvatarData avatarData = new();
                 avatarData.SetDefaultValues();
                 _image.sprite = TextureConverter.GetSprite(avatarData.CodedValue, AvatarImageWidth, AvatarImageHeight);

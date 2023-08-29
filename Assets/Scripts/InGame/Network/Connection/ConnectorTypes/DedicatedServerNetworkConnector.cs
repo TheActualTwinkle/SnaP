@@ -50,7 +50,7 @@ public class DedicatedServerNetworkConnector : INetworkConnector
             return false;
         }
  
-        Log.WriteToFile("Forwarding to public IP...");
+        Logger.Log("Forwarding to public IP...");
         ConnectionData = new[] {await IpAddressProvider.GetPublic(), _port};
         
         return true;

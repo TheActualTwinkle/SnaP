@@ -73,14 +73,14 @@ public class PlayerSeats : MonoBehaviour
         if (IsFree(seatNumber) == false)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.SeatOccupiedByOtherPlayer, seatNumber);
-            Log.WriteToFile($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).");
+            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).", Logger.Level.Error);
             return false;
         }
 
         if (player.Stack < Betting.Instance.BigBlind)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.StackTooSmall, seatNumber);
-            Log.WriteToFile($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.");
+            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.", Logger.Level.Error);
             return false;
         }
 
@@ -90,7 +90,7 @@ public class PlayerSeats : MonoBehaviour
         {
             _players[seatNumber] = player;
 
-            Log.WriteToFile($"Player ({player}) sit on {seatNumber} seat.");
+            Logger.Log($"Player ({player}) sit on {seatNumber} seat.");
 
             PlayerSitEvent?.Invoke(player, seatNumber);
             return true;
@@ -121,7 +121,7 @@ public class PlayerSeats : MonoBehaviour
             _waitingPlayers[seatNumber] = null;
         }
         
-        Log.WriteToFile($"Player ({player}) leave from {seatNumber} seat.");
+        Logger.Log($"Player ({player}) leave from {seatNumber} seat.");
 
         PlayerLeaveEvent?.Invoke(player, seatNumber);
         return true;
@@ -138,7 +138,7 @@ public class PlayerSeats : MonoBehaviour
 
             if (_players.Contains(_waitingPlayers[i]) == true)
             {
-                Log.WriteToFile($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ({_waitingPlayers[i]}).");
+                Logger.Log($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ({_waitingPlayers[i]}).", Logger.Level.Error);
                 continue;
             }
 
@@ -199,7 +199,7 @@ public class PlayerSeats : MonoBehaviour
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _players[i].NickName;
-                        Log.WriteToFile($"Connection lost on player ('{_players[i]}') on {i} seat.");
+                        Logger.Log($"Connection lost on player ('{_players[i]}') on {i} seat.", Logger.Level.Error);
                         TryLeave(_players[i]);
                         
                         continue;
@@ -217,7 +217,7 @@ public class PlayerSeats : MonoBehaviour
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _waitingPlayers[i].NickName;
-                        Log.WriteToFile($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.");
+                        Logger.Log($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.", Logger.Level.Warning);
                         TryLeave(_waitingPlayers[i]);
                     }
                     catch (NullReferenceException) { }
