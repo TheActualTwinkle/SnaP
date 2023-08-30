@@ -9,7 +9,7 @@ using Application = UnityEngine.Application;
 
 public static class Logger
 {
-    private static readonly string PokerLogReaderFilePath;
+    private static readonly string PokerLogViewerFilePath;
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
@@ -20,15 +20,15 @@ public static class Logger
         return;
         #endif
         
-        PokerLogReaderFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.plr";
+        PokerLogViewerFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.plv";
         
-        if (File.Exists(PokerLogReaderFilePath) == false)
+        if (File.Exists(PokerLogViewerFilePath) == false)
         {
-            File.Create(PokerLogReaderFilePath).Close();
+            File.Create(PokerLogViewerFilePath).Close();
         }
         else
         {
-            File.WriteAllText(PokerLogReaderFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
+            File.WriteAllText(PokerLogViewerFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
         }
     }
 
@@ -61,7 +61,7 @@ public static class Logger
     {
         try
         {
-            using StreamWriter sw = new(PokerLogReaderFilePath, true);
+            using StreamWriter sw = new(PokerLogViewerFilePath, true);
             sw.WriteLine(message.ToString());
         }
         catch (Exception e)

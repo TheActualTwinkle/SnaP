@@ -5,15 +5,15 @@ namespace PokerLogs
 {
     public readonly struct LogMessage
     {
-        private readonly DateTime _dateTime;
-        private readonly object _message;
-        private readonly Logger.LogLevel _logLevel;
+        public DateTime Time { get; }
+        public Logger.LogLevel LogLevel { get; }
+        public object Message { get; }
 
         public LogMessage(DateTime dateTime, object message, Logger.LogLevel logLevel)
         {
-            _dateTime = dateTime;
-            _message = message;
-            _logLevel = logLevel;
+            Time = dateTime;
+            Message = message;
+            LogLevel = logLevel;
         }
 
         public static bool TryParse(string data, out LogMessage logMessage)
@@ -40,7 +40,7 @@ namespace PokerLogs
         
         public override string ToString()
         {
-            return $"[{_dateTime}] {_logLevel}: {_message}";
+            return $"[{Time}] {LogLevel}: {Message}";
         }
     }   
 }
