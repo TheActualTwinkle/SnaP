@@ -72,7 +72,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Logger.Log("Preflop stage wanted to performed on client. Aborting...", Logger.Level.Error);
+            Logger.Log("Preflop stage wanted to performed on client. Aborting...", Logger.LogLevel.Error);
             yield break;
         }
 
@@ -98,7 +98,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Logger.Log("MidGame stage wanted to be performed on client. Aborting...", Logger.Level.Error);
+            Logger.Log("MidGame stage wanted to be performed on client. Aborting...", Logger.LogLevel.Error);
             yield break;
         }
         
@@ -119,7 +119,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Logger.Log("Showdown stage wanted to performed on client. Aborting...", Logger.Level.Error);
+            Logger.Log("Showdown stage wanted to performed on client. Aborting...", Logger.LogLevel.Error);
             yield break;
         }
         
@@ -169,7 +169,7 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Logger.Log("Betting wanted to performed on client. Aborting...", Logger.Level.Error);
+            Logger.Log("Betting wanted to performed on client. Aborting...", Logger.LogLevel.Error);
             yield break;
         }
         

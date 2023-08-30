@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using PokerLogs;
 using UnityEngine;
@@ -8,13 +9,19 @@ using Application = UnityEngine.Application;
 
 public static class Logger
 {
-    private static readonly string PokerLogReaderFilePath = $"{Application.persistentDataPath}\\Log.plr";
+    private static readonly string PokerLogReaderFilePath;
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
 
     static Logger()
     {
+        #if UNITY_EDITOR
+        return;
+        #endif
+        
+        PokerLogReaderFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.plr";
+        
         if (File.Exists(PokerLogReaderFilePath) == false)
         {
             File.Create(PokerLogReaderFilePath).Close();
@@ -24,34 +31,33 @@ public static class Logger
             File.WriteAllText(PokerLogReaderFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
         }
     }
-    
-    public static void Log(object message, Level level = Level.Info)
+
+    public static void Log(object message, LogLevel logLevel = LogLevel.Info)
     {
-        LogMessage logMessage = new(DateTime, message, level);
-        
 #if !UNITY_EDITOR
 
-        WriteToFile(logMessage, level);
-        
+        LogMessage logMessage = new(DateTime, message, logLevel);
+        WriteToFile(logMessage, logLevel);
+
 #endif
 
-        switch (level)
+        switch (logLevel)
         {
-            case Level.Info:
-                Debug.Log(logMessage);
+            case LogLevel.Info:
+                Debug.Log(message);
                 break;
-            case Level.Warning:
-                Debug.LogWarning(logMessage);
+            case LogLevel.Warning:
+                Debug.LogWarning(message);
                 break;
-            case Level.Error:
-                Debug.LogError(logMessage);
+            case LogLevel.Error:
+                Debug.LogError(message);
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(level), level, null);
+                throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
         }
     }
 
-    private static void WriteToFile(LogMessage message, Level level)
+    private static void WriteToFile(LogMessage message, LogLevel logLevel)
     {
         try
         {
@@ -64,7 +70,7 @@ public static class Logger
         }
     }
 
-    public enum Level
+    public enum LogLevel
     {
         Info,
         Warning,

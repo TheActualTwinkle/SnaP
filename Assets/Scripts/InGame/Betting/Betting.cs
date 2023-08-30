@@ -108,7 +108,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Logger.Log("Trying to bet blinds on client. Aborting...", Logger.Level.Error);
+            Logger.Log("Trying to bet blinds on client. Aborting...", Logger.LogLevel.Error);
             yield break;
         }
         
@@ -139,7 +139,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Logger.Log("Trying to bet on client. Aborting...", Logger.Level.Error);
+            Logger.Log("Trying to bet on client. Aborting...", Logger.LogLevel.Error);
             yield break;
         }
         
@@ -202,7 +202,7 @@ public class Betting : NetworkBehaviour
     {
         if (IsServer == false)
         {
-            Logger.Log("Trying to StartBetCountdown on client. Aborting...", Logger.Level.Error);
+            Logger.Log("Trying to StartBetCountdown on client. Aborting...", Logger.LogLevel.Error);
             yield break;
         }
         
