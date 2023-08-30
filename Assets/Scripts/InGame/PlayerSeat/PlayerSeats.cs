@@ -73,14 +73,14 @@ public class PlayerSeats : MonoBehaviour
         if (IsFree(seatNumber) == false)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.SeatOccupiedByOtherPlayer, seatNumber);
-            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).", Logger.Level.Error);
+            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).", Logger.LogLevel.Error);
             return false;
         }
 
         if (player.Stack < Betting.Instance.BigBlind)
         {
             PlayerSitDeniedEvent?.Invoke(DeniedReason.StackTooSmall, seatNumber);
-            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.", Logger.Level.Error);
+            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.", Logger.LogLevel.Error);
             return false;
         }
 
@@ -138,7 +138,7 @@ public class PlayerSeats : MonoBehaviour
 
             if (_players.Contains(_waitingPlayers[i]) == true)
             {
-                Logger.Log($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ({_waitingPlayers[i]}).", Logger.Level.Error);
+                Logger.Log($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ({_waitingPlayers[i]}).", Logger.LogLevel.Error);
                 continue;
             }
 
@@ -199,7 +199,7 @@ public class PlayerSeats : MonoBehaviour
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _players[i].NickName;
-                        Logger.Log($"Connection lost on player ('{_players[i]}') on {i} seat.", Logger.Level.Error);
+                        Logger.Log($"Connection lost on player ('{_players[i]}') on {i} seat.", Logger.LogLevel.Error);
                         TryLeave(_players[i]);
                         
                         continue;
@@ -217,7 +217,7 @@ public class PlayerSeats : MonoBehaviour
                     {
                         // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _waitingPlayers[i].NickName;
-                        Logger.Log($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.", Logger.Level.Warning);
+                        Logger.Log($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.", Logger.LogLevel.Warning);
                         TryLeave(_waitingPlayers[i]);
                     }
                     catch (NullReferenceException) { }

@@ -21,7 +21,7 @@ public static class NetworkConnectorHandler
 
         if (await connector.TryCreateGame() == false)
         {
-            Logger.Log("Fail to start at " + string.Join(':', connector.ConnectionData), Logger.Level.Error);
+            Logger.Log("Fail to start at " + string.Join(':', connector.ConnectionData), Logger.LogLevel.Error);
         }
         else
         {
@@ -48,7 +48,7 @@ public static class NetworkConnectorHandler
 
         if (await connector.TryJoinGame() == false)
         {
-            Logger.Log("Failed to join to " + string.Join(':', connector.ConnectionData), Logger.Level.Error);
+            Logger.Log("Failed to join to " + string.Join(':', connector.ConnectionData), Logger.LogLevel.Error);
         }
         
         NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent += OnNetworkTransportEvent;
@@ -63,7 +63,7 @@ public static class NetworkConnectorHandler
                 Logger.Log($"Successfully connected to {string.Join(':', CurrentConnector.ConnectionData)}");
                 break;
             case NetworkEvent.Disconnect:
-                Logger.Log($"Failed to connect to {string.Join(':', CurrentConnector.ConnectionData)}", Logger.Level.Error);
+                Logger.Log($"Failed to connect to {string.Join(':', CurrentConnector.ConnectionData)}", Logger.LogLevel.Error);
                 break;
         }
         
