@@ -3,7 +3,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 /// <summary>
-/// Keeps only single instance of NetworkManager. 
+/// Keeps only one instance of NetworkManager. 
 /// </summary>
 [RequireComponent(typeof(NetworkManager), typeof(UnityTransport))]
 public class NetworkManagerSingleton : MonoBehaviour

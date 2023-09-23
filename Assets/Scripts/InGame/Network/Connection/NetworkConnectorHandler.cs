@@ -1,10 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using Unity.Netcode;
+using UnityEngine;
 
 public static class NetworkConnectorHandler
 {
     public const uint MaxPlayersAmount = 5;
+
+    private const uint MaxConnectAttempts = 4;
+    private const uint ConnectTimeoutMS = 3000;
+    
+    private const float DelayBeforeErrorShutdownMS = 3000;
     
     public static INetworkConnector CurrentConnector { get; private set; }
 
@@ -19,14 +25,28 @@ public static class NetworkConnectorHandler
 
         Logger.Log($"====== STARTING AT: {string.Join(':', connector.ConnectionData)} ======");
 
-        if (await connector.TryCreateGame() == false)
+        for (var i = 0; i < MaxConnectAttempts; i++)
         {
-            Logger.Log("Fail to start at " + string.Join(':', connector.ConnectionData), Logger.LogLevel.Error);
+            if (await connector.TryCreateGame() == false)
+            {
+                Logger.Log($"Failed to start at {string.Join(':', connector.ConnectionData)}. Attempt {i+1}/{MaxConnectAttempts}", Logger.LogLevel.Error);
+                await Task.Delay((int)ConnectTimeoutMS);
+                
+                if (i == MaxConnectAttempts - 1)
+                {
+                    Logger.Log($"Connection timeout. Shuts-downing in {DelayBeforeErrorShutdownMS} milliseconds.");
+                    await Task.Delay((int)DelayBeforeErrorShutdownMS);
+                    Application.Quit(-1);
+                    return;
+                }
+                
+                continue;
+            }
+            
+            break;
         }
-        else
-        {
-            Logger.Log("Successfully started at " + string.Join(':', connector.ConnectionData));
-        }
+        
+        Logger.Log("Successfully started at " + string.Join(':', connector.ConnectionData));
 
         if (_isSubscribedToUserConnectionEvents == false)
         {
@@ -70,11 +90,13 @@ public static class NetworkConnectorHandler
         NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent -= OnNetworkTransportEvent;
     }
 
+    // For server only.
     private static void OnClientConnected(ulong id)
     {
         Logger.Log($"User connected. ID: '{id}'");
     }
 
+    // For server only.
     private static void OnClientDisconnected(ulong id)
     {
         Logger.Log($"User disconnected. ID: '{id}'");
@@ -84,7 +106,7 @@ public static class NetworkConnectorHandler
     {
         INetworkConnector connector = connectorType switch
         {
-            NetworkConnectorType.LocalAddress => new LocalAddressNetworkConnector(),
+            NetworkConnectorType.IpAddress => new IPAddressNetworkConnector(),
             NetworkConnectorType.UnityRelay => new UnityRelayNetworkConnector(),
             NetworkConnectorType.DedicatedServer => new DedicatedServerNetworkConnector(),
             _ => throw new ArgumentOutOfRangeException(nameof(connectorType), connectorType, null)

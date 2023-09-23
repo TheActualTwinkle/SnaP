@@ -80,7 +80,7 @@ public class Game : NetworkBehaviour
         
         Player player1 = PlayerSeats.Players[turnSequence[0]];
         Player player2 = PlayerSeats.Players[turnSequence[1]];
-        yield return Betting.AutoBetBlinds(player1, player2);
+        yield return Betting.BetBlinds(player1, player2);
 
         int[] preflopTurnSequence = _boardButton.GetPreflopTurnSequence();
 

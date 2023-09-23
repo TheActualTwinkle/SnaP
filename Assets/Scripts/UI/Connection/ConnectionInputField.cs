@@ -29,7 +29,7 @@ public class ConnectionInputField : MonoBehaviour
     {
         return connectorType switch
         {
-            NetworkConnectorType.LocalAddress => new[] { _ipAddressInputField.text, _portInputField.text },
+            NetworkConnectorType.IpAddress => new[] { _ipAddressInputField.text, _portInputField.text },
             NetworkConnectorType.UnityRelay => new[] { _joinCodeInputField.text },
             _ => throw new ArgumentOutOfRangeException(nameof(connectorType), connectorType, null)
         };

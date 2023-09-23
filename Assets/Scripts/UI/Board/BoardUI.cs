@@ -53,7 +53,7 @@ public class BoardUI : MonoBehaviour
         {
             case GameStage.Preflop:
             {
-                StartCoroutine(LoadFrontSpriteForCards());
+                StartCoroutine(LoadCardsFrontSprites());
         
                 _animator.SetTrigger(StartPreflop);
                 break;
@@ -97,16 +97,16 @@ public class BoardUI : MonoBehaviour
         _combinationHighlighting.Highlight(gameStage);
     }
 
-    private IEnumerator LoadFrontSpriteForCards()
+    private IEnumerator LoadCardsFrontSprites()
     {
         _cardSprites.Clear();
 
-        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length >= 8); // At lest more or equals then length of e.g. "2;3;4;5;" (coded 2,3,4,5 of Clubs).
+        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length >= 9); // More or equals then length of e.g. "2;3;4;5;6" (coded 2,3,4,5,6 of Clubs).
         
         List<CardObject> cards = CardObjectConverter.GetCards(Game.CodedBoardCardsString).ToList();
         foreach (CardObject card in cards)
         {
-            var id = $"Sprites/{(int)card.Value}_{card.Suit}";
+            var id = $"{Constants.ResourcesPaths.Cards}/{(int)card.Value}_{card.Suit}";
 
             Sprite sprite = Resources.Load<Sprite>(id);
             _cardSprites.Add(sprite);

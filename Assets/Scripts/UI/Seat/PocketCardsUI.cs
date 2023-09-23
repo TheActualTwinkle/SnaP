@@ -53,8 +53,8 @@ public class PocketCardsUI : MonoBehaviour
         
                 StartCoroutine(LoadFrontSpriteForCards(player));
 
-                _cardImage1.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
-                _cardImage2.sprite = Resources.Load<Sprite>("Sprites/BlueCardBack");
+                _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/BlueCardBack");
+                _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/BlueCardBack");
         
                 _animator.ResetAllTriggers();
                 _animator.SetTrigger(GetCards);
@@ -103,9 +103,9 @@ public class PocketCardsUI : MonoBehaviour
     private IEnumerator LoadFrontSpriteForCards(Player player)
     {
         yield return new WaitUntil(() => ReferenceEquals(player.PocketCard1, null) == false && ReferenceEquals(player.PocketCard2, null) == false);
-        
-        _cardSprite1 = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit.ToString()}");
-        _cardSprite2 = Resources.Load<Sprite>($"Sprites/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit.ToString()}");
+
+        _cardSprite1 = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit}");
+        _cardSprite2 = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit}");
     }  
     
     // Animator

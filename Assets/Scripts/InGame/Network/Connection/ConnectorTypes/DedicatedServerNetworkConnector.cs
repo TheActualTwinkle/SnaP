@@ -5,6 +5,9 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Use this for star connection on dedicated server.
+/// </summary>
 public class DedicatedServerNetworkConnector : INetworkConnector
 {
     public IEnumerable<string> ConnectionData { get; private set; }

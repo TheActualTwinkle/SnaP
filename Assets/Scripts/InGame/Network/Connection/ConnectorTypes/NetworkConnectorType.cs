@@ -1,6 +1,6 @@
 public enum NetworkConnectorType : byte
 {
-    LocalAddress,
+    IpAddress,
     UnityRelay,
     DedicatedServer
 }

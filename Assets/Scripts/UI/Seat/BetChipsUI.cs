@@ -137,8 +137,8 @@ public class BetChipsUI : MonoBehaviour
         {
             imageId = 1;
         }
-        
-        _image.sprite = Resources.Load<Sprite>("Sprites/ChipsStack_" + imageId);
+
+        _image.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Chips}/ChipsStack_" + imageId);
         _image.SetNativeSize();
     }
 }

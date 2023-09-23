@@ -38,6 +38,7 @@ public class Betting : NetworkBehaviour
     
     private const float DelayBeforeStartBet = 1f;
     private const float DelayBeforeEndBet = 0.7f;
+    private const float DelayBeforeEndBetBlinds = 0.2f;
 
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
@@ -104,7 +105,7 @@ public class Betting : NetworkBehaviour
         return PlayerSeats.Players.Where(x => x != null).Select(x => x.Stack + x.BetAmount).Min() - player.BetAmount;
     }
 
-    public IEnumerator AutoBetBlinds(Player player1, Player player2)
+    public IEnumerator BetBlinds(Player player1, Player player2)
     {
         if (IsServer == false)
         {
@@ -116,9 +117,9 @@ public class Betting : NetworkBehaviour
         
         if (player1.Stack <= _smallBlind || player2.Stack <= _bigBlind)
         {
-            var betValue = (uint)Mathf.Min((int)player1.Stack, (int)player2.Stack);
-            player1.TryBet(betValue);
-            player2.TryBet(betValue);
+            var betMinValue = (uint)Mathf.Min((int)player1.Stack, (int)player2.Stack);
+            player1.TryBet(betMinValue);
+            player2.TryBet(betMinValue);
 
             betAction = BetAction.AllIn;
         }
@@ -128,7 +129,7 @@ public class Betting : NetworkBehaviour
             player2.TryBet(_bigBlind);
         }
         
-        yield return new WaitForSeconds(DelayBeforeEndBet / 4);
+        yield return new WaitForSeconds(DelayBeforeEndBetBlinds);
         yield return new WaitUntil(() => (player1.BetAmount == _smallBlind && player2.BetAmount == _bigBlind) || betAction == BetAction.AllIn);
 
         S_EndBet(player1, betAction, player1.BetAmount);
@@ -217,7 +218,7 @@ public class Betting : NetworkBehaviour
                 S_EndBet(player, BetAction.Empty, player.BetAmount);
                 yield break;
             }
-            
+
             SetTimePassedSinceBetStartValueServerRpc(_timePassedSinceBetStart.Value + Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
@@ -298,6 +299,13 @@ public class Betting : NetworkBehaviour
         }
         
         Player player = PlayerSeats.Players.Find(x => x != null && x.OwnerClientId == playerId);
+
+        if (player == null)
+        {
+            Logger.Log($"Betting was initiated on PlayerId: {playerId} but no Player object was found at PlayerSeats", Logger.LogLevel.Error);
+            return;
+        }
+        
         player.TryBet(betAmount);
         
         if (Game.CurrentGameStage == GameStage.River && betAction != BetAction.Call)

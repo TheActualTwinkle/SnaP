@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public static class Constants
+public abstract class Constants
 {
     public abstract class SceneNames
     {
@@ -44,5 +44,11 @@ public static class Constants
                 BgMusic3
             }
         }
+    }
+
+    public abstract class ResourcesPaths
+    {
+        public const string Cards = "Sprites/Cards";
+        public const string Chips = "Sprites/Chips";
     }
 }
