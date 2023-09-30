@@ -125,6 +125,18 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -1357,64 +1369,64 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      3_Spades: -1866700238
-      7_Spades: -1754054222
-      10_Hearts: 1397475961
-      deck_29: 983474984
       10_Clubs: -1550473728
-      deck_44: 1746382023
-      7_Daimonds: -552076850
-      8_Hearts: 143113634
-      K_Daimonds: -1829036136
-      Q_Spades: -26388263
-      K_Clubs: 1065944035
-      3_Hearts: 1787494412
-      Q_Clubs: -509232859
-      4_Clubs: 1746649374
-      2_Spades: -1005907084
-      5_Clubs: -2000384087
-      deck_14: -407185661
-      4_Spades: -1797028735
       10_Daimonds: 1922535317
-      6_Spades: 525257487
-      6_Clubs: -2016895760
-      8_Daimonds: -908044679
-      5_Daimonds: 640732200
+      10_Hearts: 1397475961
       10_Spades: 1099871628
-      deck_30: -1354553569
-      RedCardBack: 2132445392
-      3_Daimonds: 205686794
-      J_Spades: 705903580
-      9_Clubs: 2055725439
-      K_Hearts: -308227160
-      Q_Daimonds: 1812338780
-      9_Spades: 640087852
-      4_Hearts: -311708583
-      2_Hearts: -498519806
-      J_Clubs: 178724888
-      J_Daimonds: 331993702
-      6_Hearts: 1645252685
-      BlueCardBack: -1981845628
-      9_Daimonds: -93621320
-      8_Clubs: 139897043
-      8_Spades: 806946837
-      Q_Hearts: -1209178595
       2_Clubs: -1110522935
       2_Daimonds: 1402887493
+      2_Hearts: -498519806
+      2_Spades: -1005907084
+      3_Clubs: 1834844995
+      3_Daimonds: 205686794
+      3_Hearts: 1787494412
+      3_Spades: -1866700238
+      4_Clubs: 1746649374
       4_Daimonds: 664120098
-      J_Hearts: -711707395
-      6_Daimonds: 483496973
-      7_Hearts: 447872777
+      4_Hearts: -311708583
+      4_Spades: -1797028735
+      5_Clubs: -2000384087
+      5_Daimonds: 640732200
       5_Hearts: 1189749547
       5_Spades: 1576392821
-      K_Spades: 1424191596
+      6_Clubs: -2016895760
+      6_Daimonds: 483496973
+      6_Hearts: 1645252685
+      6_Spades: 525257487
       7_Clubs: 1142604329
-      A_Spades: 521873144
+      7_Daimonds: -552076850
+      7_Hearts: 447872777
+      7_Spades: -1754054222
+      8_Clubs: 139897043
+      8_Daimonds: -908044679
+      8_Hearts: 143113634
+      8_Spades: 806946837
+      9_Clubs: 2055725439
+      9_Daimonds: -93621320
       9_Hearts: 61718820
+      9_Spades: 640087852
       A_Clubs: -1135928038
-      A_Hearts: -667566267
       A_Daimonds: 1086085126
-      3_Clubs: 1834844995
+      A_Hearts: -667566267
+      A_Spades: 521873144
+      BlueCardBack: -1981845628
+      J_Clubs: 178724888
+      J_Daimonds: 331993702
+      J_Hearts: -711707395
+      J_Spades: 705903580
+      K_Clubs: 1065944035
+      K_Daimonds: -1829036136
+      K_Hearts: -308227160
+      K_Spades: 1424191596
+      Q_Clubs: -509232859
+      Q_Daimonds: 1812338780
+      Q_Hearts: -1209178595
+      Q_Spades: -26388263
+      RedCardBack: 2132445392
+      deck_14: -407185661
+      deck_29: 983474984
+      deck_30: -1354553569
+      deck_44: 1746382023
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

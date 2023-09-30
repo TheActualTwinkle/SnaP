@@ -53,8 +53,8 @@ public class PocketCardsUI : MonoBehaviour
         
                 StartCoroutine(LoadFrontSpriteForCards(player));
 
-                _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/BlueCardBack");
-                _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/BlueCardBack");
+                _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/CardBack");
+                _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/CardBack");
         
                 _animator.ResetAllTriggers();
                 _animator.SetTrigger(GetCards);

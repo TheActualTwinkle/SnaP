@@ -1,4 +1,4 @@
-# **PokerMultiplayer**
+# **NSTU-SNAP (Surely not a Poker)**
 ![titleBanner](PokerTitle.jpg)
 
 Project was created to learn Unity multiplayer. 
