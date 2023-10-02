@@ -191,7 +191,11 @@ public class Game : NetworkBehaviour
                 {
                     ulong winnerId = notFoldPlayers[0].OwnerClientId;
                     WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}), "opponent(`s) folded")};
-                    S_EndDeal(winnerInfo);
+
+                    if (_isPlaying.Value == true)
+                    {
+                        S_EndDeal(winnerInfo);
+                    }
                     yield break;
                 }
 
@@ -341,6 +345,12 @@ public class Game : NetworkBehaviour
     {
         if (IsServer == false)
         {
+            return;
+        }
+
+        if (_isPlaying.Value == false)
+        {
+            Logger.Log($"Trying to EndDeal when it`s already Ended.", Logger.LogLevel.Error);
             return;
         }
 
