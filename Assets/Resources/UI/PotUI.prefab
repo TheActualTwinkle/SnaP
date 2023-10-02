@@ -121,8 +121,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
-  m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 45693bd3ea90c99408d1037fd2b3dc99, type: 2}
+  m_sharedMaterial: {fileID: -9129270107332301358, guid: 45693bd3ea90c99408d1037fd2b3dc99, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -254,7 +254,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 63afa7158e0759346ab390b39f17d66e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b3f9753e28666424eacaeb10d3f9e929, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

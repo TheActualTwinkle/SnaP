@@ -260,7 +260,7 @@ public class Betting : NetworkBehaviour
         }
 
         _currentBetterId.Value = player.OwnerClientId;
-        Logger.Log($"Player ({player}), seat №{PlayerSeats.Players.IndexOf(player)} start betting");
+        Logger.Log($"Player ({player}), seat {PlayerSeats.Players.IndexOf(player)} start betting");
         
         StartBetClientRpc(player.OwnerClientId);
     }

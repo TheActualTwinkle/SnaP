@@ -2,13 +2,13 @@ using System;
 
 public static class PlayerSeatsDeniedReasonExtensions
 {
-    public static string GetMessage(this PlayerSeats.DeniedReason deniedReason)
+    public static string GetMessage(this PlayerSeats.SitDenyReason sitDenyReason)
     {
-        return deniedReason switch
+        return sitDenyReason switch
         {
-            PlayerSeats.DeniedReason.SeatOccupiedByOtherPlayer => "Seat occupied by other player!",
-            PlayerSeats.DeniedReason.StackTooSmall => "Stack is too small!",
-            _ => throw new ArgumentOutOfRangeException(nameof(deniedReason), deniedReason, null)
+            PlayerSeats.SitDenyReason.SeatOccupiedByOtherPlayer => "Seat occupied by other player!",
+            PlayerSeats.SitDenyReason.StackTooSmall => "Stack is too small!",
+            _ => throw new ArgumentOutOfRangeException(nameof(sitDenyReason), sitDenyReason, null)
         };
     }
 }

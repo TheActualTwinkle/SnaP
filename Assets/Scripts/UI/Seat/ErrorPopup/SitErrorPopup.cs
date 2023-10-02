@@ -18,14 +18,14 @@ public class SitErrorPopup : MonoBehaviour
         PlayerSeats.PlayerSitDeniedEvent -= OnPlayerSitDenied;
     }
 
-    private void OnPlayerSitDenied(PlayerSeats.DeniedReason deniedReason, int seatNumber)
+    private void OnPlayerSitDenied(PlayerSeats.SitDenyReason sitDenyReason, int seatNumber)
     {
         if (seatNumber != _seatNumber)
         {
             return;
         }
         
-        _popupTextSpawner.SetText(deniedReason.GetMessage());
+        _popupTextSpawner.SetText(sitDenyReason.GetMessage());
         _popupTextSpawner.SpawnOnMousePosition();
     }
 }

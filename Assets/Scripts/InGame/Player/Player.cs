@@ -87,7 +87,7 @@ public class Player : NetworkBehaviour
             {
                 SetSeatServerRpc(NullSeatNumber);
 
-                LeaveSeat();
+                LeaveSeat(PlayerSeats.SeatLeaveReason.CommonLeave);
             }
             else
             {
@@ -153,7 +153,7 @@ public class Player : NetworkBehaviour
 
         if (value > _stack.Value)
         {
-            LeaveSeat();
+            LeaveSeat(PlayerSeats.SeatLeaveReason.Kick);
             return false;
         }
         
@@ -230,7 +230,7 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            LeaveSeat();
+            LeaveSeat(PlayerSeats.SeatLeaveReason.CommonLeave);
         }
     }    
     
@@ -248,7 +248,7 @@ public class Player : NetworkBehaviour
         
         SetSeatServerRpc(NullSeatNumber);
 
-        LeaveSeat();
+        LeaveSeat(PlayerSeats.SeatLeaveReason.Kick);
     }
 
     private void OnGameStageOver(GameStage gameStage)
@@ -287,9 +287,9 @@ public class Player : NetworkBehaviour
         PlayerSeats.TryTake(this, seatNumber, forceToSeat);
     }
 
-    private void LeaveSeat()
+    private void LeaveSeat(PlayerSeats.SeatLeaveReason leaveReason)
     {
-        PlayerSeats.TryLeave(this);
+        PlayerSeats.TryLeave(this, leaveReason);
     }
 
     private IEnumerator SetAvatar(byte[] allBytes)

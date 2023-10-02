@@ -37,7 +37,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -89.5, y: 0}
+  m_AnchoredPosition: {x: -67.400024, y: 0}
   m_SizeDelta: {x: 40.96, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7667194083800036573
@@ -408,15 +408,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: SFX
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
-  m_sharedMaterial: {fileID: -7111544809489885200, guid: 2439b9a9a193a184fab16f0f52952cf3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 45693bd3ea90c99408d1037fd2b3dc99, type: 2}
+  m_sharedMaterial: {fileID: -9129270107332301358, guid: 45693bd3ea90c99408d1037fd2b3dc99, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4281474181
+  m_fontColor: {r: 0.52156866, g: 0.10980392, b: 0.19607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -433,13 +433,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48
-  m_fontSizeBase: 48
+  m_fontSize: 62
+  m_fontSizeBase: 62
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 32
   m_VerticalAlignment: 4096
   m_textAlignment: 65535
@@ -513,8 +513,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 41.4, y: 0}
-  m_SizeDelta: {x: 168.63, y: 68.97}
+  m_AnchoredPosition: {x: 51.6, y: 0}
+  m_SizeDelta: {x: 114.74, y: 68.97}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4825957602504813833
 CanvasRenderer:
