@@ -170,10 +170,12 @@ public class Betting : NetworkBehaviour
             return;
         }
         
-        if (IsServer == true)
+        if (IsServer == false)
         {
-            SetTimePassedSinceBetStartValueServerRpc(_betTime);
+            return;
         }
+        
+        _timePassedSinceBetStart.Value = _betTime;
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
@@ -219,7 +221,7 @@ public class Betting : NetworkBehaviour
                 yield break;
             }
 
-            SetTimePassedSinceBetStartValueServerRpc(_timePassedSinceBetStart.Value + Time.deltaTime);
+            _timePassedSinceBetStart.Value += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
 
@@ -271,8 +273,8 @@ public class Betting : NetworkBehaviour
         {
             return;
         }
-        
-        SetTimePassedSinceBetStartValueServerRpc(0);
+
+        _timePassedSinceBetStart.Value = 0;
         Logger.Log($"Player ({player}); {betAction}; {betAmount}");
 
         EndBetClientRpc(player.OwnerClientId, betAction, betAmount);
@@ -318,12 +320,6 @@ public class Betting : NetworkBehaviour
     
     #region RPC
 
-    [ServerRpc]
-    private void SetTimePassedSinceBetStartValueServerRpc(float value)
-    {
-        _timePassedSinceBetStart.Value = value;
-    }
-    
     [ClientRpc]
     private void StartBetClientRpc(ulong playerId)
     {

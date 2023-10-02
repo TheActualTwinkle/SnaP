@@ -84,6 +84,7 @@ MonoBehaviour:
   - {fileID: 8790537505814019681}
   - {fileID: 331852054420897279}
   - {fileID: 3367200856411395639}
+  _backSprite: {fileID: 21300000, guid: 81712adfe5d92ec46afd8393dce9f860, type: 3}
 --- !u!1001 &1972026812979405494
 PrefabInstance:
   m_ObjectHideFlags: 0
