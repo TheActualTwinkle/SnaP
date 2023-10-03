@@ -1,7 +1,5 @@
 # **SnaP - Shurely not a Poker**
 
-![Picture](GitImages/MenuLogoTransparent.png)
-
 **"SnaP"** is a poker-based game with unique NSTU-like graphics.
 The project branched off from original [PokerMultiplayer](https://github.com/Twinkllle/PokerMultiplayer/tree/main) Game and created for NSTU subject called *Project Activities*.
 The [rules](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) of **Texas Hold 'em** as one of the most popular poker card game variants was used.
@@ -25,9 +23,10 @@ If you and your friends are not connected to the same **LAN** but still want to 
  After that you will start hosting at Unity Realy servers. At the **Desk** in the bottom-left corner you will able to see your 6-digits **Join Code** (e.g. *ZXCQWE*) then you can left-click it. 
  This will copy code to the clipboard so you can send it to your friends so they should paste it to *Join Code* input filed.
  ![RelayJoinCode](GitImages/RelayJoinCode.png)
-And then press *Join* button next to **Unity Relay** text label.
 ![JoinCodeInputField](GitImages/RelayJoinCodeIF.png) 
-2. **Hosting with Port Forwarding:** First you have to forward a port (it can be default port *47924* or almost any other port you wish) in **Router/Firewall** settings (may be this [windows instruction](https://www.lifewire.com/how-to-port-forward-4163829) can be helpful).
+	Then press *Join* button next to **Unity Relay** text label.
+
+1. **Hosting with Port Forwarding:** First you have to forward a port (it can be default port *47924* or almost any other port you wish) in **Router/Firewall** settings (may be this [windows instruction](https://www.lifewire.com/how-to-port-forward-4163829) can be helpful).
 	Next steps:
 	* Start game as you do it for LAN. 
 	* Get your [Public IP address](https://www.whatismyip.com/).
