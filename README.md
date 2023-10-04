@@ -38,12 +38,12 @@ $ .\SnaP_Server.exe
 ```
 * At Lunix machine run at `../linux_dedicated`  run:
 ```bash
-$ sudo chmod +x ./Poker.x86_64
+$ sudo chmod +x ./SnaP_Server.x86_64
 $ ./SnaP_Server.x86_64
 ```
 If you forwarded different from *47924* port then you can add the `-port` argument when starting game.
 ```bash
-$ ./Poker.x86_64 -port 12345
+$ ./SnaP_Server.x86_64 -port 12345
 ```
 
 The terminal will notify about the successful start of the server:
