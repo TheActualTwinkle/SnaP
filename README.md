@@ -30,7 +30,7 @@ If you and your friends are not connected to the same **LAN** but still want to 
 	* Get your [Public IP address](https://www.whatismyip.com/).
 	* Your friends should paste it at *IP* and forwarded *Port* to input fields and click *Join* button.
 ## Dedicated server Setup Guide
-1. As in 2nd paragraph of WAN [Standalone Setup Guide](#WAN) you have to forward a port.
+1. As in 2nd paragraph of WAN [Standalone Setup Guide](#wan-ip-and-port-connection) you have to forward a port.
 2. When your port is forwarded you should start server.
 * At Windows machine at `..\win_dedicated` run:
 ```bash
