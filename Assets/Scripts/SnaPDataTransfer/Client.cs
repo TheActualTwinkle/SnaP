@@ -47,16 +47,15 @@ namespace SnaPDataTransfer
         {
             _pipeClient = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.None, TokenImpersonationLevel.Impersonation);
 
-            Logger.Log("[SnaPDataTransfer] Connecting to server...");
+            Logger.Log("[SnaPDataTransfer] Connecting to pipe server...");
             
             try
             {
                 await _pipeClient.ConnectAsync(_connectionTimeout);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Logger.Log("[SnaPDataTransfer] " + e, Logger.LogLevel.Error);
                 return false;
             }
         }
@@ -98,10 +97,11 @@ namespace SnaPDataTransfer
                 response = requestAsEnum switch
                 {
                     Request.Get => JsonConvert.SerializeObject(new LobbyInfo(
-                        2,//PlayerSeats.MaxSeats,
-                        1,//PlayerSeats.Instance.PlayersAmount + PlayerSeats.Instance.WaitingPlayers.Count,
+                        PlayerSeats.MaxSeats,
+                        PlayerSeats.Instance.PlayersAmount + PlayerSeats.Instance.WaitingPlayersAmount,
                         "TODO: Create a lobby name feature!"
                     )),
+                    Request.IsLobbyReady => PlayerSeats.Instance == null ? "N" : "Y",
                     _ => throw new ArgumentException()
                 };
             }

@@ -3,5 +3,6 @@
     public enum Request
     {
         Get,
+        IsLobbyReady,
     }
 }
