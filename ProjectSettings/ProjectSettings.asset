@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Twinkle
-  productName: SnaP
+  productName: SnaP_Server
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.7803922, g: 0.3137255, b: 0.3137255, a: 1}

@@ -23,7 +23,9 @@ public static class NetworkConnectorHandler
         CurrentConnector = connector;
         await connector.Init();
 
-        Logger.Log($"====== STARTING AT: {string.Join(':', connector.ConnectionData)} ======");
+        Logger.Log("=============================================================");
+        Logger.Log($"STARTING AT: {string.Join(':', connector.ConnectionData)}");
+        Logger.Log("=============================================================");
 
         for (var i = 0; i < MaxConnectAttempts; i++)
         {
@@ -46,7 +48,10 @@ public static class NetworkConnectorHandler
             break;
         }
         
+        Logger.Log("=============================================================");
         Logger.Log("Successfully started at " + string.Join(':', connector.ConnectionData));
+        Logger.Log("=============================================================");
+
 
         if (_isSubscribedToUserConnectionEvents == false)
         {

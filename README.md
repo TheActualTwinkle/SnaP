@@ -1,7 +1,7 @@
-# **SnaP - Shurely not a Poker**
+# **SnaP - poker game with [NSTU](https://en.nstu.ru/)-like graphics.**
 
-**"SnaP"** is a poker-based game with unique NSTU-like graphics.
-The project branched off from original [PokerMultiplayer](https://github.com/Twinkllle/PokerMultiplayer/tree/main) Game and created for NSTU subject called *Project Activities*.
+"SnaP" -  **Shurely not a Poker**
+
 The [rules](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) of **Texas Hold 'em** as one of the most popular poker card game variants was used.
 
 ![JoinSample](GitImages/SnapPlayerTest1.gif)
@@ -10,18 +10,19 @@ The [rules](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) of **Texas Hol
 </p>
 
 ## Want to just Play? Here you go!
-To play you should visit GitHub [releases page](https://github.com/Twinkllle/PokerMultiplayer/releases) and download version for your OS. For nowadays we have only **Windows** and **Linux** standalone client and dedicated server support.
+Visit GitHub [releases page](https://github.com/Twinkllle/PokerMultiplayer/releases) and download version for your OS. For nowadays we have only **Windows** and **Linux** standalone client and dedicated server support.
 
 ## Standalone Setup Guide 
 ### [LAN](https://en.wikipedia.org/wiki/Local_area_network) IP and Port connection:
-By default the input fields will be autocomplete depending on your **Local IP address** and **Port** will be set to **47924**.
+By default the input fields will be autocomplete depending on your **Local IP address**.
+**Port** will be set to default **47924**.
 ![IpPortInputFields](GitImages/ipAndPortIF.png)
-After setup of the connection data you will be allowed to start Hosting or Joining via **LAN** by clicking the *Host* or *Join* buttons next to the **IP:Port** text label.
+After setup of the connection data you will be allowed to start Hosting or Joining lobby
 ### [WAN](https://en.wikipedia.org/wiki/Wide_area_network) IP and Port connection:
 If you and your friends are not connected to the same **LAN** but still want to play together without resorting to services like **Hamachi** or **Radmin VPN** there is some solutions.
 1. [**Unity Game Services:**](https://unity.com/solutions/gaming-services) To use it in SnaP game you should press *Create* button (that would be same as *Host* in LAN connection).
- After that you will start hosting at Unity Realy servers. At the **Desk** in the bottom-left corner you will able to see your 6-digits **Join Code** (e.g. *ZXCQWE*) then you can left-click it. 
- This will copy code to the clipboard so you can send it to your friends so they should paste it to *Join Code* input filed. Then press *Join* button next to **Unity Relay** text label.</br>
+ ![RelayButtons](GitImages/RelayButtons.png) After that you will start hosting at Unity Realy servers. At the **Desk** in the bottom-left corner you will able to see your 6-digits **Join Code** (e.g. *ZXCQWE*) then you can left-click it. 
+ This will copy code to the clipboard so you can send it to your friends so they should paste it to *Join Code* input filed. Then press Relay *Join* button.</br>
  ![RelayJoinCode](GitImages/RelayJoinCode.png)
 ![JoinCodeInputField](GitImages/RelayJoinCodeIF.png)
 1. **Hosting with Port Forwarding:** First you have to forward a port (it can be default port *47924* or almost any other port you wish) in **Router/Firewall** settings (may be this [windows instruction](https://www.lifewire.com/how-to-port-forward-4163829) can be helpful).
@@ -46,27 +47,30 @@ If you forwarded different from *47924* port then you can add the `-port` argume
 $ ./SnaP_Server.x86_64 -port 12345
 ```
 
-The terminal will notify about the successful start of the server:
+You will notified about the successful start of the server:
 ```bash 
-====== STARTING AT: <LOCAL_SERVER_IP:PORT> ======
+=============================================================
+STARTING AT: 192.168.0.69:12345
+=============================================================
 Forwarding to public IP...
 # ...Some...
 # ...Unity...
 # ...Logs here...
-Successfully started at <PUBLIC_SERVER_IP:PORT>
+=============================================================
+Successfully started at 90.189.208.37:12345
+=============================================================
 ```
 Or about start failure:
 ```bash
-====== STARTING AT: <LOCAL_SERVER_IP:PORT> ======
+=============================================================
+STARTING AT: <LOCAL_SERVER_IP:PORT> 
+=============================================================
 Failed to start at <LOCAL_SERVER_IP:PORT>. Attempt 1/4
 Failed to start at <LOCAL_SERVER_IP:PORT>. Attempt 2/4
 Failed to start at <LOCAL_SERVER_IP:PORT>. Attempt 3/4
 Failed to start at <LOCAL_SERVER_IP:PORT>. Attempt 4/4
 Connection timeout. Shuts-downing in 3000 milliseconds.
 ```
-
-## **Requirements**:
- - Unity Version [**2021.3**](https://unity3d.com/get-unity/download) or newer
 ## **Services implemented:**
   * [Netcode for GameObjects](https://unity.com/products/netcode) 
     >This library is used to synchronize GameObject and game state data across all clients that connect in a networking session.
@@ -77,6 +81,8 @@ Connection timeout. Shuts-downing in 3000 milliseconds.
   * [ParrelSync](https://github.com/VeriorPies/ParrelSync)
 	>ParrelSync is a Unity editor extension that allows users to test multiplayer gameplay without building the project by having another Unity editor window opened and mirror the changes from the original project.
 
+## **Requirements**:
+ - Unity Version [**2021.3**](https://unity3d.com/get-unity/download) or newer
 ## **Resources:**
 * [Holdem Combination Сalculator](https://github.com/ccqi/TexasHoldem)
 * [Standalone File Browser](https://github.com/gkngkc/UnityStandaloneFileBrowser)

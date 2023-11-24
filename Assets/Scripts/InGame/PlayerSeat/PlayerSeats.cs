@@ -38,6 +38,8 @@ public class PlayerSeats : MonoBehaviour
 
     public int PlayersAmount => _players.Count(x => x != null);
 
+    public int WaitingPlayersAmount => _waitingPlayers.Count(x => x != null);
+
     [SerializeField] private float _connectionLostCheckInterval;
     
     private void OnValidate()

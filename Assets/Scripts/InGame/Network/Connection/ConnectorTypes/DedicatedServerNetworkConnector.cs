@@ -17,7 +17,7 @@ public class DedicatedServerNetworkConnector : INetworkConnector
 
     public async Task Init()
     {
-        _ipAddress = await IpAddressProvider.GetLocal();
+        _ipAddress = await IpAddressProvider.GetLocalAsync();
 
         string[] args = Environment.GetCommandLineArgs();
         int portArgIndex = Array.IndexOf(args, "-port");
@@ -54,7 +54,7 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         }
  
         Logger.Log("Forwarding to public IP...");
-        ConnectionData = new[] {await IpAddressProvider.GetPublic(), _port};
+        ConnectionData = new[] {await IpAddressProvider.GetPublicAsync(), _port};
         
         return true;
     }
