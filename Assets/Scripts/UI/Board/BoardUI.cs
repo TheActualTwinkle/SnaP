@@ -10,8 +10,8 @@ public class BoardUI : MonoBehaviour
 {
     [SerializeField] private CombinationHighlightingUI _combinationHighlighting;
     [SerializeField] private Animator _animator;
-    [SerializeField] private Sprite _backSprite;
     [SerializeField] private List<Image> _cardImages;
+    [SerializeField] private Sprite _backSprite;
     private readonly List<Sprite> _cardSprites = new();
     
     private static readonly int StartPreflop = Animator.StringToHash("StartPreflop");
@@ -78,7 +78,7 @@ public class BoardUI : MonoBehaviour
     {
         _animator.ResetAllTriggers();
         _animator.SetTrigger(EndDeal);
-
+        
         foreach (Image image in _cardImages)
         {
             image.sprite = _backSprite;

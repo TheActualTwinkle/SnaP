@@ -139,6 +139,6 @@ public class BetChipsUI : MonoBehaviour
         }
 
         _image.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Chips}/ChipsStack_" + imageId);
-        _image.SetNativeSize();
+        //_image.SetNativeSize(); todo: Fix chips stack size.
     }
 }

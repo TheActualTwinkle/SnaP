@@ -18,7 +18,7 @@ public struct PlayerAvatarData : ISaveLoadData, INetworkSerializable
 
     public void SetDefaultValues()
     {
-        _codedValue = TextureConverter.GetRawTexture(Resources.Load<Sprite>("Sprites/ava").texture);
+        _codedValue = TextureConverter.GetRawTexture(Resources.Load<Sprite>("Sprites/DefaultAvatar").texture);
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter

@@ -6,12 +6,19 @@ using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
 {
-    public enum DeniedReason
+    public enum SitDenyReason
     {
         SeatOccupiedByOtherPlayer,
         StackTooSmall,
     }
     
+    public enum SeatLeaveReason
+    {
+        CommonLeave,
+        Kick,
+        ChangeSeat
+    }
+
     public static PlayerSeats Instance { get; private set; }
 
     public const int MaxSeats = 5;
@@ -19,7 +26,7 @@ public class PlayerSeats : MonoBehaviour
     public event Action<Player, int> PlayerSitEvent;
     public event Action<Player, int> PlayerWaitForSitEvent;
     public event Action<Player, int> PlayerLeaveEvent;
-    public event Action<DeniedReason, int> PlayerSitDeniedEvent;
+    public event Action<SitDenyReason, int> PlayerSitDeniedEvent;
 
     public List<Player> Players => _players.ToList();
     [ReadOnly] [SerializeField] private List<Player> _players;
@@ -28,11 +35,13 @@ public class PlayerSeats : MonoBehaviour
     [ReadOnly] [SerializeField] private List<Player> _waitingPlayers;
 
     public Player LocalPlayer => GetLocalPlayer();
-    
+
     public int PlayersAmount => _players.Count(x => x != null);
 
-    [SerializeField] private float _connectionLostCheckInterval;
+    public int WaitingPlayersAmount => _waitingPlayers.Count(x => x != null);
 
+    [SerializeField] private float _connectionLostCheckInterval;
+    
     private void OnValidate()
     {
         if (_players.Count == MaxSeats && _waitingPlayers.Count == MaxSeats)
@@ -63,29 +72,31 @@ public class PlayerSeats : MonoBehaviour
 
     private void Start()
     {
-        #if !UNITY_EDITOR
+#if !UNITY_EDITOR
         StartCoroutine(CheckForConnectionLost());
-        #endif
+#endif
     }
 
     public bool TryTake(Player player, int seatNumber, bool forceToSeat = false)
     {
         if (IsFree(seatNumber) == false)
         {
-            PlayerSitDeniedEvent?.Invoke(DeniedReason.SeatOccupiedByOtherPlayer, seatNumber);
-            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).", Logger.LogLevel.Error);
+            PlayerSitDeniedEvent?.Invoke(SitDenyReason.SeatOccupiedByOtherPlayer, seatNumber);
+            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, its already taken by Player ({player}).",
+                Logger.LogLevel.Error);
             return false;
         }
 
         if (player.Stack < Betting.Instance.BigBlind)
         {
-            PlayerSitDeniedEvent?.Invoke(DeniedReason.StackTooSmall, seatNumber);
-            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.", Logger.LogLevel.Error);
+            PlayerSitDeniedEvent?.Invoke(SitDenyReason.StackTooSmall, seatNumber);
+            Logger.Log($"Player ({player}) can`t take the {seatNumber} seat, stack smaller then Big blind.",
+                Logger.LogLevel.Error);
             return false;
         }
 
-        TryLeave(player);
-        
+        TryLeave(player, SeatLeaveReason.ChangeSeat);
+
         if (Game.Instance.IsPlaying == false || forceToSeat == true)
         {
             _players[seatNumber] = player;
@@ -100,8 +111,8 @@ public class PlayerSeats : MonoBehaviour
         PlayerWaitForSitEvent?.Invoke(player, seatNumber);
         return false;
     }
-    
-    public bool TryLeave(Player player)
+
+    public bool TryLeave(Player player, SeatLeaveReason leaveReason)
     {
         if (_players.Contains(player) == false && _waitingPlayers.Contains(player) == false)
         {
@@ -120,13 +131,24 @@ public class PlayerSeats : MonoBehaviour
             seatNumber = _waitingPlayers.IndexOf(player);
             _waitingPlayers[seatNumber] = null;
         }
-        
-        Logger.Log($"Player ({player}) leave from {seatNumber} seat.");
 
+        switch (leaveReason)
+        {
+            case SeatLeaveReason.CommonLeave:
+            case SeatLeaveReason.ChangeSeat:
+                Logger.Log($"Player ({player}) leave from {seatNumber} seat.");
+                break;
+            case SeatLeaveReason.Kick:
+                Logger.Log($"Player ({player}) kicked from {seatNumber} seat.");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(leaveReason), leaveReason, null);
+        }
+        
         PlayerLeaveEvent?.Invoke(player, seatNumber);
         return true;
     }
-    
+
     public void SitEveryoneWaiting()
     {
         for (var i = 0; i < _waitingPlayers.Count; i++)
@@ -138,13 +160,15 @@ public class PlayerSeats : MonoBehaviour
 
             if (_players.Contains(_waitingPlayers[i]) == true)
             {
-                Logger.Log($"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ({_waitingPlayers[i]}).", Logger.LogLevel.Error);
+                Logger.Log(
+                    $"THIS SHOULD NEVER HAPPENED!!! Player collection already contains some waiting player ({_waitingPlayers[i]}).",
+                    Logger.LogLevel.Error);
                 continue;
             }
 
             _players[i] = _waitingPlayers[i];
             _waitingPlayers[i] = null;
-            
+
             PlayerSitEvent?.Invoke(_players[i], i);
         }
     }
@@ -159,7 +183,7 @@ public class PlayerSeats : MonoBehaviour
             {
                 continue;
             }
-            
+
             _players[i] = null;
             _waitingPlayers[i] = player;
             PlayerWaitForSitEvent?.Invoke(player, i);
@@ -170,7 +194,7 @@ public class PlayerSeats : MonoBehaviour
     {
         return _players[seatNumber] == null && _waitingPlayers[seatNumber] == null;
     }
-    
+
     private Player GetLocalPlayer()
     {
         Player localPlayer = _players.FirstOrDefault(x => x != null && x.IsOwner == true);
@@ -183,6 +207,7 @@ public class PlayerSeats : MonoBehaviour
     }
 
     // ReSharper disable once UnusedMember.Local
+    // Check for MissingReferenceException SHIT METHOD because Unity`s NGO fon`t provide working API for clients disconnecting.
     private IEnumerator CheckForConnectionLost()
     {
         while (true)
@@ -197,10 +222,9 @@ public class PlayerSeats : MonoBehaviour
                 {
                     try
                     {
-                        // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _players[i].NickName;
                         Logger.Log($"Connection lost on player ('{_players[i]}') on {i} seat.", Logger.LogLevel.Error);
-                        TryLeave(_players[i]);
+                        TryLeave(_players[i], SeatLeaveReason.Kick);
                         
                         continue;
                     }
@@ -215,10 +239,9 @@ public class PlayerSeats : MonoBehaviour
                 {
                     try
                     {
-                        // Check for MissingReferenceException ("Kolhoz" because cant catch the real MissingReferenceException in build).
                         string nick = _waitingPlayers[i].NickName;
                         Logger.Log($"Connection lost on player ('{_waitingPlayers[i]}') on {i} seat.", Logger.LogLevel.Warning);
-                        TryLeave(_waitingPlayers[i]);
+                        TryLeave(_waitingPlayers[i], SeatLeaveReason.Kick);
                     }
                     catch (NullReferenceException) { }
                 }
