@@ -9,7 +9,7 @@ using Application = UnityEngine.Application;
 
 public static class Logger
 {
-    private static readonly string PokerLogViewerFilePath;
+    public static readonly string PokerLogViewerFilePath;
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
@@ -19,6 +19,8 @@ public static class Logger
         #if UNITY_EDITOR
         return;
         #endif
+        
+        // ReSharper disable once HeuristicUnreachableCode
         
         PokerLogViewerFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.snp";
         

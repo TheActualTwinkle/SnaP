@@ -8,18 +8,18 @@ namespace SnaPDataTransfer
     public class StreamString
     {
         private readonly Stream _ioStream;
-        private readonly UnicodeEncoding _streamEncoding;
+        private readonly ASCIIEncoding _streamEncoding;
 
         public StreamString(Stream ioStream)
         {
             this._ioStream = ioStream;
-            _streamEncoding = new UnicodeEncoding();
+            _streamEncoding = new ASCIIEncoding();
         }
 
         public async Task<string> ReadStringAsync()
         {
-            var buffer = new byte[2];
-            await _ioStream.ReadAsync(buffer, 0, 2); // Waiting for request to appear.
+            var buffer = new byte[1];
+            await _ioStream.ReadAsync(buffer, 0, 1); // Waiting for request to appear.
 
             int len = buffer[0] * 256;
             len += _ioStream.ReadByte();
@@ -29,7 +29,6 @@ namespace SnaPDataTransfer
                 return "404";
             }
 
-            //len++;
             byte[] inBuffer = new byte[len];
             await _ioStream.ReadAsync(inBuffer, 0, len);
 
@@ -40,10 +39,12 @@ namespace SnaPDataTransfer
         {
             byte[] outBuffer = _streamEncoding.GetBytes(outString);
             int len = outBuffer.Length;
-            if (len > UInt16.MaxValue)
+
+            if (len > byte.MaxValue)
             {
-                len = (int)UInt16.MaxValue;
+                len = byte.MaxValue;
             }
+
             _ioStream.WriteByte((byte)(len / 256));
             _ioStream.WriteByte((byte)(len & 255));
             await _ioStream.WriteAsync(outBuffer, 0, len);
