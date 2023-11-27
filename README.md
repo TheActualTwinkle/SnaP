@@ -20,14 +20,13 @@ By default the input fields will be autocomplete depending on your **Local IP ad
 After setup of the connection data you will be allowed to start Hosting or Joining lobby
 ### [WAN](https://en.wikipedia.org/wiki/Wide_area_network) IP and Port connection:
 If you and your friends are not connected to the same **LAN** but still want to play together without resorting to services like **Hamachi** or **Radmin VPN** there is some solutions.
-1. [**Unity Game Services:**](https://unity.com/solutions/gaming-services) To use it in SnaP game you should press *Create* button (that would be same as *Host* in LAN connection).
- 
+1. [**Unity Game Services:**](https://unity.com/solutions/gaming-services) To use it in SnaP game you should press *Create* button (that would be same as *Host* in LAN connection). </br>
  ![RelayButtons](GitImages/RelayButtons.png)
  After that you will start hosting at Unity Realy servers. At the **Desk** in the bottom-left corner you will able to see your 6-digits **Join Code** (e.g. *ZXCQWE*) then you can left-click it. 
- This will copy code to the clipboard so you can send it to your friends so they should paste it to *Join Code* input filed. Then press Relay *Join* button.</br>
+ This will copy code to the clipboard so you can send it to your friends so they should paste it to *Join Code* input filed. Then press Relay *Join* button. </br>
  ![RelayJoinCode](GitImages/RelayJoinCode.png)
-![JoinCodeInputField](GitImages/RelayJoinCodeIF.png)
-1. **Hosting with Port Forwarding:** First you have to forward a port (it can be default port *47924* or almost any other port you wish) in **Router/Firewall** settings (may be this [windows instruction](https://www.lifewire.com/how-to-port-forward-4163829) can be helpful).
+ ![JoinCodeInputField](GitImages/RelayJoinCodeIF.png)
+2. **Hosting with Port Forwarding:** First you have to forward a port (it can be default port *47924* or almost any other port you wish) in **Router/Firewall** settings (may be this [windows instruction](https://www.lifewire.com/how-to-port-forward-4163829) can be helpful).
 	Next steps:
 	* Start game as you do it for LAN. 
 	* Get your [Public IP address](https://www.whatismyip.com/).
