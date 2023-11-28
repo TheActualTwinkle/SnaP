@@ -23,9 +23,13 @@ public static class NetworkConnectorHandler
         CurrentConnector = connector;
         await connector.Init();
 
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
-        Logger.Log($"STARTING AT: {string.Join(':', connector.ConnectionData)}");
+#endif
+        Logger.Log($"Starting at: {string.Join(':', connector.ConnectionData)}");
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
+#endif
 
         for (var i = 0; i < MaxConnectAttempts; i++)
         {
@@ -48,9 +52,13 @@ public static class NetworkConnectorHandler
             break;
         }
         
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
+#endif
         Logger.Log("Successfully started at " + string.Join(':', connector.ConnectionData));
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
+#endif
 
 
         if (_isSubscribedToUserConnectionEvents == false)

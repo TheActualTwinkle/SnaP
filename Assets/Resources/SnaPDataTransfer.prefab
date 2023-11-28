@@ -45,5 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pipeName: SnaPipe
-  _connectionTimeout: 5000
-  _requestNotFoundTimeout: 10000
+  _connectionTimeout: 10000
+  _requestNotFoundTimeout: 5000

@@ -12,8 +12,8 @@ namespace SnaPDataTransfer
         private static Client Instance { get; set; }
 
         [SerializeField] private string _pipeName;
-        [SerializeField] private int _connectionTimeout;
-        [SerializeField] private int _requestNotFoundTimeout;
+        [SerializeField] private int _connectionTimeout; // Time to wait connection to server.
+        [SerializeField] private int _requestNotFoundTimeout; // Time to wait if catch 404 request from server.
         
         private NamedPipeClientStream _pipeClient;
 

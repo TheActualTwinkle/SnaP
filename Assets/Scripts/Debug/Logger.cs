@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using PokerLogs;
 using UnityEngine;
 using Application = UnityEngine.Application;
@@ -14,13 +16,17 @@ public static class Logger
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
 
+    private static readonly bool PrintSnaPDataTransferLogs;
+
+    [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
     static Logger()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         return;
-        #endif
+#endif
         
-        // ReSharper disable once HeuristicUnreachableCode
+#pragma warning disable CS0162
+        PrintSnaPDataTransferLogs = Environment.GetCommandLineArgs().Contains("-sdt");
         
         PokerLogViewerFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.snp";
         
@@ -32,34 +38,41 @@ public static class Logger
         {
             File.WriteAllText(PokerLogViewerFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
         }
+#pragma warning restore CS0162
     }
 
-    public static void Log(object message, LogLevel logLevel = LogLevel.Info)
+    public static void Log(object message, LogLevel logLevel = LogLevel.Info, LogSource logSource = LogSource.General)
     {
 #if !UNITY_EDITOR
-
-        LogMessage logMessage = new(DateTime, message, logLevel);
-        WriteToFile(logMessage, logLevel);
-
+        LogMessage logMessage = new(DateTime, message, logLevel, logSource);
+        WriteToFile(logMessage);
 #endif
-
+        
+        if (logSource == LogSource.SnaPDataTransfer && PrintSnaPDataTransferLogs == false)
+        {
+            return;
+        }
+        
+        string logSourceString = logSource == LogSource.General ? string.Empty : $"[{logSource.ToString()}] ";
+        string fullMessage = logSourceString + message;
+        
         switch (logLevel)
         {
             case LogLevel.Info:
-                Debug.Log(message);
+                Debug.Log(fullMessage);
                 break;
             case LogLevel.Warning:
-                Debug.LogWarning(message);
+                Debug.LogWarning(fullMessage);
                 break;
             case LogLevel.Error:
-                Debug.LogError(message);
+                Debug.LogError(fullMessage);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
         }
     }
 
-    private static void WriteToFile(LogMessage message, LogLevel logLevel)
+    private static void WriteToFile(LogMessage message)
     {
         try
         {
@@ -77,5 +90,11 @@ public static class Logger
         Info,
         Warning,
         Error,
+    }
+    
+    public enum LogSource
+    {
+        General,
+        SnaPDataTransfer,
     }
 }
