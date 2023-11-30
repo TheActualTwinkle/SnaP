@@ -16,7 +16,7 @@ public static class Logger
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
 
-    private static readonly bool PrintSnaPDataTransferLogs;
+    private static readonly bool PrintSnaPDataTransferLogs = true; // = true; if you want to print SnaPDataTransfer logs in unity editor.
 
     [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
     static Logger()
@@ -70,6 +70,11 @@ public static class Logger
             default:
                 throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
         }
+    }
+    
+    public static void Log(object message, LogSource logSource)
+    {
+        Log(message, LogLevel.Info, logSource);
     }
 
     private static void WriteToFile(LogMessage message)
