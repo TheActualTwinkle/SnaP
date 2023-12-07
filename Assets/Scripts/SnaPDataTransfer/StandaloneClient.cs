@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
 
-namespace SnaPDataTransfer
+namespace SDT
 {
     /// <summary>
     /// <para> This should be used ONLY in a dedicated standalone builds. </para> 
@@ -16,13 +17,16 @@ namespace SnaPDataTransfer
     public class StandaloneClient : MonoBehaviour
     {
         private static StandaloneClient Instance { get; set; }
-        
+
         private const uint BufferSize = 512;
         
         [SerializeField] private string _serverIpAddress; // TODO: Make it real ip address.
         [SerializeField] private int _serverPort;
 
         private bool _destroyed;
+
+        private NetworkStream _networkStream;
+        private TcpClient _tcpClient;
         
         private void Awake()
         {
@@ -43,13 +47,12 @@ namespace SnaPDataTransfer
             }
         }
         
-        private async void Start() // TODO: This is has to be invoked via buttons or something like that. Return value has to be lobbies list.
+        private async void Start()
         {
-            TcpClient tcpClient;
             try
             {
-                tcpClient = new TcpClient();
-                await tcpClient.ConnectAsync(_serverIpAddress, _serverPort);
+                _tcpClient = new TcpClient();
+                await _tcpClient.ConnectAsync(_serverIpAddress, _serverPort);
             }
             catch (Exception e)
             {
@@ -59,39 +62,45 @@ namespace SnaPDataTransfer
             
             Logger.Log($"Connected to server at {_serverIpAddress}:{_serverPort}.", Logger.LogSource.SnaPDataTransfer);
 
-            NetworkStream stream = tcpClient.GetStream();
-            
-            await GetLobbyInfoAsync(stream);
-            
-            tcpClient?.Close();
+            _networkStream = _tcpClient.GetStream();
         }
         
         private void OnDestroy()
         {
+            _tcpClient?.Close();
             _destroyed = true;
         }
-        
-        private async Task<List<LobbyInfo>> GetLobbyInfoAsync(Stream stream)
-        {
-            string message = GetMessage();
 
-            byte[] data = Encoding.ASCII.GetBytes(message);
-                
-            // Send "get" or "close" request.
-            await stream.WriteAsync(data, 0, data.Length);
-            Logger.Log($"Send {message}.", Logger.LogSource.SnaPDataTransfer);
+        public async Task<List<LobbyInfo>> GetLobbyInfoAsync()
+        {
+            try
+            {
+                return await GetLobbyInfoAsyncInternal();
+            }
+            catch (Exception e)
+            {
+                Logger.Log($"Can`t get lobby info. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                return new List<LobbyInfo>();                
+            }
+        }
+
+        
+        private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal()
+        {
+            string message = _destroyed ? "close" : "get-count";
+            
+            // Send "get-count" or "close" request.
+            await WriteAsync(message);
 
             // If we are dead - return.
             // But before send "close" request to server.
             if (_destroyed == true)
             {
-                return null;
+                return new List<LobbyInfo>();
             }
             
             // Getting count of lobbies.
-            var buffer = new byte[BufferSize];
-            int read = await stream.ReadAsync(buffer);
-            string lengthString = Encoding.ASCII.GetString(buffer, 0, read);
+            string lengthString = await ReadAsync();
             
             if (int.TryParse(lengthString, out int length) == false)
             {
@@ -101,25 +110,46 @@ namespace SnaPDataTransfer
             
             Logger.Log($"Received {length} lobbies count.", Logger.LogSource.SnaPDataTransfer);
             
+            message = "get-info";
+            await WriteAsync(message);
+
+            List<LobbyInfo> lobbyInfos = new();
             // Using the count of lobbies, get all lobbies info. 
             for (var i = 0; i < length; i++)
             {
-                var response = new byte[BufferSize];
-                string responseString = Encoding.ASCII.GetString(response); // TODO: Parse json to LobbyInfo and save it somewhere here to list.
-                Logger.Log($"[STANDALONE] Received: {responseString}", Logger.LogSource.SnaPDataTransfer);
+                string response = await ReadAsync();
+                Logger.Log($"[STANDALONE] Received: {response}", Logger.LogSource.SnaPDataTransfer);
+
+                // Parsing json to LobbyInfo[] and return it.
+                try
+                {
+                    LobbyInfo lobbyInfo = JsonConvert.DeserializeObject<LobbyInfo>(response);
+                    lobbyInfos.Add(lobbyInfo);
+                }
+                catch (Exception e)
+                {
+                    Logger.Log($"Can`t deserialize json to LobbyInfo at {i}/{length-1}. " + e, Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                }
             }
 
-            return null; // TODO: return lobbies info from jsons.
+            return lobbyInfos;
         }
         
-        private string GetMessage()
+        private async Task<string> ReadAsync()
         {
-            if (_destroyed == true)
-            {
-                return "close";
-            }
+            var buffer = new byte[BufferSize];
+            int read = await _networkStream.ReadAsync(buffer);
+            string message = Encoding.ASCII.GetString(buffer, 0, read);
 
-            return "get";
+            return message;
+        }
+        
+        private async Task WriteAsync(string message)
+        { 
+            byte[] data = Encoding.ASCII.GetBytes(message);
+                
+            await _networkStream.WriteAsync(data, 0, data.Length);
+            Logger.Log($"Send {message}.", Logger.LogSource.SnaPDataTransfer);
         }
     }
 }

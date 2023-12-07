@@ -22,7 +22,7 @@ public class ConnectionInputField : MonoBehaviour
             Destroy(gameObject);
         }
 
-        _ipAddressInputField.text = await IpAddressProvider.GetLocalAsync();
+        _ipAddressInputField.text = await ConnectionDataPresenter.GetLocalIpAddressAsync();
     }
 
     public IReadOnlyList<string> GetConnectionData(NetworkConnectorType connectorType)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace SnaPDataTransfer
+namespace SDT
 {
     /// <summary>
     /// <para> This should be used ONLY in a dedicated server builds. </para> 
@@ -102,13 +102,13 @@ namespace SnaPDataTransfer
             if (IsLobbyInitialized() == false)
             {
                 interval = _awaitLobbyInitializationIntervalMs;
-                return "Awaiting lobby initialization...";
+                return JsonConvert.SerializeObject(new LobbyInfo(0, 0, "Awaiting lobby initialization..."));;
             }
 
             return JsonConvert.SerializeObject(new LobbyInfo(
                 PlayerSeats.MaxSeats,
                 PlayerSeats.Instance.PlayersAmount + PlayerSeats.Instance.WaitingPlayersAmount,
-                "TODO: Create a lobby name feature!"
+                "TODO: Create a lobby name feature!" // TODO: Create a lobby name feature!
             ));
         }
         

@@ -10,7 +10,7 @@ public static class NetworkConnectorHandler
     private const uint MaxConnectAttempts = 4;
     private const uint ConnectTimeoutMS = 3000;
     
-    private const float DelayBeforeErrorShutdownMS = 3000;
+    private const uint DelayBeforeErrorShutdownMS = 3000;
     
     public static INetworkConnector CurrentConnector { get; private set; }
 
@@ -40,9 +40,11 @@ public static class NetworkConnectorHandler
                 
                 if (i == MaxConnectAttempts - 1)
                 {
+#if !UNITY_STANDALONE
                     Logger.Log($"Connection timeout. Shuts-downing in {DelayBeforeErrorShutdownMS} milliseconds.");
                     await Task.Delay((int)DelayBeforeErrorShutdownMS);
                     Application.Quit(-1);
+#endif
                     return;
                 }
                 
@@ -122,6 +124,7 @@ public static class NetworkConnectorHandler
             NetworkConnectorType.IpAddress => new IPAddressNetworkConnector(),
             NetworkConnectorType.UnityRelay => new UnityRelayNetworkConnector(),
             NetworkConnectorType.DedicatedServer => new DedicatedServerNetworkConnector(),
+            NetworkConnectorType.UPnP => new UPnPNetworkConnector(),
             _ => throw new ArgumentOutOfRangeException(nameof(connectorType), connectorType, null)
         };
         

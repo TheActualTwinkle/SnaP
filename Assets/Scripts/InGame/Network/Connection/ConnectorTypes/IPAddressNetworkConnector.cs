@@ -7,6 +7,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[Obsolete("Use UPnP connector instead.", false)]
 public class IPAddressNetworkConnector : INetworkConnector
 {
     public IEnumerable<string> ConnectionData => new [] { _ipAddress, _port };
@@ -30,6 +31,7 @@ public class IPAddressNetworkConnector : INetworkConnector
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
+            Logger.Log("Can`t create game: NetworkManager is already listening.", Logger.LogLevel.Error);
             return Task.FromResult(false);
         }
         
@@ -37,6 +39,7 @@ public class IPAddressNetworkConnector : INetworkConnector
 
         if (ushort.TryParse(_port, out ushort port) == false)
         {
+            Logger.Log($"Can`t parse port: {_port}", Logger.LogLevel.Error);
             return Task.FromResult(false);
         }
         unityTransport.SetConnectionData(_ipAddress, port);
@@ -48,8 +51,9 @@ public class IPAddressNetworkConnector : INetworkConnector
             NetworkManager.Singleton.StartHost();
             NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Logger.Log($"Can`t StartHost(). {e}", Logger.LogLevel.Error);
             return Task.FromResult(false);
         }
         
@@ -60,6 +64,7 @@ public class IPAddressNetworkConnector : INetworkConnector
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
+            Logger.Log("Can`t join game: NetworkManager is already listening.", Logger.LogLevel.Error);
             return Task.FromResult(false);
         }
         
@@ -67,6 +72,7 @@ public class IPAddressNetworkConnector : INetworkConnector
         
         if (ushort.TryParse(_port, out ushort port) == false)
         {
+            Logger.Log($"Can`t parse port: {_port}", Logger.LogLevel.Error);
             return Task.FromResult(false);
         }
         unityTransport.SetConnectionData(_ipAddress, port);
@@ -77,8 +83,9 @@ public class IPAddressNetworkConnector : INetworkConnector
         {
             NetworkManager.Singleton.StartClient();
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Logger.Log($"Can`t StartHost(). {e}", Logger.LogLevel.Error);
             return Task.FromResult(false);
         }
 
