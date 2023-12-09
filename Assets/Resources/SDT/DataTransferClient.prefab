@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5107213845572603206}
   - component: {fileID: 2745600862045013316}
   m_Layer: 0
-  m_Name: DataTransferStandaloneClient
+  m_Name: DataTransferClient
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,6 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5844041216a74170847d030704f3c1a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _serverIpAddress: 127.0.0.1
+  _serverIpAddress: 90.189.208.37
   _serverPort: 47921
-  _sendCheckIntervalMs: 10000

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Animator), typeof(SdtConnectionResultHoverTooltip))]
 public class SdtConnectionResultUI : MonoBehaviour
 {
-    private StandaloneClient SdtStandaloneClient => StandaloneClient.Instance;
+    private Client SdtClient => Client.Instance;
 
     [SerializeField] private Image _image;
 
@@ -31,12 +31,12 @@ public class SdtConnectionResultUI : MonoBehaviour
 
     private void OnEnable()
     {
-        SdtStandaloneClient.ConnectionStateChangedEvent += OnSdtConnectionStateChanged;
+        SdtClient.ConnectionStateChangedEvent += OnSdtConnectionStateChanged;
     }
 
     private void OnDisable()
     {
-        SdtStandaloneClient.ConnectionStateChangedEvent -= OnSdtConnectionStateChanged;
+        SdtClient.ConnectionStateChangedEvent -= OnSdtConnectionStateChanged;
     }
 
     private void OnSdtConnectionStateChanged(ConnectionState connectionState)
@@ -69,11 +69,11 @@ public class SdtConnectionResultUI : MonoBehaviour
     // Button.
     public void Reconnect()
     {
-        if (SdtStandaloneClient.ConnectionState is ConnectionState.Successful or ConnectionState.Connecting)
+        if (SdtClient.ConnectionState is ConnectionState.Successful or ConnectionState.Connecting)
         {
             return;
         }
         
-        SdtStandaloneClient.TryConnect();
+        SdtClient.TryConnect();
     } 
 }

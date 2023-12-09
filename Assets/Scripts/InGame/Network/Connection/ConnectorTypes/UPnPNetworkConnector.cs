@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,24 +17,31 @@ public class UPnPNetworkConnector : INetworkConnector
     private ushort _port;
     private string _ruleName;
     
-    public async Task Init()
+    // This is fake-Init.
+    // Real Init is in TryCreateGame() method.
+    public Task Init()
     {
-        if (ConnectionDataPresenter.TryGetAvailablePort(out _port) == false)
-        {
-            Logger.Log($"Can`t find available port.", Logger.LogLevel.Error);
-            return;
-        }
-        
-        Logger.Log($"Available port set to {_port}.");
-        _localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
-        
-        _ruleName = "SnaP-UPnP-" + _port;
-        
-        ConnectionData = new[] {_localIpAddress, _port.ToString()};
+        ConnectionData = new[] {"Some address via UPnP"};
+        return Task.CompletedTask;
     }
 
     public async Task<bool> TryCreateGame()
     {
+        #region Init
+
+        if (ConnectionDataPresenter.TryGetAvailablePort(out ushort port) == false)
+        {
+            Logger.Log($"Can`t find available port.", Logger.LogLevel.Error);
+            return false;
+        }
+        
+        Logger.Log($"Available port set to {port}.");
+        string localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+        
+        string ruleName = "SnaP-UPnP-" + port;
+
+        #endregion
+        
         if (NetworkManager.Singleton.IsListening == true)
         {
             Logger.Log("Can`t create game: NetworkManager is already listening.", Logger.LogLevel.Error);
@@ -41,45 +49,53 @@ public class UPnPNetworkConnector : INetworkConnector
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-
-        unityTransport.SetConnectionData(_localIpAddress, _port);
-
-        bool redirectionResult = await UPnP.RedirectExternalConnectionToThisDevice(_port, _ruleName);
+        
+        bool redirectionResult = await UPnP.RedirectExternalConnectionToThisDevice(port, ruleName);
         if (redirectionResult == false)
         {
             Logger.Log("UPnP: Unable to redirect external connection to this device", Logger.LogLevel.Error);
             return false;
         }
 
-        unityTransport.SetConnectionData(unityTransport.ConnectionData.Address, _port);
+        unityTransport.SetConnectionData(localIpAddress, port);
 
         NetworkManager.Singleton.StartHost();
         
         Logger.Log("Forwarding to public IP...");
         
         string publicIpAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
-        ConnectionData = new[] {publicIpAddress, _port.ToString()};
+        ConnectionData = new[] {publicIpAddress, port.ToString()};
         
         NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
 
         return true;
     }
 
-    public Task<bool> TryJoinGame()
+    public async Task<bool> TryJoinGame()
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
             Logger.Log("Can`t join game: NetworkManager is already listening.", Logger.LogLevel.Error);
-            return Task.FromResult(false);
+            return false;
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-
+        
         LobbyInfo selectedLobbyInfo = LobbyListCell.SelectedLobbyInfo;
-        unityTransport.SetConnectionData(selectedLobbyInfo.IpAddress, selectedLobbyInfo.Port);
 
+        string selfPublicIP = await ConnectionDataPresenter.GetPublicIpAddressAsync();
+        if (selfPublicIP == selectedLobbyInfo.PublicIpAddress)
+        {
+            Logger.Log("Seems like you and your host using same network. Redirecting to local IP...", Logger.LogLevel.Warning);
+            selectedLobbyInfo.PublicIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+        }
+        
+        unityTransport.SetConnectionData(selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port);
+
+        ConnectionData = new[] {selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port.ToString()};
+        
         NetworkManager.Singleton.StartClient();
 
-        return Task.FromResult(true);
+        return true;
     }
 }

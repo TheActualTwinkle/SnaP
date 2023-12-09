@@ -2,7 +2,7 @@
 {
     public record LobbyInfo
     {
-        public string IpAddress;
+        public string PublicIpAddress;
         public ushort Port;
         
         public int MaxSeats;
@@ -10,9 +10,9 @@
 
         public string LobbyName;
 
-        public LobbyInfo(string ipAddress, ushort port, int maxSeats, int playersCount, string lobbyName)
+        public LobbyInfo(string publicIpAddress, ushort port, int maxSeats, int playersCount, string lobbyName)
         {
-            IpAddress = ipAddress;
+            PublicIpAddress = publicIpAddress;
             Port = port;
             MaxSeats = maxSeats;
             PlayersCount = playersCount;
@@ -21,7 +21,7 @@
         
         public void Deconstruct(ref LobbyInfo lobbyInfo)
         {
-            lobbyInfo.IpAddress = IpAddress;
+            lobbyInfo.PublicIpAddress = PublicIpAddress;
             lobbyInfo.Port = Port;
             lobbyInfo.MaxSeats = MaxSeats;
             lobbyInfo.PlayersCount = PlayersCount;

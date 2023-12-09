@@ -10,7 +10,7 @@ using UnityEngine;
 public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSource
 {
     [SerializeField] private RecyclableScrollRect _recyclableScrollRect;
-    [SerializeField] private StandaloneClient _sdtStandaloneClient;
+    [SerializeField] private Client _sdtClient;
     
     private List<LobbyInfo> _lobbyInfos = new();
 
@@ -34,7 +34,7 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
         return _lobbyInfos.Count;
     }
 
-    public async void SetCell(ICell cell, int index)
+    public void SetCell(ICell cell, int index)
     {
         LobbyListCell lobbyListCell = cell as LobbyListCell;
 
@@ -44,7 +44,6 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
             return;
         }
         
-        await TryUpdateLobbiesInfo();
         lobbyListCell.SetLobbyInfo(_lobbyInfos[index], index);
     }
 
@@ -63,7 +62,7 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
     
     private async Task<bool> TryUpdateLobbiesInfo()
     {
-        List<LobbyInfo> lobbyInfos = await _sdtStandaloneClient.GetLobbiesInfoAsync();
+        List<LobbyInfo> lobbyInfos = await _sdtClient.GetLobbiesInfoAsync();
         
         if (lobbyInfos == null)
         {

@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class SdtConnectionResultHoverTooltip : HoverTooltip
 {
-    private StandaloneClient SdtStandaloneClient => StandaloneClient.Instance;
+    private Client SdtClient => Client.Instance;
 
     public override void SetupText()
     {
-        switch (SdtStandaloneClient.ConnectionState)
+        switch (SdtClient.ConnectionState)
         {
             case ConnectionState.Connecting:
                 Text.text = "Connecting to SnaP Data Transfer server...";

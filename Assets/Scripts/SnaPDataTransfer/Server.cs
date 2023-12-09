@@ -5,17 +5,19 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 namespace SDT
 {
     /// <summary>
-    /// <para> This should be used ONLY in a dedicated server builds. </para> 
+    /// <para> This must be used ONLY if you are SnaP SERVER. </para> 
     /// <para> Send data to the SnaPDataTransfer server. </para>
     /// </summary>
-    public class DedicatedClient : MonoBehaviour
+    public class Server : MonoBehaviour
     {
-        private static DedicatedClient Instance { get; set; }
+        private static Server Instance { get; set; }
 
         [SerializeField] private string _serverIpAddress;
         [SerializeField] private int _serverPort;
@@ -28,18 +30,25 @@ namespace SDT
         
         private void Awake()
         {
-#if PLATFORM_STANDALONE
-#if !UNITY_EDITOR
-            Logger.Log("DedicatedClient should be used ONLY in a dedicated server builds!", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
-            Destroy(gameObject);
-            return;   
-#endif
-#endif
+            // If this is a client, then destroy this object.
+            if (NetworkManager.Singleton.IsServer == false)
+            {
+                Destroy(gameObject);
+                return;
+            }
             
+            UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+
+            // We cant use SDT with unity relay.
+            if (unityTransport.Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else
             {
@@ -79,7 +88,6 @@ namespace SDT
         {
             while (true)
             {
-                int interval = _sendDataIntervalMs;
                 string message = await GetMessage();
 
                 byte[] data = Encoding.ASCII.GetBytes(message);
@@ -114,6 +122,7 @@ namespace SDT
                 throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.CurrentConnector.ConnectionData.Last()}");
             }
 
+            _interval = _sendDataIntervalMs;
             return JsonConvert.SerializeObject(new LobbyInfo(
                 ipAddress,
                 port,

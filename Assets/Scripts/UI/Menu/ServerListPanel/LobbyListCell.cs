@@ -9,7 +9,6 @@ public class LobbyListCell : MonoBehaviour, ICell
 {
     public static LobbyInfo SelectedLobbyInfo { get; private set; }
 
-    [SerializeField] private TextMeshProUGUI _indexText;
     [SerializeField] private TextMeshProUGUI _lobbyNameText;
     [SerializeField] private TextMeshProUGUI _lobbyPlayersCountText; // e.g "2/5"
     
@@ -21,14 +20,11 @@ public class LobbyListCell : MonoBehaviour, ICell
         
         _lobbyNameText.text = lobbyInfo.LobbyName;
         _lobbyPlayersCountText.text = $"{lobbyInfo.PlayersCount}/{lobbyInfo.MaxSeats}";
-
-        _indexText.text = index.ToString();
     }
     
     // Button.
     private void SelectLobby()
     {
-        Logger.Log($"Lobby (id: {_indexText.text}) selected.");
         SelectedLobbyInfo = _lobbyInfo;
     } 
 }

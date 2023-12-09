@@ -455,6 +455,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8054169423120029158, guid: 7181c7029ceac7d4ba42e6f3d3b76439, type: 3}
+      propertyPath: _sdtClient
+      value: 
+      objectReference: {fileID: 2089597658}
+    - target: {fileID: 8054169423120029158, guid: 7181c7029ceac7d4ba42e6f3d3b76439, type: 3}
       propertyPath: _sdtStandaloneClient
       value: 
       objectReference: {fileID: 2089597658}
@@ -731,7 +735,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5107213845572603201, guid: e74fff62cb740924aa8a1bb5ea22e8c5, type: 3}
       propertyPath: m_Name
-      value: DataTransferStandaloneClient
+      value: DataTransferClient
       objectReference: {fileID: 0}
     - target: {fileID: 5107213845572603206, guid: e74fff62cb740924aa8a1bb5ea22e8c5, type: 3}
       propertyPath: m_RootOrder

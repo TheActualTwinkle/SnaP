@@ -7,18 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
+using Unity.Netcode;
 
 namespace SDT
 {
     /// <summary>
-    /// <para> This should be used ONLY in a dedicated standalone builds. </para> 
+    /// <para> You must be a CLIENT and use it ONLY in a standalone builds. </para> 
     /// <para> Read data from the SnaPDataTransfer server. </para>
     /// </summary>
-    public class StandaloneClient : MonoBehaviour
+    public class Client : MonoBehaviour
     {
         public event Action<ConnectionState> ConnectionStateChangedEvent;
         
-        public static StandaloneClient Instance { get; private set; }
+        public static Client Instance { get; private set; }
 
         public ConnectionState ConnectionState { get; private set; } = ConnectionState.Disconnected;
 
@@ -39,11 +40,17 @@ namespace SDT
             Destroy(gameObject);
             return;
 #endif
+            // If this is a server, then destroy this object.
+            if (NetworkManager.Singleton.IsServer == true)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else
             {
