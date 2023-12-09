@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace SDT
         [SerializeField] private int _awaitLobbyInitializationIntervalMs;
         [SerializeField] private int _sendDataIntervalMs;
 
+        private int _interval;
         private bool _destroyed;
         
         private void Awake()
@@ -78,7 +80,7 @@ namespace SDT
             while (true)
             {
                 int interval = _sendDataIntervalMs;
-                string message = GetMessage(ref interval);
+                string message = await GetMessage();
 
                 byte[] data = Encoding.ASCII.GetBytes(message);
                 await stream.WriteAsync(data, 0, data.Length);
@@ -88,11 +90,11 @@ namespace SDT
                     break;
                 }
                 
-                await Task.Delay(interval);
+                await Task.Delay(_interval);
             }
         }
 
-        private string GetMessage(ref int interval)
+        private async Task<string> GetMessage()
         {
             if (_destroyed == true)
             {
@@ -101,11 +103,20 @@ namespace SDT
 
             if (IsLobbyInitialized() == false)
             {
-                interval = _awaitLobbyInitializationIntervalMs;
-                return JsonConvert.SerializeObject(new LobbyInfo(0, 0, "Awaiting lobby initialization..."));;
+                _interval = _awaitLobbyInitializationIntervalMs;
+                return JsonConvert.SerializeObject(new LobbyInfo(string.Empty, 0, 0, 0, "Awaiting lobby initialization..."));
+            }
+
+            string ipAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
+
+            if (ushort.TryParse(NetworkConnectorHandler.CurrentConnector.ConnectionData.Last(), out ushort port) == false)
+            {
+                throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.CurrentConnector.ConnectionData.Last()}");
             }
 
             return JsonConvert.SerializeObject(new LobbyInfo(
+                ipAddress,
+                port,
                 PlayerSeats.MaxSeats,
                 PlayerSeats.Instance.PlayersAmount + PlayerSeats.Instance.WaitingPlayersAmount,
                 "TODO: Create a lobby name feature!" // TODO: Create a lobby name feature!

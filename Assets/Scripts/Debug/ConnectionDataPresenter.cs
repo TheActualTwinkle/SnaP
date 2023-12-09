@@ -10,9 +10,16 @@ public static class ConnectionDataPresenter
 {
     public const ushort SnaPDefaultPort = 47924;
     
+    private static string _publicIpAddress;
+    
     public static async Task<string> GetPublicIpAddressAsync()
     {
-        return (await UPnP.GetExternalIp()).ToString();
+        if (string.IsNullOrEmpty(_publicIpAddress) == true)
+        {
+            _publicIpAddress = (await UPnP.GetExternalIp()).ToString();
+        }
+        
+        return _publicIpAddress;
     }
 
     public static async Task<string> GetLocalIpAddressAsync()

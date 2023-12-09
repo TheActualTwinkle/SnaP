@@ -18,6 +18,11 @@ public class MenuWindowsChanger : MonoBehaviour
         {
             return;
         }
+
+        if (_currentWindow.PreviousWindow == null)
+        {
+            return;
+        }
         
         _currentWindow.Hide();
         _currentWindow = _currentWindow.PreviousWindow;

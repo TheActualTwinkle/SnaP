@@ -26,16 +26,16 @@ public class ConnectCancelUI : MonoBehaviour
 
     private void OnEnable()
     {
-        _createButton.onClick.AddListener(OnCreateButtonClick);
-        _joinButton.onClick.AddListener(OnJoinButtonClick);
-        _cancelButton.onClick.AddListener(OnCancelButtonClick);
+        if (_createButton != null) _createButton.onClick.AddListener(OnCreateButtonClick);
+        if (_joinButton != null) _joinButton.onClick.AddListener(OnJoinButtonClick);
+        if (_cancelButton != null) _cancelButton.onClick.AddListener(OnCancelButtonClick);
     }
 
     private void OnDisable()
     {
-        _createButton.onClick.RemoveListener(OnCreateButtonClick);
-        _joinButton.onClick.RemoveListener(OnJoinButtonClick);
-        _cancelButton.onClick.RemoveListener(OnCancelButtonClick);
+        if (_createButton != null) _createButton.onClick.RemoveListener(OnCreateButtonClick);
+        if (_joinButton != null)  _joinButton.onClick.RemoveListener(OnJoinButtonClick);
+        if (_cancelButton != null) _cancelButton.onClick.RemoveListener(OnCancelButtonClick);
     }
 
     private void OnCreateButtonClick()

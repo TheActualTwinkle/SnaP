@@ -6,4 +6,10 @@ using UnityEngine.UI;
 
 public class ServerListScrollView : MenuWindow
 {
+    [SerializeField] private LobbyListDataSource _lobbyList;
+    
+    protected override void ShowInternal()
+    {
+        _lobbyList.UpdateScrollRect();
+    }
 }

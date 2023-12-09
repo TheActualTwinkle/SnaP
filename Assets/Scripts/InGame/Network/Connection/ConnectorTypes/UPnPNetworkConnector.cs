@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SDT;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UPnPNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData { get; private set; }
+    public IEnumerable<string> ConnectionData { get; private set; } // TODO: Make struct for it: LocalIpAddress, PublicIpAddress, Port, JoinCode!!!
     
     private string _localIpAddress;
-    private string _publicIpAddress;
     private ushort _port;
     private string _ruleName;
     
@@ -19,13 +20,16 @@ public class UPnPNetworkConnector : INetworkConnector
     {
         if (ConnectionDataPresenter.TryGetAvailablePort(out _port) == false)
         {
+            Logger.Log($"Can`t find available port.", Logger.LogLevel.Error);
             return;
         }
         
+        Logger.Log($"Available port set to {_port}.");
         _localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
-        _publicIpAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
         
         _ruleName = "SnaP-UPnP-" + _port;
+        
+        ConnectionData = new[] {_localIpAddress, _port.ToString()};
     }
 
     public async Task<bool> TryCreateGame()
@@ -55,6 +59,8 @@ public class UPnPNetworkConnector : INetworkConnector
         
         string publicIpAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
         ConnectionData = new[] {publicIpAddress, _port.ToString()};
+        
+        NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
 
         return true;
     }
@@ -69,7 +75,8 @@ public class UPnPNetworkConnector : INetworkConnector
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
-        unityTransport.SetConnectionData(_publicIpAddress, _port);
+        LobbyInfo selectedLobbyInfo = LobbyListCell.SelectedLobbyInfo;
+        unityTransport.SetConnectionData(selectedLobbyInfo.IpAddress, selectedLobbyInfo.Port);
 
         NetworkManager.Singleton.StartClient();
 

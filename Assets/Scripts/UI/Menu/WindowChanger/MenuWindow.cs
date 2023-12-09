@@ -8,8 +8,6 @@ public abstract class MenuWindow : MonoBehaviour
     public MenuWindow PreviousWindow => _previousWindow;
     [SerializeField] protected MenuWindow _previousWindow;
     
-    [SerializeField] protected Button _backButton;
-
     // Button.
     public void BackButtonClick()
     {
@@ -19,11 +17,18 @@ public abstract class MenuWindow : MonoBehaviour
     
     public void Show()
     {
+        ShowInternal();
+        
         gameObject.SetActive(true);
     }
 
     public void Hide()
     {
-        gameObject.SetActive(true);
+        HideInternal();
+        
+        gameObject.SetActive(false);
     }
+
+    protected virtual void ShowInternal() {}
+    protected virtual void HideInternal() {}
 }

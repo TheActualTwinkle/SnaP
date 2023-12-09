@@ -14,19 +14,19 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
     
     private List<LobbyInfo> _lobbyInfos = new();
 
-    private async void Awake()
+    private void Awake()
     {
         _recyclableScrollRect.DataSource = this;
     }
 
-    private async void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F5) == false)
         {
             return;
         }
 
-        await UpdateScrollRect();
+        UpdateScrollRect();
     }
 
     public int GetItemCount()
@@ -44,22 +44,34 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
             return;
         }
         
-        await UpdateLobbyInfo();
+        await TryUpdateLobbiesInfo();
         lobbyListCell.SetLobbyInfo(_lobbyInfos[index], index);
     }
 
     // Button.
-    private async Task UpdateScrollRect()
+    public async void UpdateScrollRect()
     {
-        await UpdateLobbyInfo();
+        if (await TryUpdateLobbiesInfo() == false)
+        {
+            return;
+        }
+        
         _recyclableScrollRect.ReloadData();
         
         Logger.Log("Scroll rect updated.");
     }
     
-    private async Task UpdateLobbyInfo()
+    private async Task<bool> TryUpdateLobbiesInfo()
     {
-        List<LobbyInfo> lobbyInfos = (await _sdtStandaloneClient.GetLobbyInfoAsync()).ToList();
+        List<LobbyInfo> lobbyInfos = await _sdtStandaloneClient.GetLobbiesInfoAsync();
+        
+        if (lobbyInfos == null)
+        {
+            _lobbyInfos = new List<LobbyInfo>();
+            return false;
+        }
+        
         _lobbyInfos = lobbyInfos;
+        return true;
     }
 }

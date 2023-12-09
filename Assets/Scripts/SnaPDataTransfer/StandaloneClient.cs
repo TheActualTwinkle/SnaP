@@ -16,7 +16,11 @@ namespace SDT
     /// </summary>
     public class StandaloneClient : MonoBehaviour
     {
-        private static StandaloneClient Instance { get; set; }
+        public event Action<ConnectionState> ConnectionStateChangedEvent;
+        
+        public static StandaloneClient Instance { get; private set; }
+
+        public ConnectionState ConnectionState { get; private set; } = ConnectionState.Disconnected;
 
         private const uint BufferSize = 512;
         
@@ -47,22 +51,9 @@ namespace SDT
             }
         }
         
-        private async void Start()
+        private void Start()
         {
-            try
-            {
-                _tcpClient = new TcpClient();
-                await _tcpClient.ConnectAsync(_serverIpAddress, _serverPort);
-            }
-            catch (Exception e)
-            {
-                Logger.Log($"Can`t connect to {_serverIpAddress}:{_serverPort}. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
-                throw;
-            }
-            
-            Logger.Log($"Connected to server at {_serverIpAddress}:{_serverPort}.", Logger.LogSource.SnaPDataTransfer);
-
-            _networkStream = _tcpClient.GetStream();
+            TryConnect();
         }
         
         private void OnDestroy()
@@ -71,20 +62,49 @@ namespace SDT
             _destroyed = true;
         }
 
-        public async Task<List<LobbyInfo>> GetLobbyInfoAsync()
+        public async void TryConnect()
+        {
+            ConnectionState = ConnectionState.Connecting;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Connecting);
+            
+            try
+            {
+                _tcpClient = new TcpClient();
+                await _tcpClient.ConnectAsync(_serverIpAddress, _serverPort);
+            }
+            catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR.
+            {
+                ConnectionState = ConnectionState.Failed;
+                ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
+                
+                Logger.Log($"Can`t connect to {_serverIpAddress}:{_serverPort}. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                return;
+            }
+            
+            Logger.Log($"Connected to server at {_serverIpAddress}:{_serverPort}.", Logger.LogSource.SnaPDataTransfer);
+
+            _networkStream = _tcpClient.GetStream();
+
+            ConnectionState = ConnectionState.Successful;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Successful);
+        }
+        
+        public async Task<List<LobbyInfo>> GetLobbiesInfoAsync()
         {
             try
             {
                 return await GetLobbyInfoAsyncInternal();
             }
-            catch (Exception e)
+            catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR.
             {
+                ConnectionState = ConnectionState.Failed;
+                ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
+                
                 Logger.Log($"Can`t get lobby info. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
-                return new List<LobbyInfo>();                
+                return null;                
             }
         }
 
-        
         private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal()
         {
             string message = _destroyed ? "close" : "get-count";
