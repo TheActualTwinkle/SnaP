@@ -5,6 +5,8 @@ using UnityEngine;
 
 public static class NetworkConnectorHandler
 {
+    public static bool ShutdownTrigger;
+    
     public const uint MaxPlayersAmount = 5;
 
     private const uint MaxConnectAttempts = 4;
@@ -33,6 +35,12 @@ public static class NetworkConnectorHandler
 
         for (var i = 0; i < MaxConnectAttempts; i++)
         {
+            if (ShutdownTrigger == true)
+            {
+                ShutdownTrigger = false;
+                return;
+            }
+
             if (await connector.TryCreateGame() == false)
             {
                 Logger.Log($"Failed to start at {string.Join(':', connector.ConnectionData)}. Attempt {i+1}/{MaxConnectAttempts}", Logger.LogLevel.Error);

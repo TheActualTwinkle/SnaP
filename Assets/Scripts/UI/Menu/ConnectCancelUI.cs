@@ -61,6 +61,7 @@ public class ConnectCancelUI : MonoBehaviour
     
     private void OnCancelButtonClick()
     {
+        NetworkConnectorHandler.ShutdownTrigger = true;
         NetworkManager.Singleton.Shutdown();
         EnableMenuInteraction();
     }
