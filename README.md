@@ -31,6 +31,7 @@ You can see status of **SDT** in the top-right corner
 <p align="center">
 <b><i>Don`t forget to check if UPnP is enabled in router settings</i></b>
 </p>
+
 * ### Unity Relay
 	In case if something went wrong with SDT/UPnP you can always use **Unity Relay**
 ## Dedicated server Setup Guide
