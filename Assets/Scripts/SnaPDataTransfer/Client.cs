@@ -35,18 +35,19 @@ namespace SDT
         
         private void Awake()
         {
-#if !PLATFORM_STANDALONE
-            Logger.Log("StandaloneClient should be used ONLY in a standalone builds!", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
-            Destroy(gameObject);
-            return;
-#endif
+            if (Application.platform is RuntimePlatform.WindowsServer or RuntimePlatform.LinuxServer)
+            {
+                Logger.Log("StandaloneClient should be used ONLY in a standalone builds!", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                Destroy(gameObject);
+                return;
+            }
+            
             // If this is a server, then destroy this object.
             if (NetworkManager.Singleton.IsServer == true)
             {
                 Destroy(gameObject);
                 return;
             }
-            
             
             if (Instance == null)
             {
