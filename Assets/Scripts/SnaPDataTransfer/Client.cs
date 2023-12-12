@@ -137,14 +137,14 @@ namespace SDT
             }
             
             Logger.Log($"Received {length} lobbies count.", Logger.LogSource.SnaPDataTransfer);
-            
-            message = "get-info";
-            await WriteAsync(message);
 
             List<LobbyInfo> lobbyInfos = new();
             // Using the count of lobbies, get all lobbies info. 
             for (var i = 0; i < length; i++)
             {
+                message = "get-info " + i;
+                await WriteAsync(message);
+                
                 string response = await ReadAsync();
                 Logger.Log($"[STANDALONE] Received: {response}", Logger.LogSource.SnaPDataTransfer);
 
