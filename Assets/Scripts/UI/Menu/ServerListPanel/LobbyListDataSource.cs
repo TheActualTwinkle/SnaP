@@ -11,6 +11,7 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
 {
     [SerializeField] private RecyclableScrollRect _recyclableScrollRect;
     [SerializeField] private Client _sdtClient;
+    [SerializeField] private KeyCode _updateRectKeyCode;
     
     private List<LobbyInfo> _lobbyInfos = new();
 
@@ -21,7 +22,7 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F5) == false)
+        if (Input.GetKeyDown(_updateRectKeyCode) == false)
         {
             return;
         }

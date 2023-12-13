@@ -23,11 +23,12 @@ namespace SDT
         [SerializeField] private int _serverPort;
 
         [SerializeField] private int _awaitLobbyInitializationIntervalMs;
-        [SerializeField] private int _sendDataIntervalMs;
 
-        private int _interval;
         private bool _destroyed;
         
+        private TcpClient _tcpClient;
+        private NetworkStream Stream => _tcpClient.GetStream();
+
         private void Awake()
         {
             // If this is a client, then destroy this object.
@@ -58,11 +59,10 @@ namespace SDT
 
         private async void Start()
         {
-            TcpClient tcpClient;
             try
             {
-                tcpClient = new TcpClient();
-                await tcpClient.ConnectAsync(_serverIpAddress, _serverPort);
+                _tcpClient = new TcpClient();
+                await _tcpClient.ConnectAsync(_serverIpAddress, _serverPort);
             }
             catch (Exception e)
             {
@@ -72,34 +72,46 @@ namespace SDT
             
             Logger.Log($"Connected to server at {_serverIpAddress}:{_serverPort}.", Logger.LogSource.SnaPDataTransfer);
 
-            NetworkStream stream = tcpClient.GetStream();
+            await SendDataUntilInitialized();
             
-            await EndlessHandleServerRequest(stream);
+            PlayerSeats.Instance.PlayerSitEvent += (_, _) =>
+            {
+                SendData();
+            };            
             
-            tcpClient?.Close();
+            PlayerSeats.Instance.PlayerLeaveEvent += (_, _) =>
+            {
+                SendData();
+            };
         }
 
         private void OnDestroy()
         {
             _destroyed = true;
+            _tcpClient?.Close();
         }
 
-        private async Task EndlessHandleServerRequest(Stream stream)
+        private async Task SendDataUntilInitialized()
         {
             while (true)
             {
-                string message = await GetMessage();
+                SendData();
 
-                byte[] data = Encoding.ASCII.GetBytes(message);
-                await stream.WriteAsync(data, 0, data.Length);
-                
-                if (_destroyed == true)
+                if (IsLobbyInitialized() == true)
                 {
                     break;
                 }
                 
-                await Task.Delay(_interval);
+                await Task.Delay(_awaitLobbyInitializationIntervalMs);
             }
+        }
+        
+        private async void SendData()
+        {
+            string message = await GetMessage();
+
+            byte[] data = Encoding.ASCII.GetBytes(message);
+            await Stream.WriteAsync(data, 0, data.Length);
         }
 
         private async Task<string> GetMessage()
@@ -111,7 +123,6 @@ namespace SDT
 
             if (IsLobbyInitialized() == false)
             {
-                _interval = _awaitLobbyInitializationIntervalMs;
                 return JsonConvert.SerializeObject(new LobbyInfo(string.Empty, 0, 0, 0, "Awaiting lobby initialization..."));
             }
 
@@ -122,7 +133,6 @@ namespace SDT
                 throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.CurrentConnector.ConnectionData.Last()}");
             }
 
-            _interval = _sendDataIntervalMs;
             return JsonConvert.SerializeObject(new LobbyInfo(
                 ipAddress,
                 port,

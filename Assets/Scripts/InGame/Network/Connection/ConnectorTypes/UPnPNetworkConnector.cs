@@ -58,14 +58,22 @@ public class UPnPNetworkConnector : INetworkConnector
 
         unityTransport.SetConnectionData(localIpAddress, port);
 
-        NetworkManager.Singleton.StartHost();
+        try
+        {
+            NetworkManager.Singleton.StartHost();
+            
+            Logger.Log("Forwarding to public IP...");
         
-        Logger.Log("Forwarding to public IP...");
+            string publicIpAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
+            ConnectionData = new[] {publicIpAddress, port.ToString()};
         
-        string publicIpAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
-        ConnectionData = new[] {publicIpAddress, port.ToString()};
-        
-        NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
+        }
+        catch (Exception e)
+        {
+            Logger.Log($"Can`t StartHost(). {e}", Logger.LogLevel.Error);
+            return false;
+        }
 
         return true;
     }
@@ -92,8 +100,16 @@ public class UPnPNetworkConnector : INetworkConnector
         unityTransport.SetConnectionData(selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port);
 
         ConnectionData = new[] {selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port.ToString()};
-        
-        NetworkManager.Singleton.StartClient();
+
+        try
+        {
+            NetworkManager.Singleton.StartClient();
+        }
+        catch (Exception e)
+        {
+            Logger.Log($"Can`t StartHost(). {e}", Logger.LogLevel.Error);
+            return false;
+        }
 
         return true;
     }
