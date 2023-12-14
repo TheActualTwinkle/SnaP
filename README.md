@@ -12,8 +12,9 @@ The [rules](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) of **Texas Hol
 ## Want to just Play? Here you go!
 Visit GitHub [releases page](https://github.com/Twinkllle/PokerMultiplayer/releases) and download version for your OS. For nowadays we have only **Windows** and **Linux** standalone client and dedicated server support.
 
-## SDT/UPnP
+## [SDT](https://github.com/TheActualTwinkle/SDT)/UPnP
 What the hell is **SDT**?
+
 **SDT** is a SnaP Data Transfer system that allows us to communicate between the game *Host* and all users.
 
 Example is simple: 
