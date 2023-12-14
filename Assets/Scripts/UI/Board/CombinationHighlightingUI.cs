@@ -35,8 +35,8 @@ public class CombinationHighlightingUI : MonoBehaviour
         switch (gameStage)
         {
             case GameStage.Flop:
-                _cards.Add(LocalPlayer.PocketCard1);
-                _cards.Add(LocalPlayer.PocketCard2);
+                _cards.Add(LocalPlayer.LocalPocketCard1);
+                _cards.Add(LocalPlayer.LocalPocketCard2);
 
                 _cards.Add(Game.BoardCards[0]);
                 _cards.Add(Game.BoardCards[1]);

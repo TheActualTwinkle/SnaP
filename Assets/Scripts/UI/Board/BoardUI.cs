@@ -52,19 +52,18 @@ public class BoardUI : MonoBehaviour
         switch (gameStage)
         {
             case GameStage.Preflop:
-            {
-                StartCoroutine(LoadCardsFrontSprites());
-        
                 _animator.SetTrigger(StartPreflop);
                 break;
-            } 
             case GameStage.Flop:
+                StartCoroutine(LoadCardsFrontSprites(0, 3));
                 _animator.SetTrigger(StartFlop);
                 break;
             case GameStage.Turn:
+                StartCoroutine(LoadCardsFrontSprites(3, 1));
                 _animator.SetTrigger(StartTurn);
                 break;
             case GameStage.River:
+                StartCoroutine(LoadCardsFrontSprites(4, 1));
                 _animator.SetTrigger(StartRiver);
                 break;
             case GameStage.Showdown:
@@ -97,15 +96,22 @@ public class BoardUI : MonoBehaviour
         _combinationHighlighting.Highlight(gameStage);
     }
 
-    private IEnumerator LoadCardsFrontSprites()
+    private IEnumerator LoadCardsFrontSprites(int startIndex, int count)
     {
-        _cardSprites.Clear();
-
-        yield return new WaitUntil(() => Game.CodedBoardCardsString.Length >= 9); // More or equals then length of e.g. "2;3;4;5;6" (coded 2,3,4,5,6 of Clubs).
-        
-        List<CardObject> cards = CardObjectConverter.GetCards(Game.CodedBoardCardsString).ToList();
-        foreach (CardObject card in cards)
+        if (startIndex == 0)
         {
+            _cardSprites.Clear();
+        }
+        
+        yield return new WaitWhile(() => Game.BoardCards.Count < startIndex + count);
+        
+        List<CardObject> cards = Game.BoardCards.ToList();
+        
+        int endIndex = startIndex + count;
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            CardObject card = cards[i];
+            
             var id = $"{Constants.ResourcesPaths.Cards}/{(int)card.Value}_{card.Suit}";
 
             Sprite sprite = Resources.Load<Sprite>(id);

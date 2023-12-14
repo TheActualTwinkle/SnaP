@@ -14,9 +14,6 @@ public class Game : NetworkBehaviour
     public event Action<GameStage> GameStageOverEvent;
     public event Action<WinnerInfo[]> EndDealEvent;
 
-    public string CodedBoardCardsString => _codedBoardCardsString.Value.ToString();
-    private readonly NetworkVariable<FixedString64Bytes> _codedBoardCardsString = new();
-
     public List<CardObject> BoardCards => _board.Cards.ToList();
 
     public bool IsPlaying => _isPlaying.Value;
@@ -55,7 +52,7 @@ public class Game : NetworkBehaviour
             Destroy(gameObject);
         }
     }
-    
+
     private void OnEnable()
     {
         PlayerSeats.PlayerSitEvent += OnPlayerSit;
@@ -311,6 +308,41 @@ public class Game : NetworkBehaviour
         return PlayerSeats.Players.Where(x => x != null && x.BetAction != BetAction.Fold).Select(x => x.BetAmount).Distinct().Skip(1).Any() == false;
     }
     
+    private void SetPlayersPocketCards()
+    {
+        if (IsServer == false)
+        {
+            return;
+        }
+        
+        int[] turnSequence = _boardButton.GetTurnSequence();
+        foreach (int index in turnSequence)
+        {
+            CardObject card1 = _cardDeck.PullCard();
+            CardObject card2 = _cardDeck.PullCard();
+            
+            Player player = PlayerSeats.Players[index];
+            if (player == null)
+            {
+                return;
+            }
+        
+            player.SetLocalPocketCards(card1, card2, player.OwnerClientId);
+
+            Logger.Log($"Player ('{player}') received: {card1}, {card2}.");
+        }
+    }
+
+    private void InitBoard()
+    {
+        _board = new Board(_cardDeck.PullCards(5).ToList());
+
+        if (IsServer == true)
+        {
+            Logger.Log($"Board created: {string.Join(", ", _board.Cards)}.");
+        }
+    }
+    
     #region Server
 
     private void S_StartDeal()
@@ -323,19 +355,14 @@ public class Game : NetworkBehaviour
         Logger.Log("Starting Deal.");
         
         _cardDeck = new CardDeck();
-
-        StartDealClientRpc(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
         
-        if (IsHost == false)
-        {
-            InitDeck(CardObjectConverter.GetCodedCards(_cardDeck.Cards));
-            InitPocketCards();
-            InitBoard();
-        }
+        Logger.Log($"Deck created: {string.Join(", ", _cardDeck)}.");
+        
+        SetPlayersPocketCards();
+        InitBoard();
 
         _boardButton.Move();
 
-        _codedBoardCardsString.Value = CardObjectConverter.GetCodedCardsString(_board.Cards);
         _isPlaying.Value = true;
 
         S_StartNextStage();
@@ -356,7 +383,7 @@ public class Game : NetworkBehaviour
 
         _currentGameStage.Value = GameStage.Empty;
         _isPlaying.Value = false;
-        _codedBoardCardsString.Value = string.Empty;
+        _board.Cards.Clear();
         
         List<Player> winners = PlayerSeats.Players.Where(x => x != null && winnerInfo.Select(info => info.WinnerId).Contains(x.OwnerClientId)).ToList();
 
@@ -396,6 +423,29 @@ public class Game : NetworkBehaviour
         StartNextStageClientRpc(stage);
         
         Logger.Log($"Starting {stage} stage.");
+
+        int startIndex;
+        int cardsCount;
+        switch (stage)
+        {
+            case GameStage.Flop:
+                startIndex = 0;
+                cardsCount = 3;
+                break;
+            case GameStage.Turn:
+                startIndex = 3;
+                cardsCount = 1;
+                break;
+            case GameStage.River:
+                startIndex = 4;
+                cardsCount = 1;
+                break;
+            default:
+                return;
+        }
+
+        IEnumerable<CardObject> codedCards = _board.Cards.Skip(startIndex).Take(cardsCount);
+        SetBoardCardsClientRpc(CardObjectConverter.GetCodedCards(codedCards));
     }
 
     private void S_EndStage()
@@ -418,25 +468,24 @@ public class Game : NetworkBehaviour
     #region RPC
 
     [ClientRpc]
-    private void SetPlayersPocketCardsClientRpc(ulong playerId, CardObject card1, CardObject card2)
-    {
-        SetPlayersPocketCards(playerId, card1, card2);
-    }
-
-    [ClientRpc]
-    private void StartDealClientRpc(int[] cardDeck)
-    {
-        InitDeck(cardDeck);
-        InitPocketCards();
-        InitBoard();
-    }
-
-    [ClientRpc]
     private void EndDealClientRpc(WinnerInfo[] winnerInfo)
     {
+        _board.Cards.Clear();
         InitEndDealRoutine(winnerInfo);
     }
-
+    
+    [ClientRpc]
+    private void SetBoardCardsClientRpc(int[] codedBoardCardsString)
+    {
+        if (IsHost == true)
+        {
+            return;
+        }
+        
+        IEnumerable<CardObject> cardObjects = CardObjectConverter.GetCards(codedBoardCardsString);
+        _board.AddCards(cardObjects);
+    }
+    
     [ClientRpc]
     private void StartNextStageClientRpc(GameStage stage)
     {
@@ -453,61 +502,6 @@ public class Game : NetworkBehaviour
 
     #region Methods that has to be called both on Server and Client.
 
-    private void SetPlayersPocketCards(ulong playerId, CardObject card1, CardObject card2)
-    {
-        Player player = PlayerSeats.Players.FirstOrDefault(x => x != null && x.OwnerClientId == playerId);
-        if (player == null)
-        {
-            return;
-        }
-        
-        player.SetPocketCards(card1, card2);
-    }
-    
-    private void InitDeck(int[] cardDeck)
-    {
-        _cardDeck = new CardDeck(cardDeck);
-
-        if (IsServer == true)
-        {
-            Logger.Log($"Deck created: {string.Join(", ", cardDeck)}.");
-        }
-    }
-
-
-    private void InitPocketCards()
-    {
-        int[] turnSequence = _boardButton.GetTurnSequence();
-        foreach (int index in turnSequence)
-        {
-            Player player = PlayerSeats.Players[index];
-            CardObject card1 =  _cardDeck.PullCard();
-            CardObject card2 =  _cardDeck.PullCard();
-            
-            if (IsHost == false)
-            {
-                SetPlayersPocketCards(player.OwnerClientId, card1, card2);
-            }
-            
-            SetPlayersPocketCardsClientRpc(player.OwnerClientId, card1, card2);
-
-            if (IsServer == true)
-            {            
-                Logger.Log($"Player ('{player}') received: {card1}, {card2}.");
-            }
-        }
-    }
-
-    private void InitBoard()
-    {
-        _board = new Board(_cardDeck.PullCards(5).ToList());
-
-        if (IsServer == true)
-        {
-            Logger.Log($"Board created: {string.Join(", ", _board.Cards)}.");
-        }
-    }
-        
     private void InitEndDealRoutine(WinnerInfo[] winnerInfo)
     {
         if (_startDealAfterRoundsInterval != null)
