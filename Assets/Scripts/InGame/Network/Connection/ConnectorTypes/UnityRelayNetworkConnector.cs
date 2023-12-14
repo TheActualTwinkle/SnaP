@@ -28,6 +28,7 @@ public class UnityRelayNetworkConnector : INetworkConnector
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
+            Logger.Log("Can`t create game: NetworkManager is already listening.", Logger.LogLevel.Error);
             return false;
         }
         
@@ -46,8 +47,9 @@ public class UnityRelayNetworkConnector : INetworkConnector
             NetworkManager.Singleton.StartHost();
             NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Logger.Log($"Can`t StartHost(). {e}", Logger.LogLevel.Error);
             return false;
         }
         
@@ -58,12 +60,22 @@ public class UnityRelayNetworkConnector : INetworkConnector
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
+            Logger.Log("Can`t join game: NetworkManager is already listening.", Logger.LogLevel.Error);
             return false;
         }
         
         await TryAuthenticate();
-        
-        JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(_joinCode);
+
+        JoinAllocation allocation;
+        try
+        {
+            allocation = await RelayService.Instance.JoinAllocationAsync(_joinCode);
+        }
+        catch (Exception e)
+        {
+            Logger.Log($"Can`t join game: {e.Message}", Logger.LogLevel.Error);
+            return false;
+        }
 
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
         unityTransport.SetClientRelayData(allocation.RelayServer.IpV4, 
@@ -79,8 +91,9 @@ public class UnityRelayNetworkConnector : INetworkConnector
         {
             NetworkManager.Singleton.StartClient();
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Logger.Log($"Can`t StartClient(). {e}", Logger.LogLevel.Error);
             return false;
         }
 
@@ -91,12 +104,16 @@ public class UnityRelayNetworkConnector : INetworkConnector
     {
         try
         {
-            if (UnityServices.State == ServicesInitializationState.Initialized || AuthenticationService.Instance.IsAuthorized == true)
+            if (UnityServices.State == ServicesInitializationState.Initialized ||
+                AuthenticationService.Instance.IsAuthorized == true)
             {
                 return;
             }
         }
-        catch (ServicesInitializationException) { }
+        catch (ServicesInitializationException e)
+        {
+            Logger.Log($"Can`t TryAuthenticate(). {e}", Logger.LogLevel.Error);
+        }
 
         await UnityServices.InitializeAsync();
         await AuthenticationService.Instance.SignInAnonymouslyAsync();

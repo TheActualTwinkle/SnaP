@@ -1,4 +1,7 @@
+using System;
 using System.Collections;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -21,21 +24,20 @@ public class ConnectCancelUI : MonoBehaviour
     private static readonly int Disable = Animator.StringToHash("Disable");
     private static readonly int ConnectionFail = Animator.StringToHash("ConnectionFail");
 
-    private IEnumerator _connectionFailTimerRoutine;
     private IEnumerator _enableCancelButtonAfterTime;
 
     private void OnEnable()
     {
-        _createButton.onClick.AddListener(OnCreateButtonClick);
-        _joinButton.onClick.AddListener(OnJoinButtonClick);
-        _cancelButton.onClick.AddListener(OnCancelButtonClick);
+        if (_createButton != null) _createButton.onClick.AddListener(OnCreateButtonClick);
+        if (_joinButton != null) _joinButton.onClick.AddListener(OnJoinButtonClick);
+        if (_cancelButton != null) _cancelButton.onClick.AddListener(OnCancelButtonClick);
     }
 
     private void OnDisable()
     {
-        _createButton.onClick.RemoveListener(OnCreateButtonClick);
-        _joinButton.onClick.RemoveListener(OnJoinButtonClick);
-        _cancelButton.onClick.RemoveListener(OnCancelButtonClick);
+        if (_createButton != null) _createButton.onClick.RemoveListener(OnCreateButtonClick);
+        if (_joinButton != null)  _joinButton.onClick.RemoveListener(OnJoinButtonClick);
+        if (_cancelButton != null) _cancelButton.onClick.RemoveListener(OnCancelButtonClick);
     }
 
     private void OnCreateButtonClick()
@@ -48,6 +50,8 @@ public class ConnectCancelUI : MonoBehaviour
 
         _enableCancelButtonAfterTime = EnableCancelButtonAfterTime();
         StartCoroutine(_enableCancelButtonAfterTime);
+
+        NetworkConnectorHandler.ConnectionStateChangedEvent += OnConnectionStateChanged;
         
         _connectText.text = "Creating game...";
         DisableMenuInteraction();
@@ -56,25 +60,46 @@ public class ConnectCancelUI : MonoBehaviour
     private void OnJoinButtonClick()
     {
         _connectText.text = "Connecting...";
+        
+        NetworkConnectorHandler.ConnectionStateChangedEvent += OnConnectionStateChanged;
+
         DisableMenuInteraction();
     }
     
     private void OnCancelButtonClick()
     {
+        NetworkConnectorHandler.ShutdownTrigger = true;
         NetworkManager.Singleton.Shutdown();
         EnableMenuInteraction();
     }
-
-    private IEnumerator StartTimer()
+    
+    private void OnConnectionStateChanged(NetworkConnectorHandler.ConnectionState state)
     {
-        UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        float time = (float)unityTransport.MaxConnectAttempts * unityTransport.ConnectTimeoutMS / 1000;
+        switch (state)
+        {
+            case NetworkConnectorHandler.ConnectionState.Canceled:
+                _connectText.text = "Connection canceled";
+                break;
+            case NetworkConnectorHandler.ConnectionState.Successful:
+                // If connect is OK we don't need to do anything. Changing scene!
+                break;
+            case NetworkConnectorHandler.ConnectionState.Failed:
+                _connectText.text = "Connection failed";
+                
+                _animator.SetTrigger(ConnectionFail);
 
-        yield return new WaitForSeconds(time);
-        
-        _fadeImage.enabled = false;
-        _animator.SetTrigger(ConnectionFail);
-        _connectText.text = "Connect time out";
+                if (_fadeImage == null)
+                {
+                    break;
+                }
+                
+                _fadeImage.enabled = false;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(state), state, null);
+        }
+
+        NetworkConnectorHandler.ConnectionStateChangedEvent -= OnConnectionStateChanged;
     }
 
     private IEnumerator EnableCancelButtonAfterTime()
@@ -85,31 +110,28 @@ public class ConnectCancelUI : MonoBehaviour
     }
     
     private void EnableMenuInteraction()
-    {   
-        if (_connectionFailTimerRoutine != null)
-        {
-            StopCoroutine(_connectionFailTimerRoutine);
-        }
-        
+    {
         _animator.ResetTrigger(Enable);
         _animator.SetTrigger(Disable);
 
+        if (_fadeImage == null)
+        {
+            return;
+        }
+        
         _fadeImage.enabled = false;
     }
 
     private void DisableMenuInteraction()
     {
-        if (_connectionFailTimerRoutine != null)
-        {
-            StopCoroutine(_connectionFailTimerRoutine);
-        }
-
-        _connectionFailTimerRoutine = StartTimer();
-        StartCoroutine(_connectionFailTimerRoutine);
-
         _animator.ResetTrigger(Disable);
         _animator.SetTrigger(Enable);
-
+        
+        if (_fadeImage == null)
+        {
+            return;
+        }
+        
         _fadeImage.enabled = true;
     }
 }

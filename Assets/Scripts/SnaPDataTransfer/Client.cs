@@ -1,121 +1,183 @@
-using System;
-using System.IO.Pipes;
-using System.Security.Principal;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using UnityEngine;
+using Newtonsoft.Json;
+using Unity.Netcode;
 
-namespace SnaPDataTransfer
+namespace SDT
 {
+    /// <summary>
+    /// <para> You must be a CLIENT and use it ONLY in a standalone builds. </para> 
+    /// <para> Read data from the SnaPDataTransfer server. </para>
+    /// </summary>
     public class Client : MonoBehaviour
     {
-        private static Client Instance { get; set; }
-
-        [SerializeField] private string _pipeName;
-        [SerializeField] private int _connectionTimeout;
-        [SerializeField] private int _requestNotFoundTimeout;
+        public event Action<ConnectionState> ConnectionStateChangedEvent;
         
-        private NamedPipeClientStream _pipeClient;
+        public static Client Instance { get; private set; }
 
+        public ConnectionState ConnectionState { get; private set; } = ConnectionState.Disconnected;
+
+        private const uint BufferSize = 512;
+        
+        [SerializeField] private string _serverIpAddress; // TODO: Make it real ip address.
+        [SerializeField] private int _serverPort;
+
+        private bool _destroyed;
+
+        private NetworkStream _networkStream;
+        private TcpClient _tcpClient;
+        
         private void Awake()
         {
+            if (Application.platform is RuntimePlatform.WindowsServer or RuntimePlatform.LinuxServer)
+            {
+                Logger.Log("StandaloneClient should be used ONLY in a standalone builds!", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                Destroy(gameObject);
+                return;
+            }
+            
+            // If this is a server, then destroy this object.
+            if (NetworkManager.Singleton.IsServer == true)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else
             {
                 Destroy(gameObject);
             }
         }
-
-        private async void Start()
+        
+        private void Start()
         {
-            if (await TryConnect(_pipeName) == false)
-            {
-                Logger.Log($"[SnaPDataTransfer] Can`t connect to {_pipeName} pipe.", Logger.LogLevel.Error);
-                return;
-            }
-
-            StreamString streamString = new(_pipeClient);
-            
-            EndlessHandeServerRequest(streamString);
+            TryConnect();
+        }
+        
+        private void OnDestroy()
+        {
+            _tcpClient?.Close();
+            _destroyed = true;
         }
 
-        private async Task<bool> TryConnect(string pipeName)
+        public async void TryConnect()
         {
-            _pipeClient = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.None, TokenImpersonationLevel.Impersonation);
-
-            Logger.Log("[SnaPDataTransfer] Connecting to pipe server...");
+            ConnectionState = ConnectionState.Connecting;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Connecting);
             
             try
             {
-                await _pipeClient.ConnectAsync(_connectionTimeout);
-                return true;
+                _tcpClient = new TcpClient();
+                await _tcpClient.ConnectAsync(_serverIpAddress, _serverPort);
             }
-            catch (Exception)
+            catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR.
             {
-                return false;
-            }
-        }
-
-        private async void EndlessHandeServerRequest(StreamString streamString)
-        {
-            while (true)
-            {
-                string request = await GetRequestAsync(streamString);
-
-                if (request == "404")
-                {
-                    await Task.Delay(_requestNotFoundTimeout);
-                    continue;
-                }
+                ConnectionState = ConnectionState.Failed;
+                ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
                 
-                Logger.Log($"[SnaPDataTransfer] Got request: {request}");
-
-                string response = GetResponse(request);
-                Logger.Log($"[SnaPDataTransfer] Figured response: {response}");
-
-                Logger.Log($"[SnaPDataTransfer] Sending response...");
-                await SendDataAsync(response, streamString);
+                Logger.Log($"Can`t connect to {_serverIpAddress}:{_serverPort}. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                return;
             }
             
-            // ReSharper disable once FunctionNeverReturns
-        }
+            Logger.Log($"Connected to server at {_serverIpAddress}:{_serverPort}.", Logger.LogSource.SnaPDataTransfer);
 
-        private async Task<string> GetRequestAsync(StreamString streamString)
-        {
-            return await streamString.ReadStringAsync();
+            _networkStream = _tcpClient.GetStream();
+
+            ConnectionState = ConnectionState.Successful;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Successful);
         }
         
-        private static string GetResponse(string request)
+        public async Task<List<LobbyInfo>> GetLobbiesInfoAsync()
         {
-            string response;
-            if (Enum.TryParse(typeof(Request), request, true, out object requestAsEnum) == true)
+            try
             {
-                response = requestAsEnum switch
+                return await GetLobbyInfoAsyncInternal();
+            }
+            catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR.
+            {
+                ConnectionState = ConnectionState.Failed;
+                ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
+                
+                Logger.Log($"Can`t get lobby info. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                return null;                
+            }
+        }
+
+        private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal()
+        {
+            string message = _destroyed ? "close" : "get-count";
+            
+            // Send "get-count" or "close" request.
+            await WriteAsync(message);
+
+            // If we are dead - return.
+            // But before send "close" request to server.
+            if (_destroyed == true)
+            {
+                return new List<LobbyInfo>();
+            }
+            
+            // Getting count of lobbies.
+            string lengthString = await ReadAsync();
+            
+            if (int.TryParse(lengthString, out int length) == false)
+            {
+                Logger.Log($"Can`t parse {lengthString} to int.", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                return null;
+            }
+            
+            Logger.Log($"Received {length} lobbies count.", Logger.LogSource.SnaPDataTransfer);
+
+            List<LobbyInfo> lobbyInfos = new();
+            // Using the count of lobbies, get all lobbies info. 
+            for (var i = 0; i < length; i++)
+            {
+                message = "get-info " + i;
+                await WriteAsync(message);
+                
+                string response = await ReadAsync();
+                Logger.Log($"[STANDALONE] Received: {response}", Logger.LogSource.SnaPDataTransfer);
+
+                // Parsing json to LobbyInfo[] and return it.
+                try
                 {
-                    Request.Get => JsonConvert.SerializeObject(new LobbyInfo(
-                        PlayerSeats.MaxSeats,
-                        PlayerSeats.Instance.PlayersAmount + PlayerSeats.Instance.WaitingPlayersAmount,
-                        "TODO: Create a lobby name feature!"
-                    )),
-                    Request.IsLobbyReady => PlayerSeats.Instance == null ? "N" : "Y",
-                    _ => throw new ArgumentException()
-                };
-            }
-            else
-            {
-                response = "400";
+                    LobbyInfo lobbyInfo = JsonConvert.DeserializeObject<LobbyInfo>(response);
+                    lobbyInfos.Add(lobbyInfo);
+                }
+                catch (Exception e)
+                {
+                    Logger.Log($"Can`t deserialize json to LobbyInfo at {i}/{length-1}. " + e, Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                }
             }
 
-            return response;
+            return lobbyInfos;
         }
-
-        private async Task SendDataAsync(string dataToSend, StreamString streamString)
+        
+        private async Task<string> ReadAsync()
         {
-            await streamString.WriteStringAsync(dataToSend);
+            var buffer = new byte[BufferSize];
+            int read = await _networkStream.ReadAsync(buffer);
+            string message = Encoding.ASCII.GetString(buffer, 0, read);
+
+            return message;
         }
-    }   
+        
+        private async Task WriteAsync(string message)
+        { 
+            byte[] data = Encoding.ASCII.GetBytes(message);
+                
+            await _networkStream.WriteAsync(data, 0, data.Length);
+            Logger.Log($"Send {message}.", Logger.LogSource.SnaPDataTransfer);
+        }
+    }
 }

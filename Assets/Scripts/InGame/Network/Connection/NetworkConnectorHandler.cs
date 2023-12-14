@@ -5,30 +5,63 @@ using UnityEngine;
 
 public static class NetworkConnectorHandler
 {
+    public enum ConnectionState : byte
+    {
+        Disconnected,
+        Canceled,
+        Connecting,
+        Successful,
+        Failed,
+    }
+    
+    public static event Action<ConnectionState> ConnectionStateChangedEvent;
+    
+    private static ConnectionState _connectionState = ConnectionState.Disconnected;
+
+    public static bool ShutdownTrigger;
+    
     public const uint MaxPlayersAmount = 5;
 
     private const uint MaxConnectAttempts = 4;
     private const uint ConnectTimeoutMS = 3000;
     
-    private const float DelayBeforeErrorShutdownMS = 3000;
+    private const uint DelayBeforeErrorShutdownMS = 3000;
     
     public static INetworkConnector CurrentConnector { get; private set; }
 
-    private static bool _isSubscribedToUserConnectionEvents; 
+    private static bool _isSubscribedToUserConnectionEvents;
     
     public static async Task CreateGame(NetworkConnectorType connectorType)
     {
+        if (_connectionState == ConnectionState.Connecting)
+        {
+            Logger.Log("Already connecting. Aborting...", Logger.LogLevel.Error);
+            return;
+        }
+
         INetworkConnector connector = GetConnector(connectorType);
         
         CurrentConnector = connector;
         await connector.Init();
 
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
-        Logger.Log($"STARTING AT: {string.Join(':', connector.ConnectionData)}");
+#endif
+        Logger.Log($"Starting at: {string.Join(':', connector.ConnectionData)}");
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
+#endif
 
         for (var i = 0; i < MaxConnectAttempts; i++)
         {
+            if (ShutdownTrigger == true)
+            {
+                ShutdownTrigger = false;
+                _connectionState = ConnectionState.Canceled;
+                ConnectionStateChangedEvent?.Invoke(_connectionState);
+                return;
+            }
+
             if (await connector.TryCreateGame() == false)
             {
                 Logger.Log($"Failed to start at {string.Join(':', connector.ConnectionData)}. Attempt {i+1}/{MaxConnectAttempts}", Logger.LogLevel.Error);
@@ -36,9 +69,13 @@ public static class NetworkConnectorHandler
                 
                 if (i == MaxConnectAttempts - 1)
                 {
+#if !UNITY_STANDALONE
                     Logger.Log($"Connection timeout. Shuts-downing in {DelayBeforeErrorShutdownMS} milliseconds.");
                     await Task.Delay((int)DelayBeforeErrorShutdownMS);
                     Application.Quit(-1);
+#endif
+                    _connectionState = ConnectionState.Canceled;
+                    ConnectionStateChangedEvent?.Invoke(_connectionState);
                     return;
                 }
                 
@@ -48,9 +85,13 @@ public static class NetworkConnectorHandler
             break;
         }
         
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
+#endif
         Logger.Log("Successfully started at " + string.Join(':', connector.ConnectionData));
+#if !UNITY_EDITOR
         Logger.Log("=============================================================");
+#endif
 
 
         if (_isSubscribedToUserConnectionEvents == false)
@@ -60,10 +101,19 @@ public static class NetworkConnectorHandler
             
             _isSubscribedToUserConnectionEvents = true;
         }
+
+        _connectionState = ConnectionState.Successful;
+        ConnectionStateChangedEvent?.Invoke(_connectionState);
     }
 
     public static async Task JoinGame(NetworkConnectorType connectorType)
     {
+        if (_connectionState == ConnectionState.Connecting)
+        {
+            Logger.Log($"Already connecting. Aborting...", Logger.LogLevel.Error);
+            return;
+        }
+
         INetworkConnector connector = GetConnector(connectorType);
         
         CurrentConnector = connector;
@@ -74,6 +124,9 @@ public static class NetworkConnectorHandler
         if (await connector.TryJoinGame() == false)
         {
             Logger.Log("Failed to join to " + string.Join(':', connector.ConnectionData), Logger.LogLevel.Error);
+            _connectionState = ConnectionState.Failed;
+            ConnectionStateChangedEvent?.Invoke(_connectionState);
+            return;
         }
         
         NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent += OnNetworkTransportEvent;
@@ -86,11 +139,15 @@ public static class NetworkConnectorHandler
         {
             case NetworkEvent.Connect:
                 Logger.Log($"Successfully connected to {string.Join(':', CurrentConnector.ConnectionData)}");
+                _connectionState = ConnectionState.Successful;
                 break;
             case NetworkEvent.Disconnect:
                 Logger.Log($"Failed to connect to {string.Join(':', CurrentConnector.ConnectionData)}", Logger.LogLevel.Error);
+                _connectionState = ConnectionState.Failed;
                 break;
         }
+        
+        ConnectionStateChangedEvent?.Invoke(_connectionState);
         
         NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent -= OnNetworkTransportEvent;
     }
@@ -114,6 +171,7 @@ public static class NetworkConnectorHandler
             NetworkConnectorType.IpAddress => new IPAddressNetworkConnector(),
             NetworkConnectorType.UnityRelay => new UnityRelayNetworkConnector(),
             NetworkConnectorType.DedicatedServer => new DedicatedServerNetworkConnector(),
+            NetworkConnectorType.UPnP => new UPnPNetworkConnector(),
             _ => throw new ArgumentOutOfRangeException(nameof(connectorType), connectorType, null)
         };
         
