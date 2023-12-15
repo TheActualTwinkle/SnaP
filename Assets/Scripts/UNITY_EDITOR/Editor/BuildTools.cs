@@ -146,7 +146,7 @@ public class BuildTools : EditorWindow
             var buildTarget = targetsToBuild[targetIndex];
 
             Progress.Report(buildAllProgressID, targetIndex + 1, targetsToBuild.Count);
-            int buildTaskProgressID = Progress.Start($"Build {buildTarget.ToString()}", null, Progress.Options.Sticky, buildAllProgressID);
+            int buildTaskProgressID;
             yield return new EditorWaitForSeconds(1f);
 
             EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Player;
@@ -155,6 +155,9 @@ public class BuildTools : EditorWindow
             {
                 if (buildTarget is BuildTarget.StandaloneWindows64 or BuildTarget.StandaloneWindows)
                 {
+                    buildTaskProgressID = Progress.Start($"Build Windows Server", null, Progress.Options.Sticky, buildAllProgressID);
+                    yield return new EditorWaitForSeconds(1f);
+
                     _buildWindowsServer = false;
                     EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Server;
                     // perform the server build
@@ -176,6 +179,9 @@ public class BuildTools : EditorWindow
             {
                 if (buildTarget is BuildTarget.StandaloneLinux64)
                 {
+                    buildTaskProgressID = Progress.Start($"Build Linux Server", null, Progress.Options.Sticky, buildAllProgressID);
+                    yield return new EditorWaitForSeconds(1f);
+
                     _buildLinuxServer = false;
                     EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Server;
                     // perform the server build
@@ -193,6 +199,8 @@ public class BuildTools : EditorWindow
                 }
             }
             
+            yield return new EditorWaitForSeconds(1f);
+            buildTaskProgressID = Progress.Start($"Build {buildTarget.ToString()}", null, Progress.Options.Sticky, buildAllProgressID);
             if (BuildIndividualTarget(buildTarget))
             {                
                 Progress.Finish(buildTaskProgressID, Progress.Status.Succeeded);
