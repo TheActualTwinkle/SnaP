@@ -35,9 +35,15 @@ public class Player : NetworkBehaviour
 
     public bool IsAvatarImageReady => _isAvatarImageReady.Value;
     private readonly NetworkVariable<bool> _isAvatarImageReady = new();
+    
+    public CardObject PocketCard1 => _pocketCard1.Value;
+    public CardObject PocketCard2 => _pocketCard2.Value;
+    
+    private readonly NetworkVariable<CardObject> _pocketCard1 = new();
+    private readonly NetworkVariable<CardObject> _pocketCard2 = new();
 
-    public CardObject PocketCard1 { get; private set; }
-    public CardObject PocketCard2 { get; private set; }
+    public CardObject LocalPocketCard1 { get; private set; }
+    public CardObject LocalPocketCard2 { get; private set; }
 
     private static Game Game => Game.Instance;
     private static Betting Betting => Betting.Instance;
@@ -101,11 +107,6 @@ public class Player : NetworkBehaviour
                 }
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton; // todo Delete
-        }
     }
 
     public override void OnNetworkSpawn()
@@ -161,13 +162,14 @@ public class Player : NetworkBehaviour
         _betAmount.Value += value;
         return true;
     }
-    
-    public void SetPocketCards(CardObject card1, CardObject card2)
+
+    public void SetLocalPocketCards(CardObject card1, CardObject card2, ulong playerId)
     {
-        PocketCard1 = card1;
-        PocketCard2 = card2;
+        ClientRpcParams rpcParams = default;
+        rpcParams.Send.TargetClientIds = new[] { playerId };
+        SetLocalPocketCardsClientRpc(card1, card2, rpcParams);
     }
-    
+
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();
@@ -253,11 +255,19 @@ public class Player : NetworkBehaviour
 
     private void OnGameStageOver(GameStage gameStage)
     {
+        if (IsOwner == true)
+        {
+            if (gameStage == GameStage.River || Betting.IsAllIn == true)
+            {
+                SetGlobalPocketCardsServerRpc(LocalPocketCard1, LocalPocketCard2);
+            }
+        }
+        
         if (IsServer == false)
         {
             return;
         }
-        
+
         _betAmount.Value = 0;
     }
 
@@ -338,6 +348,13 @@ public class Player : NetworkBehaviour
     }
 
     #region RPC
+
+    [ServerRpc]
+    private void SetGlobalPocketCardsServerRpc(CardObject card1, CardObject card2)
+    {
+        _pocketCard1.Value = card1;
+        _pocketCard2.Value = card2;
+    }
     
     [ServerRpc]
     private void SetSeatServerRpc(int seatNumber)
@@ -385,6 +402,13 @@ public class Player : NetworkBehaviour
         _isAvatarImageReady.Value = value;
     }
 
+    [ClientRpc]
+    private void SetLocalPocketCardsClientRpc(CardObject card1, CardObject card2, ClientRpcParams clientRpcParams = default)
+    {
+        LocalPocketCard1 = card1;
+        LocalPocketCard2 = card2;
+    }
+    
     [ClientRpc]
     private void ShutdownClientRpc()
     {

@@ -41,18 +41,16 @@ public class PocketCardsUI : MonoBehaviour
 
     private void GameStageBeganEvent(GameStage gameStage)
     {
+        Player player = PlayerSeats.Players[_position];
+        if (player == null || player.IsOwner == true)
+        {
+            return;
+        }
+        
         switch (gameStage)
         {
             case GameStage.Preflop:
             {
-                Player player = PlayerSeats.Players[_position];
-                if (player == null || player.IsOwner == true)
-                {
-                    return;
-                }
-        
-                StartCoroutine(LoadFrontSpriteForCards(player));
-
                 _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/CardBack");
                 _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/CardBack");
         
@@ -62,6 +60,8 @@ public class PocketCardsUI : MonoBehaviour
             }
             case GameStage.Showdown:
             {
+                StartCoroutine(LoadFrontSpriteForCards(player));
+
                 _animator.ResetAllTriggers();
                 _animator.SetTrigger(OpenCards);
                 break;
@@ -70,6 +70,8 @@ public class PocketCardsUI : MonoBehaviour
             {
                 if (Betting.IsAllIn == true)
                 {
+                    StartCoroutine(LoadFrontSpriteForCards(player));
+
                     _animator.ResetAllTriggers();;
                     _animator.SetTrigger(OpenCards);
                 }

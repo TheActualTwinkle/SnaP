@@ -12,4 +12,9 @@ public class Board
     {
         _cards = cards;
     }
+
+    public void AddCards(IEnumerable<CardObject> cardObjects)
+    {
+        _cards.AddRange(cardObjects);
+    }
 }

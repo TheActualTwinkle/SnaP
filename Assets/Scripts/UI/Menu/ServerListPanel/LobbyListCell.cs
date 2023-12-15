@@ -28,6 +28,11 @@ public class LobbyListCell : MonoBehaviour, ICell
     
     private static bool _isJoining;
 
+    private void Start()
+    {
+        _isJoining = false;
+    }
+
     public void SetLobbyInfo(LobbyInfo lobbyInfo, int index)
     {
         _lobbyInfo = lobbyInfo;
@@ -86,6 +91,11 @@ public class LobbyListCell : MonoBehaviour, ICell
         }
 
         await Task.Delay((int)(_joinButtonDisabledTimeSeconds * 1000));
+
+        if (_buttonText == null || _joinButton == null)
+        {
+            return;
+        }
         
         _buttonText.text = "Join";
         

@@ -98,10 +98,10 @@ public class OwnerPocketCardsUI : MonoBehaviour
 
     private IEnumerator ShowCards(Player player)
     {
-        yield return new WaitUntil(() => ReferenceEquals(player.PocketCard1, null) == false && ReferenceEquals(player.PocketCard2, null) == false);
+        yield return new WaitUntil(() => ReferenceEquals(player.LocalPocketCard1, null) == false && ReferenceEquals(player.LocalPocketCard2, null) == false);
         
-        _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit.ToString()}");
-        _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit.ToString()}");
+        _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.LocalPocketCard1.Value}_{player.LocalPocketCard1.Suit.ToString()}");
+        _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.LocalPocketCard2.Value}_{player.LocalPocketCard2.Suit.ToString()}");
 
         _animator.ResetAllTriggers();
         _animator.SetTrigger(GetCards);
