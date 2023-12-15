@@ -10,7 +10,7 @@ The [rules](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) of **Texas Hol
 </p>
 
 ## Want to just Play? Here you go!
-Visit GitHub [releases page](https://github.com/Twinkllle/PokerMultiplayer/releases) and download version for your OS. For nowadays we have only **Windows** and **Linux** standalone client and dedicated server support.
+Visit GitHub [releases page](https://github.com/Twinkllle/PokerMultiplayer/releases) and download version for your OS.
 
 ## [SDT](https://github.com/TheActualTwinkle/SDT)/UPnP
 What the hell is **SDT**?
