@@ -11,21 +11,29 @@ public abstract class Constants
     
     public abstract class Sound
     {
+        public static readonly string MixerPath = "Sound/Mixer";
+        
         public abstract class Sfx
         {
-            public static readonly Dictionary<Type, string> Paths = new() {
-                { Type.ShowingCards, "Sound/SFX/ShowingCards"},
-                { Type.Bet, "Sound/SFX/Bet"},
-                { Type.ToPot, "Sound/SFX/ToPot"},
-                { Type.Check, "Sound/SFX/Check"}
-            }; 
-            
+            public static readonly Dictionary<Type, string> Paths = new()
+            {
+                { Type.ShowingCards, "Sound/SFX/ShowingCards" },
+                { Type.Bet, "Sound/SFX/Bet" },
+                { Type.ToPot, "Sound/SFX/ToPot" },
+                { Type.Check, "Sound/SFX/Check" },
+                { Type.ButtonHover, "Sound/SFX/ButtonHover" },
+                { Type.ButtonClick, "Sound/SFX/ButtonClick" }
+
+            };
+
             public enum Type
             {
                 ShowingCards,
                 Bet,
                 ToPot,
                 Check,
+                ButtonHover,
+                ButtonClick,
             }
         }
     

@@ -7,7 +7,7 @@ public class SfxAudio : MonoBehaviour
     public static SfxAudio Instance { get; private set; }
 
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private Dictionary<Constants.Sound.Sfx.Type, AudioClip> _audioClips = new();
+    private readonly Dictionary<Constants.Sound.Sfx.Type, AudioClip> _audioClips = new();
 
     private void Awake()
     {

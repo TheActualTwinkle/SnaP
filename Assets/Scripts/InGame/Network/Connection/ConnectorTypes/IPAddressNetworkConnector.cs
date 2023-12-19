@@ -7,7 +7,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[Obsolete("Use UPnP connector instead.", false)]
+// [Obsolete("Use UPnP connector instead.", false)]
 public class IPAddressNetworkConnector : INetworkConnector
 {
     public IEnumerable<string> ConnectionData => new [] { _ipAddress, _port };

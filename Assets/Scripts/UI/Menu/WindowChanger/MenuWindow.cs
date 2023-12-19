@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,8 +10,10 @@ public abstract class MenuWindow : MonoBehaviour
     [SerializeField] protected MenuWindow _previousWindow;
     
     // Button.
-    public void BackButtonClick()
+    public async void BackButtonClick(float delay = 0.0f)
     {
+        await Task.Delay((int)(delay * 1000));
+
         Hide();
         _previousWindow.Show();
     }
