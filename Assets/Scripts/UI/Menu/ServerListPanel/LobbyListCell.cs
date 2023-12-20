@@ -35,6 +35,12 @@ public class LobbyListCell : MonoBehaviour, ICell
 
     public void SetLobbyInfo(LobbyInfo lobbyInfo, int index)
     {
+        if (lobbyInfo == null)
+        {
+            Logger.Log("LobbyInfo is null!", Logger.LogLevel.Error);
+            return;
+        }
+        
         _lobbyInfo = lobbyInfo;
         
         _lobbyNameText.text = lobbyInfo.LobbyName;

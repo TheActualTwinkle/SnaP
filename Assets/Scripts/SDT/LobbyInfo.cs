@@ -1,6 +1,6 @@
 ﻿namespace SDT
 {
-    public record LobbyInfo
+    public class LobbyInfo
     {
         public string PublicIpAddress;
         public ushort Port;

@@ -1,13 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
+[RequireComponent(typeof(Animator))]
 public class ServerListScrollView : MenuWindow
 {
     [SerializeField] private LobbyListDataSource _lobbyList;
     [SerializeField] private KeyCode _hideWindowKeyCode;
+
+    private Animator _animator;
+    
+    private static readonly int Loading = Animator.StringToHash("Loading");
     
     private void Update()
     {
@@ -21,6 +23,32 @@ public class ServerListScrollView : MenuWindow
 
     protected override void ShowInternal()
     {
+        if (_animator == null)
+        {
+            _animator = GetComponent<Animator>();
+        }
+
+        _lobbyList.StartLoadingEvent += OnStartLoadingLobbyList;
+        _lobbyList.EndLoadingEvent += OnEndLoadingLobbyList;
+
         _lobbyList.UpdateScrollRect();
+    }
+
+    protected override void HideInternal()
+    {
+        _lobbyList.CancelLoading();
+        
+        _lobbyList.StartLoadingEvent -= OnStartLoadingLobbyList;
+        _lobbyList.EndLoadingEvent -= OnEndLoadingLobbyList;
+    }
+    
+    private void OnStartLoadingLobbyList()
+    {
+        _animator.SetBool(Loading, true);
+    }
+
+    private void OnEndLoadingLobbyList()
+    {
+        _animator.SetBool(Loading, false);
     }
 }

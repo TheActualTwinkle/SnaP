@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -97,13 +98,13 @@ namespace SDT
             ConnectionStateChangedEvent?.Invoke(ConnectionState.Successful);
         }
         
-        public async Task<List<LobbyInfo>> GetLobbiesInfoAsync()
+        public async Task<List<LobbyInfo>> GetLobbiesInfoAsync(CancellationTokenSource token)
         {
             try
             {
-                return await GetLobbyInfoAsyncInternal();
+                return await GetLobbyInfoAsyncInternal(token);
             }
-            catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR.
+            catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR; to make different errors.
             {
                 ConnectionState = ConnectionState.Failed;
                 ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
@@ -113,7 +114,7 @@ namespace SDT
             }
         }
 
-        private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal()
+        private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal(CancellationTokenSource token)
         {
             string message = _destroyed ? "close" : "get-count";
             
@@ -142,6 +143,11 @@ namespace SDT
             // Using the count of lobbies, get all lobbies info. 
             for (var i = 0; i < length; i++)
             {
+                if (token.IsCancellationRequested == true)
+                {
+                    return lobbyInfos;
+                }
+                
                 message = "get-info " + i;
                 await WriteAsync(message);
                 

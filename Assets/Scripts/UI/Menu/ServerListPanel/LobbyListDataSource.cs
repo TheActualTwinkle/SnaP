@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using PolyAndCode.UI;
 using SDT;
@@ -9,11 +10,16 @@ using UnityEngine;
 
 public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSource
 {
+    public event Action StartLoadingEvent;
+    public event Action EndLoadingEvent;
+    
     [SerializeField] private RecyclableScrollRect _recyclableScrollRect;
     [SerializeField] private Client _sdtClient;
     [SerializeField] private KeyCode _updateRectKeyCode;
     
     private List<LobbyInfo> _lobbyInfos = new();
+
+    private CancellationTokenSource _loadCancellationToken;
 
     private void Awake()
     {
@@ -48,13 +54,26 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
         lobbyListCell.SetLobbyInfo(_lobbyInfos[index], index);
     }
 
+    public void CancelLoading()
+    {
+        _loadCancellationToken?.Cancel();
+    }
+    
     // Button.
     public async void UpdateScrollRect()
     {
+        if (_lobbyInfos.Count != 0)
+        {
+            _lobbyInfos.Clear();
+            _recyclableScrollRect.ReloadData();
+        }
+
         if (await TryUpdateLobbiesInfo() == false)
         {
             return;
         }
+
+        _lobbyInfos = _lobbyInfos.Where(lobbyInfo => lobbyInfo != null).ToList();
         
         _recyclableScrollRect.ReloadData();
         
@@ -63,7 +82,19 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
     
     private async Task<bool> TryUpdateLobbiesInfo()
     {
-        List<LobbyInfo> lobbyInfos = await _sdtClient.GetLobbiesInfoAsync();
+        StartLoadingEvent?.Invoke();
+        
+        _loadCancellationToken = new CancellationTokenSource();
+        List<LobbyInfo> lobbyInfos;
+        try
+        {
+            lobbyInfos = await _sdtClient.GetLobbiesInfoAsync(_loadCancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            Logger.Log("Loading canceled.");
+            return false;
+        }
         
         if (lobbyInfos == null)
         {
@@ -71,6 +102,8 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
             return false;
         }
         
+        EndLoadingEvent?.Invoke();
+
         _lobbyInfos = lobbyInfos;
         return true;
     }
