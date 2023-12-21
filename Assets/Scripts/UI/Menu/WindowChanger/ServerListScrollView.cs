@@ -27,7 +27,7 @@ public class ServerListScrollView : MenuWindow
         {
             _animator = GetComponent<Animator>();
         }
-
+        
         _lobbyList.StartLoadingEvent += OnStartLoadingLobbyList;
         _lobbyList.EndLoadingEvent += OnEndLoadingLobbyList;
 

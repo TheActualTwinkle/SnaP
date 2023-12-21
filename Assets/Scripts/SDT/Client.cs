@@ -152,7 +152,7 @@ namespace SDT
                 await WriteAsync(message);
                 
                 string response = await ReadAsync();
-                Logger.Log($"[STANDALONE] Received: {response}", Logger.LogSource.SnaPDataTransfer);
+                Logger.Log($"Received: {response}", Logger.LogSource.SnaPDataTransfer);
 
                 // Parsing json to LobbyInfo[] and return it.
                 try

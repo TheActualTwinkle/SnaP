@@ -62,12 +62,6 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
     // Button.
     public async void UpdateScrollRect()
     {
-        if (_lobbyInfos.Count != 0)
-        {
-            _lobbyInfos.Clear();
-            _recyclableScrollRect.ReloadData();
-        }
-
         if (await TryUpdateLobbiesInfo() == false)
         {
             return;
