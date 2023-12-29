@@ -30,6 +30,12 @@ public static class ConnectionDataPresenter
             .ToString();
     }
     
+    public static async Task<List<string>> GetLocalIpAddressesAsync()
+    {
+        return (await Dns.GetHostEntryAsync(Dns.GetHostName()))
+            .AddressList.Select(x => x.ToString()).ToList();
+    }
+    
     public static bool TryGetAvailablePort(out ushort port)
     {
         const ushort lowerPort = 10000; 

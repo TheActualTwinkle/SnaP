@@ -116,9 +116,9 @@ namespace SDT
 
         private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal(CancellationTokenSource token)
         {
-            string message = _destroyed ? "close" : "get-count";
+            string message = _destroyed ? "close" : "get-ids";
             
-            // Send "get-count" or "close" request.
+            // Send "get-ids" or "close" request.
             await WriteAsync(message);
 
             // If we are dead - return.
@@ -147,7 +147,7 @@ namespace SDT
                 {
                     return lobbyInfos;
                 }
-                
+
                 message = "get-info " + i;
                 await WriteAsync(message);
                 
@@ -179,7 +179,10 @@ namespace SDT
         }
         
         private async Task WriteAsync(string message)
-        { 
+        {
+            UdpClient c = new();
+            
+            
             byte[] data = Encoding.ASCII.GetBytes(message);
                 
             await _networkStream.WriteAsync(data, 0, data.Length);

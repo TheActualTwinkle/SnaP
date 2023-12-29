@@ -112,6 +112,8 @@ namespace SDT
 
             byte[] data = Encoding.ASCII.GetBytes(message);
             await Stream.WriteAsync(data, 0, data.Length);
+            
+            await UdpPortChecker.Check();
         }
 
         private async Task<string> GetMessage()
