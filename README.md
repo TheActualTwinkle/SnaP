@@ -25,7 +25,7 @@ Other player can see your server in *Browse menu*
 
 You can see status of **SDT** in the top-right corner
 
-![[GitImages/SDT.png]]
+![SDT](GitImages/SDT.png)
 ## UPnP or Relay?
 * ### Universal Plug and Play: 
 	In **SnaP** we have implemented [UPnP](https://ru.wikipedia.org/wiki/UPnP)  system witch allows us to handle clients connection without the Port Forwarding.
