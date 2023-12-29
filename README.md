@@ -24,6 +24,7 @@ Your ~~bank account~~ data was sent to to SDT Server ->
 Other player can see your server in *Browse menu*
 
 You can see status of **SDT** in the top-right corner
+
 ![[GitImages/SDT.png]]
 ## UPnP or Relay?
 * ### Universal Plug and Play: 
