@@ -1,46 +1,23 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
+using Open.Nat;
 
 namespace SDT
 {
     /// <summary>
-    /// Sends some bytes to SDT Server to check if the port is open.
+    /// Receive some bytes from SDT Server to check if the port is open.
     /// </summary>
     public static class UdpPortChecker
     {
-        public static async Task<bool> Check(uint timeoutMs)
+        public static async Task<bool> Check(ushort port)
         {
-            string ip = await ConnectionDataPresenter.GetLocalIpAddressAsync();
-            
-            UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-            ushort port = unityTransport.ConnectionData.Port;
+            IPAddress localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+            IPEndPoint endPoint = new(localIpAddress, port);
+            IEnumerable<Mapping> matchingMappings = await UPnP.GetMatchingMappingsAsync(endPoint);
 
-            try
-            {
-                UdpClient udpClient = new(ip, port);
-
-                CancellationTokenSource cancellationToken = new((int)timeoutMs);
-            
-                Memory<byte> buffer = new(new byte[2048]);
-                await udpClient.ReceiveAsync(cancellationToken.Token);
-
-                if (udpReceiveResult.Buffer.Length <= 0)
-                {
-                    return false;
-                }
-
-                Logger.Log("Successfully sent port forward check message to SDT Server.", Logger.LogSource.SnaPDataTransfer);
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Log($"Can`t check if port {port} is visible.", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
-                return false;
-            }
+            return matchingMappings.Any();
         }
     }
 }

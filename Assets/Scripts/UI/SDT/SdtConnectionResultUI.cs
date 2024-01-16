@@ -1,23 +1,25 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using SDT;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Animator), typeof(SdtConnectionResultHoverTooltip))]
+[RequireComponent(typeof(Animator), typeof(SdtConnectionStatusHoverTooltip))]
 public class SdtConnectionResultUI : MonoBehaviour
 {
-    private Client SdtClient => Client.Instance;
+    private static Client SdtClient => Client.Instance;
+    private static Server SdtServer => Server.Instance;
 
+    [SerializeField] private SdtType _sdtType;
+    
     [SerializeField] private Image _image;
 
+    [SerializeField] private Sprite _disconnectedSprite;
     [SerializeField] private Sprite _loadingSprite;
     [SerializeField] private Sprite _successSprite;
-    [SerializeField] private Sprite _warningSprite;
     [SerializeField] private Sprite _failSprite;
-    
-    private SdtConnectionResultHoverTooltip _hoverTooltip;
+    [SerializeField] private Sprite _abandonedSprite;
+
+    private SdtConnectionStatusHoverTooltip _hoverTooltip;
 
     private Animator _animator;
     
@@ -25,18 +27,31 @@ public class SdtConnectionResultUI : MonoBehaviour
 
     private void Awake()
     {
-        _hoverTooltip = GetComponent<SdtConnectionResultHoverTooltip>();
+        _hoverTooltip = GetComponent<SdtConnectionStatusHoverTooltip>();
+        _hoverTooltip.SetSdtType(_sdtType);
+
         _animator = GetComponent<Animator>();
     }
 
     private void OnEnable()
     {
-        SdtClient.ConnectionStateChangedEvent += OnSdtConnectionStateChanged;
+        switch (_sdtType)
+        {
+            case SdtType.Server:
+                SdtServer.ConnectionStateChangedEvent += OnSdtConnectionStateChanged;
+                break;
+            case SdtType.Client:
+                SdtClient.ConnectionStateChangedEvent += OnSdtConnectionStateChanged;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     private void OnDisable()
     {
-        SdtClient.ConnectionStateChangedEvent -= OnSdtConnectionStateChanged;
+        if (SdtServer != null) SdtServer.ConnectionStateChangedEvent -= OnSdtConnectionStateChanged;
+        if (SdtClient != null) SdtClient.ConnectionStateChangedEvent -= OnSdtConnectionStateChanged;
     }
 
     private void OnSdtConnectionStateChanged(ConnectionState connectionState)
@@ -56,7 +71,11 @@ public class SdtConnectionResultUI : MonoBehaviour
                 _animator.SetBool(Loading, false);
                 break;
             case ConnectionState.Disconnected:
-                _image.sprite = _warningSprite;
+                _image.sprite = _disconnectedSprite;
+                _animator.SetBool(Loading, false);
+                break;
+            case ConnectionState.Abandoned:
+                _image.sprite = _abandonedSprite;
                 _animator.SetBool(Loading, false);
                 break;
             default:
@@ -69,11 +88,39 @@ public class SdtConnectionResultUI : MonoBehaviour
     // Button.
     public void Reconnect()
     {
-        if (SdtClient.ConnectionState is ConnectionState.Successful or ConnectionState.Connecting)
+        ConnectionState state;
+        
+        switch (_sdtType)
+        {
+            case SdtType.Server:
+                if (SdtServer == null) return;
+                
+                state = SdtServer.ConnectionState;
+                break;
+            case SdtType.Client:
+                if (SdtClient == null) return;
+
+                state = SdtClient.ConnectionState;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        
+        if (state is ConnectionState.Successful or ConnectionState.Connecting or ConnectionState.Abandoned)
         {
             return;
         }
-        
-        SdtClient.TryConnect();
+
+        switch (_sdtType)
+        {
+            case SdtType.Server:
+                SdtServer.Reconnect();
+                break;
+            case SdtType.Client:
+                SdtClient.Reconnect();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     } 
 }

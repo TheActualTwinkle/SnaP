@@ -361,7 +361,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5107213845572603201, guid: 03805ee2c0a201a48a299c5d9fbbf1a4, type: 3}
       propertyPath: m_Name
-      value: DataTransferDedicatedClient
+      value: SDTServer
       objectReference: {fileID: 0}
     - target: {fileID: 5107213845572603206, guid: 03805ee2c0a201a48a299c5d9fbbf1a4, type: 3}
       propertyPath: m_RootOrder

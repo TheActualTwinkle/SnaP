@@ -14,14 +14,16 @@ public class DedicatedServerNetworkConnector : INetworkConnector
 
     private string _ipAddress;
     private string _port;
+
+    private const ushort DefaultPort = 47924;
     
     public async Task Init()
     {
-        _ipAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+        _ipAddress = (await ConnectionDataPresenter.GetLocalIpAddressAsync()).ToString();
 
         string[] args = Environment.GetCommandLineArgs();
         int portArgIndex = Array.IndexOf(args, "-port");
-        _port = portArgIndex != -1 ? args[portArgIndex + 1] : ConnectionDataPresenter.SnaPDefaultPort.ToString();
+        _port = portArgIndex != -1 ? args[portArgIndex + 1] : DefaultPort.ToString();
 
         ConnectionData = new[] {_ipAddress, _port};
     }

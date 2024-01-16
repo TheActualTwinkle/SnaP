@@ -113,12 +113,9 @@ public static class UPnP
 
 	public static async void DeleteRuleAsync(ushort privatePort)
 	{
-		NatDevice router = await GetInterDevice();
-
-		IEnumerable<Mapping> allMappings = await router.GetAllMappingsAsync();
-
-		string localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
-		List<Mapping> matchingMappings = allMappings.Where(x => x.PrivatePort == privatePort && x.PrivateIP.ToString() == localIpAddress).ToList();
+		IPAddress localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+		IPEndPoint endPoint = new(localIpAddress, privatePort);
+		List<Mapping> matchingMappings = (await GetMatchingMappingsAsync(endPoint)).ToList();
 		
 		if (matchingMappings.Any() == false)
 		{
@@ -126,10 +123,20 @@ public static class UPnP
 			return;
 		}
 
+		NatDevice router = await GetInterDevice();
 		foreach (Mapping mapping in matchingMappings)
 		{
 			await router.DeletePortMapAsync(mapping);
 			Logger.Log($"Router rule (port: {privatePort}) deleted successfully");
 		}
+	}
+	
+	public static async Task<IEnumerable<Mapping>> GetMatchingMappingsAsync(IPEndPoint ipEndPoint)
+	{
+		NatDevice router = await GetInterDevice();
+		IEnumerable<Mapping> allMappings = await router.GetAllMappingsAsync();
+		List<Mapping> matchingMappings = allMappings.Where(x => x.PrivatePort == ipEndPoint.Port && Equals(x.PrivateIP, ipEndPoint.Address)).ToList();
+		
+		return matchingMappings;
 	}
 }

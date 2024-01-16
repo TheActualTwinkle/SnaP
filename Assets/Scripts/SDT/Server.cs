@@ -17,10 +17,17 @@ namespace SDT
     /// </summary>
     public class Server : MonoBehaviour
     {
-        private static Server Instance { get; set; }
+        public event Action<ConnectionState> ConnectionStateChangedEvent;
 
+        public static Server Instance { get; private set; }
+        
+        public ConnectionState ConnectionState { get; private set; } = ConnectionState.Disconnected;
+
+        public string ServerIpAddress => _serverIpAddress;
         [SerializeField] private string _serverIpAddress;
-        [SerializeField] private int _serverPort;
+
+        public ushort ServerPort => _serverPort;
+        [SerializeField] private ushort _serverPort;
 
         [SerializeField] private int _awaitLobbyInitializationIntervalMs;
 
@@ -57,8 +64,33 @@ namespace SDT
             }
         }
 
-        private async void Start()
+        private void Start()
         {
+            Connect();
+        }
+
+        private void OnDestroy()
+        {
+            ConnectionState = ConnectionState.Abandoned;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Abandoned);
+            
+            _destroyed = true;
+            _tcpClient?.Close();
+
+            Instance = null;
+        }
+
+        public void Reconnect()
+        {
+            Disconnect();
+            Connect();
+        }
+        
+        private async void Connect()
+        {
+            ConnectionState = ConnectionState.Connecting;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Connecting);
+            
             try
             {
                 _tcpClient = new TcpClient();
@@ -66,31 +98,73 @@ namespace SDT
             }
             catch (Exception e)
             {
+                if (ConnectionState == ConnectionState.Abandoned)
+                {
+                    return;
+                }
+                
+                ConnectionState = ConnectionState.Failed;
+                ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
+                
                 Logger.Log($"Can`t connect to {_serverIpAddress}:{_serverPort}. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
                 throw;
             }
             
+            ConnectionState = ConnectionState.Successful;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Successful);
+            
             Logger.Log($"Connected to server at {_serverIpAddress}:{_serverPort}.", Logger.LogSource.SnaPDataTransfer);
 
-            await SendDataUntilInitialized();
-            
-            PlayerSeats.Instance.PlayerSitEvent += (_, _) =>
+            try
             {
-                SendData();
-            };            
+                await SendDataUntilInitialized();
             
-            PlayerSeats.Instance.PlayerLeaveEvent += (_, _) =>
-            {
-                SendData();
-            };
-        }
+                ushort port = ConnectionDataPresenter.GetGamePort();
 
-        private void OnDestroy()
+                PlayerSeats.Instance.PlayerSitEvent += async (_, _) =>
+                {
+                    if (await UdpPortChecker.Check(port) == false)
+                    {
+                        Disconnect();
+                        return;
+                    }
+                    
+                    SendData();
+                };            
+            
+                PlayerSeats.Instance.PlayerLeaveEvent += async (_, _) =>
+                {
+                    if (await UdpPortChecker.Check(port) == false)
+                    {
+                        Disconnect();
+                        return;
+                    }
+                    
+                    SendData();
+                };
+            }
+            catch (Exception e)
+            {
+                if (ConnectionState == ConnectionState.Abandoned)
+                {
+                    return;
+                }
+                
+                ConnectionState = ConnectionState.Failed;
+                ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
+                
+                Logger.Log($"Exception while sending data to server. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+            }
+        }
+        
+        private void Disconnect()
         {
-            _destroyed = true;
+            ConnectionState = ConnectionState.Disconnected;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Disconnected);
+            
             _tcpClient?.Close();
         }
-
+        
         private async Task SendDataUntilInitialized()
         {
             while (true)
@@ -109,11 +183,9 @@ namespace SDT
         private async void SendData()
         {
             string message = await GetMessage();
-
+            
             byte[] data = Encoding.ASCII.GetBytes(message);
             await Stream.WriteAsync(data, 0, data.Length);
-            
-            await UdpPortChecker.Check();
         }
 
         private async Task<string> GetMessage()
@@ -127,13 +199,9 @@ namespace SDT
             {
                 return JsonConvert.SerializeObject(new LobbyInfo(string.Empty, 0, 0, 0, "Awaiting lobby initialization..."));
             }
-
+            
             string ipAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
-
-            if (ushort.TryParse(NetworkConnectorHandler.CurrentConnector.ConnectionData.Last(), out ushort port) == false)
-            {
-                throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.CurrentConnector.ConnectionData.Last()}");
-            }
+            ushort port = ConnectionDataPresenter.GetGamePort();
 
             return JsonConvert.SerializeObject(new LobbyInfo(
                 ipAddress,

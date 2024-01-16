@@ -26,8 +26,8 @@ namespace SDT
 
         private const uint BufferSize = 512;
         
-        [SerializeField] private string _serverIpAddress; // TODO: Make it real ip address.
-        [SerializeField] private int _serverPort;
+        [SerializeField] private string _serverIpAddress;
+        [SerializeField] private ushort _serverPort;
 
         private bool _destroyed;
 
@@ -62,16 +62,27 @@ namespace SDT
         
         private void Start()
         {
-            TryConnect();
+            Connect();
         }
         
         private void OnDestroy()
         {
+            ConnectionState = ConnectionState.Abandoned;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Abandoned);
+            
             _tcpClient?.Close();
             _destroyed = true;
+            
+            Instance = null;
         }
 
-        public async void TryConnect()
+        public void Reconnect()
+        {
+            Disconnect();
+            Connect();
+        }
+        
+        private async void Connect()
         {
             ConnectionState = ConnectionState.Connecting;
             ConnectionStateChangedEvent?.Invoke(ConnectionState.Connecting);
@@ -83,6 +94,11 @@ namespace SDT
             }
             catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR.
             {
+                if (ConnectionState == ConnectionState.Abandoned)
+                {
+                    return;
+                }
+                
                 ConnectionState = ConnectionState.Failed;
                 ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
                 
@@ -98,6 +114,14 @@ namespace SDT
             ConnectionStateChangedEvent?.Invoke(ConnectionState.Successful);
         }
         
+        private void Disconnect()
+        {
+            ConnectionState = ConnectionState.Disconnected;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState.Disconnected);
+            
+            _tcpClient?.Close();
+        }
+        
         public async Task<List<LobbyInfo>> GetLobbiesInfoAsync(CancellationTokenSource token)
         {
             try
@@ -106,6 +130,11 @@ namespace SDT
             }
             catch (Exception e) // todo CHECK IF THE SERVER ERROR IS SAME WITH CLIENT ERROR; to make different errors.
             {
+                if (ConnectionState == ConnectionState.Abandoned)
+                {
+                    return null;
+                }
+                
                 ConnectionState = ConnectionState.Failed;
                 ConnectionStateChangedEvent?.Invoke(ConnectionState.Failed);
                 

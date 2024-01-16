@@ -5,6 +5,7 @@ namespace SDT
         Disconnected,
         Connecting,
         Successful,
-        Failed
+        Failed,
+        Abandoned
     }
 }
