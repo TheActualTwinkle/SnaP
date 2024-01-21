@@ -111,8 +111,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -135.2, y: -48.49292}
-  m_SizeDelta: {x: 200, y: 146.9858}
+  m_AnchoredPosition: {x: -202.56, y: -48.49292}
+  m_SizeDelta: {x: 334.72, y: 146.99}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4140812683861107235
 CanvasRenderer:
@@ -268,11 +268,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f15b8c57dd068489dcf7b9ca596a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _sdtType: 0
   _image: {fileID: 7448436689564620527}
+  _disconnectedSprite: {fileID: 21300000, guid: 3bda4e7a979a75f429d26e005f67aeaf, type: 3}
   _loadingSprite: {fileID: 21300000, guid: 7d263c15602f8b342a73745ff1383b9b, type: 3}
   _successSprite: {fileID: 21300000, guid: 3ebd705d1dd7b6b419ab993c579b6f8a, type: 3}
-  _warningSprite: {fileID: 21300000, guid: b124cf42a1d309946b58a8a61e1b0799, type: 3}
   _failSprite: {fileID: 21300000, guid: 714880d45ea86394c9db5ff897aa8354, type: 3}
+  _abandonedSprite: {fileID: 21300000, guid: 7bd9bf9f527f85d4196c352c393e3a28, type: 3}
 --- !u!114 &4071232693766735385
 MonoBehaviour:
   m_ObjectHideFlags: 0

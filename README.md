@@ -24,7 +24,8 @@ Your ~~bank account~~ data was sent to to SDT Server ->
 Other player can see your server in *Browse menu*
 
 You can see status of **SDT** in the top-right corner
-![[GitImages/SDT.png]]
+
+![SDT](GitImages/SDT.png)
 ## UPnP or Relay?
 * ### Universal Plug and Play: 
 	In **SnaP** we have implemented [UPnP](https://ru.wikipedia.org/wiki/UPnP)  system witch allows us to handle clients connection without the Port Forwarding.
@@ -83,7 +84,7 @@ Connection timeout. Shuts-downing in 3000 milliseconds.
     >This library is used to synchronize GameObject and game state data across all clients that connect in a networking session.
   * [UnityTransport](https://docs-multiplayer.unity3d.com/transport/current/about/index.html)
     >Unity Transport provides the `com.unity.transport` package, used to add multiplayer and network features to your project.  
-  *  [UPnP](https://ru.wikipedia.org/wiki/UPnP) 
+  * [UPnP](https://ru.wikipedia.org/wiki/UPnP)
 	>This set of protocols allows us to avoid Port Forwarding
   * [Unity Gaming Services (Relay)](https://unity.com/solutions/gaming-services)
     >These services make it easy for players to host and join games that are playable over the internet, without the need for port forwarding or out-of-game coordination.

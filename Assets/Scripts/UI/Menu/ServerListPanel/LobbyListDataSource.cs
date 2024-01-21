@@ -87,12 +87,14 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
         catch (TaskCanceledException)
         {
             Logger.Log("Loading canceled.");
+            EndLoadingEvent?.Invoke();
             return false;
         }
         
         if (lobbyInfos == null)
         {
             _lobbyInfos = new List<LobbyInfo>();
+            EndLoadingEvent?.Invoke();
             return false;
         }
         

@@ -1,36 +1,23 @@
-﻿using System;
-using System.Net.Sockets;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Open.Nat;
 
 namespace SDT
 {
     /// <summary>
-    /// Sends some bytes to SDT Server to check if the port is open.
+    /// Receive some bytes from SDT Server to check if the port is open.
     /// </summary>
-    public class UdpPortChecker : MonoBehaviour
+    public static class UdpPortChecker
     {
-        private async void Start()
+        public static async Task<bool> IsForwarded(ushort port)
         {
-            // If this is a client, then destroy this object.
-            if (NetworkManager.Singleton.IsServer == false)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            
-            UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-            string ip = unityTransport.ConnectionData.Address;
-            ushort port = unityTransport.ConnectionData.Port;
-            
-            UdpClient udpClient = new(ip, port);
-            
-            
-            await udpClient.SendAsync(new byte[]{48}, 1);
-            
-            Logger.Log("Successfully sent port forward check message to SDT Server.", Logger.LogSource.SnaPDataTransfer);
-            Destroy(gameObject);
+            IPAddress localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+            IPEndPoint endPoint = new(localIpAddress, port);
+            IEnumerable<Mapping> matchingMappings = await UPnP.GetMatchingMappingsAsync(endPoint);
+
+            return matchingMappings.Any();
         }
     }
 }

@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 
 public static class ConnectionDataPresenter
 {
-    public const ushort SnaPDefaultPort = 47924;
-    
     private static string _publicIpAddress;
     
     public static async Task<string> GetPublicIpAddressAsync()
@@ -21,15 +19,24 @@ public static class ConnectionDataPresenter
         
         return _publicIpAddress;
     }
-
-    public static async Task<string> GetLocalIpAddressAsync()
+    
+    public static async Task<IPAddress> GetLocalIpAddressAsync()
     {
         return (await Dns.GetHostEntryAsync(Dns.GetHostName()))
             .AddressList.First(
-            f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-            .ToString();
+                f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
     }
-    
+
+    public static ushort GetGamePort()
+    {
+        if (ushort.TryParse(NetworkConnectorHandler.CurrentConnector.ConnectionData.Last(), out ushort port) == false)
+        {
+            throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.CurrentConnector.ConnectionData.Last()}");
+        }
+
+        return port;
+    }
+
     public static bool TryGetAvailablePort(out ushort port)
     {
         const ushort lowerPort = 10000; 

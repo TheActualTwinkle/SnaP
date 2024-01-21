@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using SDT;
 using Unity.Netcode;
@@ -35,7 +36,7 @@ public class UPnPNetworkConnector : INetworkConnector
         }
         
         Logger.Log($"Available port set to {port}.");
-        string localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+        IPAddress localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
         
         string ruleName = "SnaP-UPnP-" + port;
 
@@ -56,7 +57,7 @@ public class UPnPNetworkConnector : INetworkConnector
             return false;
         }
 
-        unityTransport.SetConnectionData(localIpAddress, port);
+        unityTransport.SetConnectionData(localIpAddress.ToString(), port);
 
         try
         {
@@ -94,7 +95,7 @@ public class UPnPNetworkConnector : INetworkConnector
         if (selfPublicIP == selectedLobbyInfo.PublicIpAddress)
         {
             Logger.Log("Seems like you and your host using same network. Redirecting to local IP...", Logger.LogLevel.Warning);
-            selectedLobbyInfo.PublicIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
+            selectedLobbyInfo.PublicIpAddress = (await ConnectionDataPresenter.GetLocalIpAddressAsync()).ToString();
         }
         
         unityTransport.SetConnectionData(selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port);
