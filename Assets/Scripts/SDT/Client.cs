@@ -26,14 +26,18 @@ namespace SDT
 
         private const uint BufferSize = 512;
         
+        private const string GetCountCommand = "get-count";
+        private const string GetInfoCommand = "get-info";
+        private const string CloseCommand = "close";
+        
         [SerializeField] private string _serverIpAddress;
         [SerializeField] private ushort _serverPort;
 
         private bool _destroyed;
 
-        private NetworkStream _networkStream;
         private TcpClient _tcpClient;
-        
+        private NetworkStream NetworkStream => _tcpClient.GetStream();
+
         private void Awake()
         {
             if (Application.platform is RuntimePlatform.WindowsServer or RuntimePlatform.LinuxServer)
@@ -108,17 +112,21 @@ namespace SDT
             
             Logger.Log($"Connected to server at {_serverIpAddress}:{_serverPort}.", Logger.LogSource.SnaPDataTransfer);
 
-            _networkStream = _tcpClient.GetStream();
-
             ConnectionState = ConnectionState.Successful;
             ConnectionStateChangedEvent?.Invoke(ConnectionState.Successful);
         }
         
-        private void Disconnect()
+        private async void Disconnect()
         {
             ConnectionState = ConnectionState.Disconnected;
             ConnectionStateChangedEvent?.Invoke(ConnectionState.Disconnected);
+
             
+            if (_tcpClient is { Connected: true })
+            {
+                await WriteAsync(CloseCommand);
+            }
+
             _tcpClient?.Close();
         }
         
@@ -145,9 +153,9 @@ namespace SDT
 
         private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal(CancellationTokenSource token)
         {
-            string message = _destroyed ? "close" : "get-ids";
+            string message = _destroyed ? CloseCommand : GetCountCommand;
             
-            // Send "get-ids" or "close" request.
+            // Send "get-count" or "close" request.
             await WriteAsync(message);
 
             // If we are dead - return.
@@ -157,15 +165,8 @@ namespace SDT
                 return new List<LobbyInfo>();
             }
             
-            // Getting count of lobbies.
-            string lengthString = await ReadAsync();
-            
-            if (int.TryParse(lengthString, out int length) == false)
-            {
-                Logger.Log($"Can`t parse {lengthString} to int.", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
-                return null;
-            }
-            
+            int length = await GetCountOfLobbies();
+
             Logger.Log($"Received {length} lobbies count.", Logger.LogSource.SnaPDataTransfer);
 
             List<LobbyInfo> lobbyInfos = new();
@@ -177,7 +178,7 @@ namespace SDT
                     return lobbyInfos;
                 }
 
-                message = "get-info " + i;
+                message = $"{GetInfoCommand} {i}";
                 await WriteAsync(message);
                 
                 string response = await ReadAsync();
@@ -197,11 +198,26 @@ namespace SDT
 
             return lobbyInfos;
         }
-        
+
+        private async Task<int> GetCountOfLobbies()
+        {
+            // Getting count of lobbies.
+            string lengthString = await ReadAsync();
+
+            if (int.TryParse(lengthString, out int length) == false)
+            {
+                Logger.Log($"Can`t parse {lengthString} to int.", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                return -1;
+            }
+
+            return length;
+        }
+
         private async Task<string> ReadAsync()
         {
             var buffer = new byte[BufferSize];
-            int read = await _networkStream.ReadAsync(buffer);
+
+            int read = await NetworkStream.ReadAsync(buffer);
             string message = Encoding.ASCII.GetString(buffer, 0, read);
 
             return message;
@@ -209,12 +225,9 @@ namespace SDT
         
         private async Task WriteAsync(string message)
         {
-            UdpClient c = new();
-            
-            
             byte[] data = Encoding.ASCII.GetBytes(message);
-                
-            await _networkStream.WriteAsync(data, 0, data.Length);
+            
+            await NetworkStream.WriteAsync(data, 0, data.Length);
             Logger.Log($"Send {message}.", Logger.LogSource.SnaPDataTransfer);
         }
     }

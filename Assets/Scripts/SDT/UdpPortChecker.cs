@@ -11,7 +11,7 @@ namespace SDT
     /// </summary>
     public static class UdpPortChecker
     {
-        public static async Task<bool> Check(ushort port)
+        public static async Task<bool> IsForwarded(ushort port)
         {
             IPAddress localIpAddress = await ConnectionDataPresenter.GetLocalIpAddressAsync();
             IPEndPoint endPoint = new(localIpAddress, port);

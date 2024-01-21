@@ -17,12 +17,20 @@ namespace SDT
     /// </summary>
     public class Server : MonoBehaviour
     {
+        private enum DisconnectReason : byte
+        {
+            Unknown,
+            PortClosed,
+        }
+        
         public event Action<ConnectionState> ConnectionStateChangedEvent;
 
         public static Server Instance { get; private set; }
         
         public ConnectionState ConnectionState { get; private set; } = ConnectionState.Disconnected;
 
+        private const string CloseCommand = "close";
+        
         public string ServerIpAddress => _serverIpAddress;
         [SerializeField] private string _serverIpAddress;
 
@@ -34,7 +42,7 @@ namespace SDT
         private bool _destroyed;
         
         private TcpClient _tcpClient;
-        private NetworkStream Stream => _tcpClient.GetStream();
+        private NetworkStream NetworkStream => _tcpClient.GetStream();
 
         private void Awake()
         {
@@ -82,7 +90,7 @@ namespace SDT
 
         public void Reconnect()
         {
-            Disconnect();
+            Disconnect(DisconnectReason.Unknown);
             Connect();
         }
         
@@ -117,31 +125,15 @@ namespace SDT
 
             try
             {
-                await SendDataUntilInitialized();
-            
+                await WaitUntilLobbyInitialized();
+                
                 ushort port = ConnectionDataPresenter.GetGamePort();
+                
+                await SendData(port);
 
-                PlayerSeats.Instance.PlayerSitEvent += async (_, _) =>
-                {
-                    if (await UdpPortChecker.Check(port) == false)
-                    {
-                        Disconnect();
-                        return;
-                    }
-                    
-                    SendData();
-                };            
+                PlayerSeats.Instance.PlayerSitEvent += async (_, _) => { await SendData(port); };            
             
-                PlayerSeats.Instance.PlayerLeaveEvent += async (_, _) =>
-                {
-                    if (await UdpPortChecker.Check(port) == false)
-                    {
-                        Disconnect();
-                        return;
-                    }
-                    
-                    SendData();
-                };
+                PlayerSeats.Instance.PlayerLeaveEvent += async (_, _) => { await SendData(port); };            
             }
             catch (Exception e)
             {
@@ -156,21 +148,43 @@ namespace SDT
                 Logger.Log($"Exception while sending data to server. {e}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
             }
         }
-        
-        private void Disconnect()
+
+        // Sending some message based on Game Context/Connection situation.
+        private async Task SendData(ushort port)
         {
-            ConnectionState = ConnectionState.Disconnected;
-            ConnectionStateChangedEvent?.Invoke(ConnectionState.Disconnected);
-            
+            if (await UdpPortChecker.IsForwarded(port) == false)
+            {
+                Disconnect(DisconnectReason.PortClosed);
+                return;
+            }
+
+            await WriteAsync();
+        }
+
+        private async void Disconnect(DisconnectReason reason)
+        {
+            ConnectionState newConnectionState = reason switch
+            {
+                DisconnectReason.Unknown => ConnectionState.Disconnected,
+                DisconnectReason.PortClosed => ConnectionState.DisconnectedPortClosed,
+                _ => throw new ArgumentOutOfRangeException(nameof(reason), reason, null)
+            };
+
+            ConnectionState = newConnectionState;
+            ConnectionStateChangedEvent?.Invoke(ConnectionState);
+         
+            if (_tcpClient is { Connected: true })
+            {
+                await WriteAsync();
+            }
+
             _tcpClient?.Close();
         }
         
-        private async Task SendDataUntilInitialized()
+        private async Task WaitUntilLobbyInitialized()
         {
             while (true)
             {
-                SendData();
-
                 if (IsLobbyInitialized() == true)
                 {
                     break;
@@ -180,19 +194,24 @@ namespace SDT
             }
         }
         
-        private async void SendData()
+        private async Task WriteAsync()
         {
             string message = await GetMessage();
             
             byte[] data = Encoding.ASCII.GetBytes(message);
-            await Stream.WriteAsync(data, 0, data.Length);
+            await NetworkStream.WriteAsync(data, 0, data.Length);
         }
 
         private async Task<string> GetMessage()
         {
             if (_destroyed == true)
             {
-                return "close";
+                return CloseCommand;
+            }
+            
+            if (ConnectionState is ConnectionState.DisconnectedPortClosed or ConnectionState.Disconnected)
+            {
+                return CloseCommand;
             }
 
             if (IsLobbyInitialized() == false)

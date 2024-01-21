@@ -1,5 +1,6 @@
 using System;
 using SDT;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,12 @@ public class SdtConnectionResultUI : MonoBehaviour
 
     private void Awake()
     {
+        if (NetworkManager.Singleton.IsClient == true)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         _hoverTooltip = GetComponent<SdtConnectionStatusHoverTooltip>();
         _hoverTooltip.SetSdtType(_sdtType);
 
@@ -71,6 +78,7 @@ public class SdtConnectionResultUI : MonoBehaviour
                 _animator.SetBool(Loading, false);
                 break;
             case ConnectionState.Disconnected:
+            case ConnectionState.DisconnectedPortClosed:
                 _image.sprite = _disconnectedSprite;
                 _animator.SetBool(Loading, false);
                 break;
