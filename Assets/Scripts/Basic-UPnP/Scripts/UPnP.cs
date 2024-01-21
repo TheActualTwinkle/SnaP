@@ -36,8 +36,6 @@ public static class UPnP
 	/// <returns>Async Task, Bool = success</returns>
 	public static async Task<bool> RedirectExternalConnectionToThisDevice(int port, string ruleName)
 	{
-		return true;
-		
 		try
 		{
 			NatDevice router = await GetInterDevice();

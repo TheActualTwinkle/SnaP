@@ -28,8 +28,9 @@ public class SdtConnectionResultUI : MonoBehaviour
 
     private void Awake()
     {
-        if (NetworkManager.Singleton.IsClient == true)
+        if (NetworkManager.Singleton.IsServer == false && _sdtType == SdtType.Server)
         {
+            print("SdtConnectionResultUI should only be on the server.");
             Destroy(gameObject);
             return;
         }
