@@ -8,7 +8,15 @@ public abstract class Constants
         public const string Desk = "Desk_d";
         public const string Kickstart = "Kickstart";
     }
-    
+
+    public abstract class Sprites
+    {
+        public const string Music = "MusicIcon";
+        public const string Cross = "Cross";
+        public const string MenuBackgroundSprite = "nstu_menu";
+        public const string DeskBackgroundSprite = "nstu_desk_back";
+    }
+
     public abstract class Sound
     {
         public static readonly string MixerPath = "Sound/Mixer";

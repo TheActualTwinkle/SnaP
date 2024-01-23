@@ -70,7 +70,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f15ee9b4c4a34424085711345b92d343, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -255,6 +255,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8631545224118486908}
   - component: {fileID: 4565627146070263082}
+  - component: {fileID: 5231294857612428494}
   m_Layer: 5
   m_Name: SoundUI
   m_TagString: Untagged
@@ -297,6 +298,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mixer: {fileID: 24100000, guid: 0ad00adf51236334e919a15e647d7961, type: 2}
+  _musicCrossImage: {fileID: 7363627522871592829}
+  _sfxCrossImage: {fileID: 2088463065950367195}
+--- !u!114 &5231294857612428494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682409995304809340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a58fd2ca06a9504da41ffa361de6393, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _musicImage: {fileID: 5169986678978042739}
   _musicCrossImage: {fileID: 7363627522871592829}
   _sfxCrossImage: {fileID: 2088463065950367195}
 --- !u!1 &4928345095175768563
@@ -365,7 +381,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 200dab1e34755b6488670a54dbc56a5a, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -441,7 +457,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 200dab1e34755b6488670a54dbc56a5a, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -657,7 +673,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
