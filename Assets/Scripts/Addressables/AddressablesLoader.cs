@@ -12,7 +12,7 @@ public static class AddressablesLoader
     public static async Task<T> LoadAsync<T>(string assetId)
     {
         AddressableContentUsersCount++;
-        
+
         AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(assetId);
         await handle.Task;
 
@@ -22,6 +22,8 @@ public static class AddressablesLoader
         }
 
         AddressableContentUsersCount--;
+        Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.Addressables);
+        
         return handle.Result;
     }
     
@@ -33,6 +35,8 @@ public static class AddressablesLoader
         }
         
         Addressables.Release(obj);
+        
+        Logger.Log($"Unloaded asset: {obj}", Logger.LogSource.Addressables);
     }
     
     public static void UnloadInstance(GameObject go)
@@ -44,5 +48,7 @@ public static class AddressablesLoader
         
         go.SetActive(false);
         Addressables.ReleaseInstance(go);
+        
+        Logger.Log($"Unloaded instance of asset: {go}", Logger.LogSource.Addressables);
     }
 }

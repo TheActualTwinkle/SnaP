@@ -25,12 +25,40 @@ MonoBehaviour:
     m_Address: Cross
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: c42b4adb5f9b4c44ea9fe58375b11ca0
+    m_Address: nstu_desk_back
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: 25bf28457db581044827d264a731a3ef
     m_Address: nstu_menu
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: c42b4adb5f9b4c44ea9fe58375b11ca0
-    m_Address: nstu_desk_back
+  - m_GUID: 524a41c3867ccd141a5bc4d38c5fdb1d
+    m_Address: AppIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3bda4e7a979a75f429d26e005f67aeaf
+    m_Address: disconnected
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 714880d45ea86394c9db5ff897aa8354
+    m_Address: error
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7d263c15602f8b342a73745ff1383b9b
+    m_Address: loading
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7bd9bf9f527f85d4196c352c393e3a28
+    m_Address: questionmark
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3ebd705d1dd7b6b419ab993c579b6f8a
+    m_Address: success
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b124cf42a1d309946b58a8a61e1b0799
+    m_Address: warning
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

@@ -34,10 +34,9 @@ public static class Logger
         {
             File.Create(PokerLogViewerFilePath).Close();
         }
-        else
-        {
-            File.WriteAllText(PokerLogViewerFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
-        }
+
+        File.WriteAllText(PokerLogViewerFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
+        
 #pragma warning restore CS0162
     }
 
@@ -101,5 +100,6 @@ public static class Logger
     {
         General,
         SnaPDataTransfer,
+        Addressables,
     }
 }

@@ -6,4 +6,6 @@ using UnityEngine;
 public interface IAddressableContentUser
 {
     void LoadContent();
+    
+    void UnloadContent();
 }

@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
-public class BackgroundImageAddressableContentUser : MonoBehaviour, IAddressableContentUser
-{    
+public class GameMainIconAddressableContentUser : MonoBehaviour, IAddressableContentUser
+{
     [SerializeField] private Image _backgroundImage;
 
     private Sprite _loadedSprite;
@@ -22,14 +23,7 @@ public class BackgroundImageAddressableContentUser : MonoBehaviour, IAddressable
 
     public async void LoadContent()
     {
-        string id = SceneManager.GetActiveScene().name switch
-        {
-            Constants.SceneNames.Menu => Constants.Sprites.MenuBackground,
-            Constants.SceneNames.Desk => Constants.Sprites.DeskBackground,
-            _ => throw new NotImplementedException()
-        };
-
-        _loadedSprite = await AddressablesLoader.LoadAsync<Sprite>(id);
+        _loadedSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.GameMainIcon);
         _backgroundImage.sprite = _loadedSprite;
     }
 

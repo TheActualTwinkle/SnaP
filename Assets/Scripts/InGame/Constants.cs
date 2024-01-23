@@ -13,8 +13,18 @@ public abstract class Constants
     {
         public const string Music = "MusicIcon";
         public const string Cross = "Cross";
-        public const string MenuBackgroundSprite = "nstu_menu";
-        public const string DeskBackgroundSprite = "nstu_desk_back";
+        public const string MenuBackground = "nstu_menu";
+        public const string DeskBackground = "nstu_desk_back";
+        public const string GameMainIcon = "AppIcon";
+
+        public abstract class Sdt
+        {
+            public const string Disconnected = "disconnected";
+            public const string Loading = "loading";
+            public const string Success = "success";
+            public const string Fail = "error";
+            public const string Abandoned = "questionmark";
+        }
     }
 
     public abstract class Sound

@@ -7,18 +7,13 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Animator), typeof(SdtConnectionStatusHoverTooltip))]
 public class SdtConnectionResultUI : MonoBehaviour
 {
-    private static Client SdtClient => Client.Instance;
-    private static Server SdtServer => Server.Instance;
+    public static Server SdtServer => Server.Instance;
+    public static Client SdtClient => Client.Instance;
 
+    public SdtType SdtType => _sdtType;
     [SerializeField] private SdtType _sdtType;
     
     [SerializeField] private Image _image;
-
-    [SerializeField] private Sprite _disconnectedSprite;
-    [SerializeField] private Sprite _loadingSprite;
-    [SerializeField] private Sprite _successSprite;
-    [SerializeField] private Sprite _failSprite;
-    [SerializeField] private Sprite _abandonedSprite;
 
     private SdtConnectionStatusHoverTooltip _hoverTooltip;
 
@@ -64,33 +59,8 @@ public class SdtConnectionResultUI : MonoBehaviour
 
     private void OnSdtConnectionStateChanged(ConnectionState connectionState)
     {
-        switch (connectionState)
-        {
-            case ConnectionState.Connecting:
-                _image.sprite = _loadingSprite;
-                _animator.SetBool(Loading, true);
-                break;
-            case ConnectionState.Successful:
-                _image.sprite = _successSprite;
-                _animator.SetBool(Loading, false);
-                break;
-            case ConnectionState.Failed:
-                _image.sprite = _failSprite;
-                _animator.SetBool(Loading, false);
-                break;
-            case ConnectionState.Disconnected:
-            case ConnectionState.DisconnectedPortClosed:
-                _image.sprite = _disconnectedSprite;
-                _animator.SetBool(Loading, false);
-                break;
-            case ConnectionState.Abandoned:
-                _image.sprite = _abandonedSprite;
-                _animator.SetBool(Loading, false);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(connectionState), connectionState, null);
-        }
-        
+        _animator.SetBool(Loading, connectionState == ConnectionState.Connecting);
+
         _hoverTooltip.SetupText();
     }
 

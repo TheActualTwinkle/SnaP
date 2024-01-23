@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,17 +11,36 @@ public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentU
     [SerializeField] private Image _musicCrossImage;
     [SerializeField] private Image _sfxCrossImage;
 
+    private readonly List<Sprite> _loadedSprites = new();
+
     private void Start()
     {
         LoadContent();
     }
 
+    private void OnDestroy()
+    {
+        UnloadContent();
+    }
+
     public async void LoadContent()
     {
-        _musicImage.sprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Music);
+        Sprite musicSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Music);
+        _musicImage.sprite = musicSprite;
         
         Sprite crossSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Cross);
         _musicCrossImage.sprite = crossSprite;
         _sfxCrossImage.sprite = crossSprite;
+        
+        _loadedSprites.Add(musicSprite);
+        _loadedSprites.Add(crossSprite);
+    }
+
+    public void UnloadContent()
+    {
+        foreach (Sprite sprite in _loadedSprites)
+        {
+            AddressablesLoader.Unload(sprite);
+        }
     }
 }
