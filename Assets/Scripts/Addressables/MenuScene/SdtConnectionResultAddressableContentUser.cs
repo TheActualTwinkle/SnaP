@@ -22,12 +22,12 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
     private Sprite _failSprite;
     private Sprite _abandonedSprite;
 
-    private static bool IsLoaded;
+    private static bool _isLoaded;
     
-    private void Awake()
+    private async void Awake()
     {
         _sdtConnectionResultUi = GetComponent<SdtConnectionResultUI>();
-        LoadContent();
+        await LoadContent();
     }
 
     private void OnEnable()
@@ -56,7 +56,7 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
         UnloadContent();
     }
 
-    public async void LoadContent()
+    public async Task LoadContent()
     {
         _disconnectedSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Disconnected);
         _loadingSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Loading);
@@ -64,7 +64,7 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
         _failSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Fail);
         _abandonedSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Abandoned);
 
-        IsLoaded = true;
+        _isLoaded = true;
     }
 
     public void UnloadContent()
@@ -75,12 +75,12 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
         AddressablesLoader.Unload(_failSprite);
         AddressablesLoader.Unload(_abandonedSprite);
 
-        IsLoaded = false;
+        _isLoaded = false;
     }
     
     private async void OnSdtConnectionStateChanged(ConnectionState connectionState)
     {
-        if (IsLoaded == false)
+        if (_isLoaded == false)
         {
             await WaitUntilLoaded();
         }
@@ -110,7 +110,7 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
     
     private static async Task WaitUntilLoaded()
     {
-        while (IsLoaded == false)
+        while (_isLoaded == false)
         {
             await Task.Yield();
         }

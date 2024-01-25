@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -15,9 +16,14 @@ public static class Logger
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
-
-    private static readonly bool PrintSnaPDataTransferLogs = true; // = true; if you want to print SnaPDataTransfer logs in unity editor.
-
+    
+    private static readonly List<LogSource> IgnoredLogSources = new()
+    {
+        // LogSource.General,
+        // LogSource.SnaPDataTransfer,
+        // LogSource.Addressables,
+    };
+    
     [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
     static Logger()
     {
@@ -26,7 +32,6 @@ public static class Logger
 #endif
         
 #pragma warning disable CS0162
-        PrintSnaPDataTransferLogs = Environment.GetCommandLineArgs().Contains("-sdt");
         
         PokerLogViewerFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.snp";
         
@@ -42,16 +47,17 @@ public static class Logger
 
     public static void Log(object message, LogLevel logLevel = LogLevel.Info, LogSource logSource = LogSource.General)
     {
-#if !UNITY_EDITOR
-        LogMessage logMessage = new(DateTime, message, logLevel, logSource);
-        WriteToFile(logMessage);
-#endif
-        
-        if (logSource == LogSource.SnaPDataTransfer && PrintSnaPDataTransferLogs == false)
+        if (IgnoredLogSources.Contains(logSource) == true)
         {
             return;
         }
         
+        
+#if !UNITY_EDITOR
+        LogMessage logMessage = new(DateTime, message, logLevel, logSource);
+        WriteToFile(logMessage);
+#endif
+
         string logSourceString = logSource == LogSource.General ? string.Empty : $"[{logSource.ToString()}] ";
         string fullMessage = logSourceString + message;
         

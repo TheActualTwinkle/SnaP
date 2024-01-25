@@ -13,9 +13,9 @@ public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentU
 
     private readonly List<Sprite> _loadedSprites = new();
 
-    private void Start()
+    private async void Start()
     {
-        LoadContent();
+        await LoadContent();
     }
 
     private void OnDestroy()
@@ -23,7 +23,7 @@ public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentU
         UnloadContent();
     }
 
-    public async void LoadContent()
+    public async Task LoadContent()
     {
         Sprite musicSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Music);
         _musicImage.sprite = musicSprite;

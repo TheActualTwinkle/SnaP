@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,9 +12,9 @@ public class GameMainIconAddressableContentUser : MonoBehaviour, IAddressableCon
 
     private Sprite _loadedSprite;
     
-    private void Start()
+    private async void Start()
     {
-        LoadContent();
+        await LoadContent();
     }
 
     private void OnDestroy()
@@ -21,7 +22,7 @@ public class GameMainIconAddressableContentUser : MonoBehaviour, IAddressableCon
         UnloadContent();
     }
 
-    public async void LoadContent()
+    public async Task LoadContent()
     {
         _loadedSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.GameMainIcon);
         _backgroundImage.sprite = _loadedSprite;

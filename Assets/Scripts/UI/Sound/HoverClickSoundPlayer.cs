@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,6 +13,8 @@ public class HoverClickSoundPlayer : EventTrigger
     private AudioClip _clickAudioClip;
 
     private Button _button;
+
+    private HoverClickSoundPlayerAddressableContentUser _loader;
 
     private void Awake()
     {
@@ -41,21 +45,19 @@ public class HoverClickSoundPlayer : EventTrigger
 
     private void Start()
     {
-        string pathToHoverSfx = Constants.Sound.Sfx.Paths[Constants.Sound.Sfx.Type.ButtonHover];
-        _hoverAudioClip = Resources.Load<AudioClip>(pathToHoverSfx);  
-        
-        string pathToMusicSfx = Constants.Sound.Sfx.Paths[Constants.Sound.Sfx.Type.ButtonClick];
-        _clickAudioClip = Resources.Load<AudioClip>(pathToMusicSfx);
-        
-        if (_hoverAudioClip == null)
-        {
-            Logger.Log($"Audio Clip named '{pathToHoverSfx}' not found!", Logger.LogLevel.Error);
-        }      
-        
-        if (_clickAudioClip == null)
-        {
-            Logger.Log($"Audio Clip named '{pathToMusicSfx}' not found!", Logger.LogLevel.Error);
-        }
+        LoadClips();
+    }
+
+    public void SetClips(AudioClip hoverAudioClip, AudioClip clickAudioClip)
+    {
+        _hoverAudioClip = hoverAudioClip;
+        _clickAudioClip = clickAudioClip;
+    }
+    
+    private async void LoadClips()
+    {
+        _loader = new HoverClickSoundPlayerAddressableContentUser(this);
+        await _loader.LoadContent();
     }
 
     public override void OnPointerEnter(PointerEventData eventData)

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,9 +11,9 @@ public class BackgroundImageAddressableContentUser : MonoBehaviour, IAddressable
 
     private Sprite _loadedSprite;
     
-    private void Start()
-    {
-        LoadContent();
+    private async void Start()
+    { 
+        await LoadContent();
     }
 
     private void OnDestroy()
@@ -20,7 +21,7 @@ public class BackgroundImageAddressableContentUser : MonoBehaviour, IAddressable
         UnloadContent();
     }
 
-    public async void LoadContent()
+    public async Task LoadContent()
     {
         string id = SceneManager.GetActiveScene().name switch
         {

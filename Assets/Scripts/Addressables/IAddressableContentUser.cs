@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface IAddressableContentUser
 {
-    void LoadContent();
+    Task LoadContent();
     
     void UnloadContent();
 }

@@ -9,6 +9,11 @@ public abstract class Constants
         public const string Kickstart = "Kickstart";
     }
 
+    public abstract class Prefabs
+    {
+        public const string GameTitleText = "SnaPGameTitleText";
+    }
+    
     public abstract class Sprites
     {
         public const string Music = "MusicIcon";
@@ -35,12 +40,12 @@ public abstract class Constants
         {
             public static readonly Dictionary<Type, string> Paths = new()
             {
-                { Type.ShowingCards, "Sound/SFX/ShowingCards" },
-                { Type.Bet, "Sound/SFX/Bet" },
-                { Type.ToPot, "Sound/SFX/ToPot" },
-                { Type.Check, "Sound/SFX/Check" },
-                { Type.ButtonHover, "Sound/SFX/ButtonHover" },
-                { Type.ButtonClick, "Sound/SFX/ButtonClick" }
+                { Type.ShowingCards, "ShowingCards" },
+                { Type.Bet, "Bet" },
+                { Type.ToPot, "ToPot" },
+                { Type.Check, "Check" },
+                { Type.ButtonHover, "ButtonHover" },
+                { Type.ButtonClick, "ButtonClick" }
 
             };
 
@@ -57,18 +62,11 @@ public abstract class Constants
     
         public abstract class Music
         {
-            public static readonly Dictionary<Type, string> Paths = new() {
-                { Type.BgMusic, "Sound/Music/BGMusic"},
-                { Type.BgMusic2, "Sound/Music/BGMusic2"},
-                { Type.BgMusic3, "Sound/Music/BGMusic3"}
-            }; 
-
-            public enum Type
-            {
-                BgMusic,
-                BgMusic2,
-                BgMusic3
-            }
+            public static readonly List<string> Paths = new() {
+                { "BGMusic"},
+                { "BGMusic2"},
+                { "BGMusic3"}
+            };
         }
     }
 

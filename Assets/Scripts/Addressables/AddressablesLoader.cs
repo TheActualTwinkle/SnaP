@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using Object = System.Object;
 
 public static class AddressablesLoader
 {
@@ -34,9 +33,12 @@ public static class AddressablesLoader
             return;
         }
         
+        string objectType = obj.GetType().Name;
+        string objectName = obj.GetType().Name;
+
         Addressables.Release(obj);
         
-        Logger.Log($"Unloaded asset: {obj}", Logger.LogSource.Addressables);
+        Logger.Log($"Unloaded asset: Type: {objectType}; Name: {objectName}", Logger.LogSource.Addressables);
     }
     
     public static void UnloadInstance(GameObject go)
@@ -45,10 +47,13 @@ public static class AddressablesLoader
         {
             return;
         }
+
+        string goType = go.GetType().Name;
+        string goName = go.name;
         
         go.SetActive(false);
         Addressables.ReleaseInstance(go);
         
-        Logger.Log($"Unloaded instance of asset: {go}", Logger.LogSource.Addressables);
+        Logger.Log($"Unloaded instance of asset: Type: {goType}; Name: {goName}", Logger.LogSource.Addressables);
     }
 }
