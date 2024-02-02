@@ -273,7 +273,8 @@ public class Game : NetworkBehaviour
     private IEnumerator StartDealWhenСonditionTrue()
     {
         yield return new WaitUntil(() => ConditionToStartDeal == true);
-        yield return new WaitForSeconds(0.05f);
+        // yield return new WaitForSeconds(0.05f);
+        // yield return new WaitUntil(() => ConditionToStartDeal == true);
 
         S_StartDeal();
 

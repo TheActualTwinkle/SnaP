@@ -50,7 +50,7 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
         if (SdtClient != null) SdtClient.ConnectionStateChangedEvent -= OnSdtConnectionStateChanged;
     }
     
-    private void OnDestroy()
+    private void OnApplicationQuit()
     {
         UnloadContent();
     }

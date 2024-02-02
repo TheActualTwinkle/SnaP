@@ -103,6 +103,15 @@ public class Pot : NetworkBehaviour
         }
         else
         {
+            // In case someone leaves too early we should return blinds to the players.
+            if (_stageBets.Count == 0)
+            {
+                foreach (Player player in PlayerSeats.Instance.Players.Where(x => x != null))
+                {
+                    _stageBets[player] = player.BetAmount;
+                }
+            }
+            
             foreach (KeyValuePair<Player,uint> bet in _stageBets)
             {
                 if (_bets.TryGetValue(bet.Key, out uint _) == false)

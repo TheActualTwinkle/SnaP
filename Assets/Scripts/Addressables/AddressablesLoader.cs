@@ -16,7 +16,7 @@ public static class AddressablesLoader
             throw new NullReferenceException($"Object of type {typeof(T)} with id {assetId} can`t be loaded via Addressables");
         }
         
-        // Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.Addressables);
+        Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.Addressables);
         
         return handle.Result;
     }

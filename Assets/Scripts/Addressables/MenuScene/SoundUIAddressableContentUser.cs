@@ -21,7 +21,7 @@ public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentU
         await LoadContent();
     }
 
-    private void OnDestroy()
+    private void OnApplicationQuit()
     {
         UnloadContent();
     }

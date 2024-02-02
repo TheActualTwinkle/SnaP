@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -92,7 +93,14 @@ public class BetChipsUI : MonoBehaviour
         _animator.ResetAllTriggers();
         _animator.SetTrigger(Bet);
 
-        SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
+        try
+        {
+            SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
+        }
+        catch (Exception e)
+        {
+            Logger.Log("SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet) failed.", Logger.LogLevel.Error);
+        }
     }
     
     private IEnumerator DelayToPotAnimation(float delay)

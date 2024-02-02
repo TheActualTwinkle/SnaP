@@ -33,7 +33,7 @@ public class MusicAudioAddressableContentUser : MonoBehaviour, IAddressableConte
         await LoadContent();
     }
 
-    private void OnDestroy()
+    private void OnApplicationQuit()
     {
         UnloadContent();
     }
