@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class GameTitleTextAddressableContentUser : MonoBehaviour, IAddressableContentUser
 {
+    public uint LoadedCount { get; private set; }
+    public uint AssetsCount => 1;
+
     // Are we left of right?
     [Range(1, 2)] [SerializeField] private uint _part; 
     
@@ -35,10 +38,12 @@ public class GameTitleTextAddressableContentUser : MonoBehaviour, IAddressableCo
     public async Task LoadContent()
     {
         _loadedGo = await AddressablesLoader.LoadAsync<GameObject>(Constants.Prefabs.GameTitleText + _part);
+        LoadedCount = 1;
     }
 
     public void UnloadContent()
     {
         AddressablesLoader.UnloadInstance(_loadedGo);
+        LoadedCount = 0;
     }
 }

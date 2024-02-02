@@ -30,6 +30,11 @@ public abstract class Constants
             public const string Fail = "error";
             public const string Abandoned = "questionmark";
         }
+
+        public abstract class Cards
+        {
+            public const string CardBack = "CardBack2";
+        }
     }
 
     public abstract class Sound
@@ -72,7 +77,6 @@ public abstract class Constants
 
     public abstract class ResourcesPaths
     {
-        public const string Cards = "Sprites/Cards";
         public const string Chips = "Sprites/Chips";
     }
 }

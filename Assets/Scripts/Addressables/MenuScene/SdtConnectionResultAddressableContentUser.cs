@@ -9,20 +9,19 @@ using UnityEngine.UI;
 [RequireComponent(typeof(SdtConnectionResultUI))]
 public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddressableContentUser
 {
+    public uint LoadedCount { get; private set; }
+    public uint AssetsCount => 5;
+
     private SdtConnectionResultUI _sdtConnectionResultUi;
 
     private static Client SdtClient => SdtConnectionResultUI.SdtClient;
     private static Server SdtServer => SdtConnectionResultUI.SdtServer;
-    
-    [SerializeField] private Image _image;
 
     private Sprite _disconnectedSprite;
     private Sprite _loadingSprite;
     private Sprite _successSprite;
     private Sprite _failSprite;
     private Sprite _abandonedSprite;
-
-    private static bool _isLoaded;
     
     private async void Awake()
     {
@@ -55,7 +54,7 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
     {
         UnloadContent();
     }
-
+    
     public async Task LoadContent()
     {
         _disconnectedSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Disconnected);
@@ -64,7 +63,7 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
         _failSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Fail);
         _abandonedSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Abandoned);
 
-        _isLoaded = true;
+        LoadedCount += 5;
     }
 
     public void UnloadContent()
@@ -75,42 +74,46 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
         AddressablesLoader.Unload(_failSprite);
         AddressablesLoader.Unload(_abandonedSprite);
 
-        _isLoaded = false;
+        LoadedCount = 0;
     }
     
     private async void OnSdtConnectionStateChanged(ConnectionState connectionState)
     {
-        if (_isLoaded == false)
+        if (LoadedCount == 0)
         {
             await WaitUntilLoaded();
         }
         
+        Sprite sprite;
+        
         switch (connectionState)
         {
             case ConnectionState.Connecting:
-                _image.sprite = _loadingSprite;
+                sprite = _loadingSprite;
                 break;
             case ConnectionState.Successful:
-                _image.sprite = _successSprite;
+                sprite = _successSprite;
                 break;
             case ConnectionState.Failed:
-                _image.sprite = _failSprite;
+                sprite = _failSprite;
                 break;
             case ConnectionState.Disconnected:
             case ConnectionState.DisconnectedPortClosed:
-                _image.sprite = _disconnectedSprite;
+                sprite = _disconnectedSprite;
                 break;
             case ConnectionState.Abandoned:
-                _image.sprite = _abandonedSprite;
+                sprite = _abandonedSprite;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(connectionState), connectionState, null);
         }
+        
+        _sdtConnectionResultUi.SetSprite(sprite);
     }
     
-    private static async Task WaitUntilLoaded()
+    private async Task WaitUntilLoaded()
     {
-        while (_isLoaded == false)
+        while (LoadedCount == 0)
         {
             await Task.Yield();
         }

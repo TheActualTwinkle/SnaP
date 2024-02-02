@@ -352,6 +352,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2891278938977396766}
     m_Modifications:
+    - target: {fileID: 2352219327293511863, guid: 0ee24fd83479f7d49a83bbab3a6242ef, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2944180258400628467, guid: 0ee24fd83479f7d49a83bbab3a6242ef, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3367200856411395639, guid: 0ee24fd83479f7d49a83bbab3a6242ef, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5084385057578158000, guid: 0ee24fd83479f7d49a83bbab3a6242ef, type: 3}
       propertyPath: m_Name
       value: BoardUI
@@ -444,6 +456,10 @@ PrefabInstance:
       propertyPath: _combinationHighlighting
       value: 
       objectReference: {fileID: 3386943441876987809}
+    - target: {fileID: 8790537505814019681, guid: 0ee24fd83479f7d49a83bbab3a6242ef, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ee24fd83479f7d49a83bbab3a6242ef, type: 3}
 --- !u!114 &16478187929196025 stripped
@@ -1374,6 +1390,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3068127582238575553, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3664536349621706283, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3664536349621706283, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3664536349621706283, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3664536349621706283, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8301606497990660522, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8301606497990660522, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8301606497990660522, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8301606497990660522, guid: 117de5317124a87409d2b9b9d0f06f8a, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

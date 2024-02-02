@@ -6,12 +6,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public static class AddressablesLoader
 {
-    public static uint AddressableContentUsersCount { get; private set; }
-
     public static async Task<T> LoadAsync<T>(string assetId)
     {
-        AddressableContentUsersCount++;
-
         AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(assetId);
         await handle.Task;
 
@@ -19,9 +15,8 @@ public static class AddressablesLoader
         {
             throw new NullReferenceException($"Object of type {typeof(T)} with id {assetId} can`t be loaded via Addressables");
         }
-
-        AddressableContentUsersCount--;
-        Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.Addressables);
+        
+        // Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.Addressables);
         
         return handle.Result;
     }
@@ -34,7 +29,7 @@ public static class AddressablesLoader
         }
         
         string objectType = obj.GetType().Name;
-        string objectName = obj.GetType().Name;
+        var objectName = obj.ToString();
 
         Addressables.Release(obj);
         

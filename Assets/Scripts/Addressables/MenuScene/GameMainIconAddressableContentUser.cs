@@ -8,6 +8,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class GameMainIconAddressableContentUser : MonoBehaviour, IAddressableContentUser
 {
+    public uint LoadedCount { get; private set; }
+    public uint AssetsCount => 1;
+
     [SerializeField] private Image _backgroundImage;
 
     private Sprite _loadedSprite;
@@ -26,10 +29,13 @@ public class GameMainIconAddressableContentUser : MonoBehaviour, IAddressableCon
     {
         _loadedSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.GameMainIcon);
         _backgroundImage.sprite = _loadedSprite;
+
+        LoadedCount = 1;
     }
 
     public void UnloadContent()
     {
         AddressablesLoader.Unload(_loadedSprite);
+        LoadedCount = 0;
     }
 }

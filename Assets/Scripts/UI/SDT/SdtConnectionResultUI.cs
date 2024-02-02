@@ -64,6 +64,11 @@ public class SdtConnectionResultUI : MonoBehaviour
         _hoverTooltip.SetupText();
     }
 
+    public void SetSprite(Sprite sprite)
+    {
+        _image.sprite = sprite;
+    }
+    
     // Button.
     public void Reconnect()
     {

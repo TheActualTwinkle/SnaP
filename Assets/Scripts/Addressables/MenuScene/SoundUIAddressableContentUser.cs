@@ -7,6 +7,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(SoundUI))]
 public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentUser
 {
+    public uint LoadedCount { get; private set; }
+    public uint AssetsCount => 2;
+
     [SerializeField] private Image _musicImage; 
     [SerializeField] private Image _musicCrossImage;
     [SerializeField] private Image _sfxCrossImage;
@@ -27,10 +30,12 @@ public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentU
     {
         Sprite musicSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Music);
         _musicImage.sprite = musicSprite;
+        LoadedCount++;
         
         Sprite crossSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Cross);
         _musicCrossImage.sprite = crossSprite;
         _sfxCrossImage.sprite = crossSprite;
+        LoadedCount++;
         
         _loadedSprites.Add(musicSprite);
         _loadedSprites.Add(crossSprite);
@@ -42,5 +47,7 @@ public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentU
         {
             AddressablesLoader.Unload(sprite);
         }
+
+        LoadedCount = 0;
     }
 }

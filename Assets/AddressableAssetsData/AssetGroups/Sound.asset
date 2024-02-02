@@ -41,10 +41,6 @@ MonoBehaviour:
     m_Address: BetSliderValueChanged
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 3eaac25878984f24dad3fc1c1b46a23e
-    m_Address: Bet
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 97e7973ad7e4d9440a57334ffc5430ee
     m_Address: BGMusic3
     m_ReadOnly: 0
@@ -55,6 +51,10 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: aa53f27e20203ca4ba4cf64151fb7bee
     m_Address: BGMusic
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3eaac25878984f24dad3fc1c1b46a23e
+    m_Address: Bet
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,9 +19,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
-
-    private IEnumerator _showCardsCoroutine;
-
+    
     private void OnEnable()
     {
         Game.GameStageBeganEvent += GameStageBeganEvent;
@@ -37,7 +36,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
     }
 
-    private void GameStageBeganEvent(GameStage gameStage)
+    private async void GameStageBeganEvent(GameStage gameStage)
     {
         if (gameStage != GameStage.Preflop)
         {
@@ -50,13 +49,7 @@ public class OwnerPocketCardsUI : MonoBehaviour
             return;
         }
 
-        if (_showCardsCoroutine != null)
-        {
-            StopCoroutine(_showCardsCoroutine);
-        }
-
-        _showCardsCoroutine = ShowCards(player);
-        StartCoroutine(_showCardsCoroutine);
+        await ShowCards(player);
     }
 
     private void OnEndDeal(WinnerInfo[] winnerInfo)
@@ -64,8 +57,8 @@ public class OwnerPocketCardsUI : MonoBehaviour
         _animator.ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);
     }
-    
-    private void OnPlayerSit(Player player, int index)
+
+    private async void OnPlayerSit(Player player, int index)
     {
         if (player.IsOwner == false || PlayerSeats.Players.Contains(player) == false)
         {
@@ -77,15 +70,9 @@ public class OwnerPocketCardsUI : MonoBehaviour
             return;
         }
         
-        if (_showCardsCoroutine != null)
-        {
-            StopCoroutine(_showCardsCoroutine);
-        }
-        
-        _showCardsCoroutine = ShowCards(player);
-        StartCoroutine(_showCardsCoroutine);
+        await ShowCards(player);
     }
-    
+
     private void OnPlayerEndBetting(BetActionInfo betActionInfo)
     {
         if (betActionInfo.BetAction != BetAction.Fold || betActionInfo.Player.IsOwner == false)
@@ -96,14 +83,22 @@ public class OwnerPocketCardsUI : MonoBehaviour
         _animator.SetTrigger(Fold);
     }
 
-    private IEnumerator ShowCards(Player player)
+    private async Task ShowCards(Player player)
     {
-        yield return new WaitUntil(() => ReferenceEquals(player.LocalPocketCard1, null) == false && ReferenceEquals(player.LocalPocketCard2, null) == false);
-        
-        _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.LocalPocketCard1.Value}_{player.LocalPocketCard1.Suit.ToString()}");
-        _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.LocalPocketCard2.Value}_{player.LocalPocketCard2.Suit.ToString()}");
+        while (ReferenceEquals(player.LocalPocketCard1, null) == true || ReferenceEquals(player.LocalPocketCard2, null) == true)
+        {
+            await Task.Yield();
+        }
 
+        await LoadSprites(player);
+        
         _animator.ResetAllTriggers();
         _animator.SetTrigger(GetCards);
+    }
+
+    private async Task LoadSprites(Player player)
+    {
+        _cardImage1.sprite = await AddressablesLoader.LoadAsync<Sprite>($"{(int)player.LocalPocketCard1.Value}_{player.LocalPocketCard1.Suit.ToString()}");
+        _cardImage2.sprite = await AddressablesLoader.LoadAsync<Sprite>($"{(int)player.LocalPocketCard2.Value}_{player.LocalPocketCard2.Suit.ToString()}");
     }
 }

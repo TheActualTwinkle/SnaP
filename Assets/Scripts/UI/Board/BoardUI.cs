@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,8 @@ public class BoardUI : MonoBehaviour
     [SerializeField] private CombinationHighlightingUI _combinationHighlighting;
     [SerializeField] private Animator _animator;
     [SerializeField] private List<Image> _cardImages;
-    [SerializeField] private Sprite _backSprite;
+    
+    private Sprite _backSprite;
     private readonly List<Sprite> _cardSprites = new();
     
     private static readonly int StartPreflop = Animator.StringToHash("StartPreflop");
@@ -34,8 +36,15 @@ public class BoardUI : MonoBehaviour
         Game.EndDealEvent -= OnEndDeal;
     }
 
-    private void Start()
+    private async void Start()
     {
+        _backSprite = await AddressablesLoader.LoadAsync<Sprite>("CardBack2");
+
+        foreach (Image cardImage in _cardImages)
+        {
+            cardImage.sprite = _backSprite;
+        }
+
         if (Game.IsPlaying == false)
         {
             return;
@@ -47,7 +56,7 @@ public class BoardUI : MonoBehaviour
         }
     }
 
-    private void OnGameStageBegan(GameStage gameStage)
+    private async void OnGameStageBegan(GameStage gameStage)
     {
         switch (gameStage)
         {
@@ -55,15 +64,15 @@ public class BoardUI : MonoBehaviour
                 _animator.SetTrigger(StartPreflop);
                 break;
             case GameStage.Flop:
-                StartCoroutine(LoadCardsFrontSprites(0, 3));
+                await LoadCardsFrontSprites(0, 3);
                 _animator.SetTrigger(StartFlop);
                 break;
             case GameStage.Turn:
-                StartCoroutine(LoadCardsFrontSprites(3, 1));
+                await LoadCardsFrontSprites(3, 1);
                 _animator.SetTrigger(StartTurn);
                 break;
             case GameStage.River:
-                StartCoroutine(LoadCardsFrontSprites(4, 1));
+                await LoadCardsFrontSprites(4, 1);
                 _animator.SetTrigger(StartRiver);
                 break;
             case GameStage.Showdown:
@@ -96,14 +105,17 @@ public class BoardUI : MonoBehaviour
         _combinationHighlighting.Highlight(gameStage);
     }
 
-    private IEnumerator LoadCardsFrontSprites(int startIndex, int count)
+    private async Task LoadCardsFrontSprites(int startIndex, int count)
     {
         if (startIndex == 0)
         {
             _cardSprites.Clear();
         }
-        
-        yield return new WaitWhile(() => Game.BoardCards.Count < startIndex + count);
+
+        while (Game.BoardCards.Count < startIndex + count)
+        {
+            await Task.Yield();
+        }
         
         List<CardObject> cards = Game.BoardCards.ToList();
         
@@ -112,9 +124,9 @@ public class BoardUI : MonoBehaviour
         {
             CardObject card = cards[i];
             
-            var id = $"{Constants.ResourcesPaths.Cards}/{(int)card.Value}_{card.Suit}";
+            var id = $"{(int)card.Value}_{card.Suit}";
 
-            Sprite sprite = Resources.Load<Sprite>(id);
+            Sprite sprite = await AddressablesLoader.LoadAsync<Sprite>(id);
             _cardSprites.Add(sprite);
         }
     }

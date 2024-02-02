@@ -17,7 +17,7 @@ public static class Logger
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
     
-    private static readonly List<LogSource> IgnoredLogSources = new()
+    private static readonly List<LogSource> AcceptableLogSources = new()
     {
         // LogSource.General,
         // LogSource.SnaPDataTransfer,
@@ -47,7 +47,7 @@ public static class Logger
 
     public static void Log(object message, LogLevel logLevel = LogLevel.Info, LogSource logSource = LogSource.General)
     {
-        if (IgnoredLogSources.Contains(logSource) == true)
+        if (AcceptableLogSources.Contains(logSource) == false)
         {
             return;
         }

@@ -6,7 +6,10 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
 public class BackgroundImageAddressableContentUser : MonoBehaviour, IAddressableContentUser
-{    
+{   
+    public uint LoadedCount { get; private set; }
+    public uint AssetsCount => 1;
+
     [SerializeField] private Image _backgroundImage;
 
     private Sprite _loadedSprite;
@@ -20,7 +23,7 @@ public class BackgroundImageAddressableContentUser : MonoBehaviour, IAddressable
     {
         UnloadContent();
     }
-
+    
     public async Task LoadContent()
     {
         string id = SceneManager.GetActiveScene().name switch
@@ -32,10 +35,13 @@ public class BackgroundImageAddressableContentUser : MonoBehaviour, IAddressable
 
         _loadedSprite = await AddressablesLoader.LoadAsync<Sprite>(id);
         _backgroundImage.sprite = _loadedSprite;
+
+        LoadedCount = 1;
     }
 
     public void UnloadContent()
     {
         AddressablesLoader.Unload(_loadedSprite);
+        LoadedCount = 0;
     }
 }
