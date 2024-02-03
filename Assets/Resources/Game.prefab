@@ -49,8 +49,9 @@ MonoBehaviour:
   _boardButton: {fileID: 9018023548917246893}
   _board:
     _cards: []
-  _roundsInterval: 1.75
-  _showdownEndTime: 3.5
+  _roundsIntervalSeconds: 1.75
+  _showdownEndTimeSeconds: 3.5
+  _playerSeatLeaveDenySeconds: 2
 --- !u!114 &5515698721813201346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,6 +66,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 951099334
   AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
 --- !u!1 &5107917377864906839

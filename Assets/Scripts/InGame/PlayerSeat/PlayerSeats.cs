@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerSeats : MonoBehaviour
@@ -14,7 +15,7 @@ public class PlayerSeats : MonoBehaviour
     
     public enum SeatLeaveReason
     {
-        CommonLeave,
+        UserInput,
         Kick,
         ChangeSeat
     }
@@ -145,7 +146,7 @@ public class PlayerSeats : MonoBehaviour
 
         switch (leaveReason)
         {
-            case SeatLeaveReason.CommonLeave:
+            case SeatLeaveReason.UserInput:
             case SeatLeaveReason.ChangeSeat:
                 Logger.Log($"Player ({player}) leave from {seatNumber} seat.");
                 break;
@@ -218,7 +219,7 @@ public class PlayerSeats : MonoBehaviour
     }
 
     // ReSharper disable once UnusedMember.Local
-    // Check for MissingReferenceException SHIT METHOD because Unity`s NGO fon`t provide working API for clients disconnecting.
+    // Check for MissingReferenceException SHIT METHOD because Unity`s NGO doesn`t provide working API for clients disconnecting.
     private IEnumerator CheckForConnectionLost()
     {
         while (true)

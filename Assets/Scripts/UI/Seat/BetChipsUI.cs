@@ -97,7 +97,7 @@ public class BetChipsUI : MonoBehaviour
         {
             SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Logger.Log("SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet) failed.", Logger.LogLevel.Error);
         }

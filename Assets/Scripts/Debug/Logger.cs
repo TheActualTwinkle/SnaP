@@ -19,9 +19,9 @@ public static class Logger
     
     private static readonly List<LogSource> AcceptableLogSources = new()
     {
-        LogSource.General,
-        LogSource.SnaPDataTransfer,
-        LogSource.Addressables,
+        // LogSource.General,
+        // LogSource.SnaPDataTransfer,
+        // LogSource.Addressables,
     };
     
     [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]

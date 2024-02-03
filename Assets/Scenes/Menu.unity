@@ -1030,6 +1030,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Network
       objectReference: {fileID: 0}
+    - target: {fileID: 1546813429071845632, guid: 53eeff91638760f448bd658c131e2d1e, type: 3}
+      propertyPath: DebugSimulator.PacketDelayMS
+      value: 75
+      objectReference: {fileID: 0}
     - target: {fileID: 8877477335213035335, guid: 53eeff91638760f448bd658c131e2d1e, type: 3}
       propertyPath: m_RootOrder
       value: 7
