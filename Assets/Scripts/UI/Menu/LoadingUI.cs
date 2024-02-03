@@ -57,7 +57,7 @@ public class LoadingUI : MonoBehaviour
         
         Destroy(gameObject);
     }
-    
+
     private void Setup()
     {
         uint assetsCount = LoadingHandler.AssetsCount;

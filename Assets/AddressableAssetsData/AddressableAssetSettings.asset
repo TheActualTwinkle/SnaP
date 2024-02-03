@@ -81,7 +81,7 @@ MonoBehaviour:
       - m_Id: 3f85a70f6dbc1d04b89ae3fd8e64bc8d
         m_Value: ServerData/[BuildTarget]
       - m_Id: daf435f3201515046b280416f2e7c9c2
-        m_Value: http://[PrivateIpAddress]:8000/[BuildTarget]
+        m_Value: http://90.189.208.37:47925/[BuildTarget]
     - m_InheritedParent: 
       m_Id: e6cec4c2825d2754c88a93a68b3da47f
       m_ProfileName: Dev
@@ -89,13 +89,13 @@ MonoBehaviour:
       - m_Id: 26dbc172d5f92cc4a9ed454d0f1da349
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
       - m_Id: 3a9f04c3433cd0e46991c87abab3e26a
-        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+        m_Value: ServerData/[BuildTarget]
       - m_Id: ddb3168d976314747ab866d85118091d
-        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
       - m_Id: 3f85a70f6dbc1d04b89ae3fd8e64bc8d
-        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+        m_Value: ServerData/[BuildTarget]
       - m_Id: daf435f3201515046b280416f2e7c9c2
-        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+        m_Value: http://[PrivateIpAddress]:8000/[BuildTarget]
     m_ProfileEntryNames:
     - m_Id: 26dbc172d5f92cc4a9ed454d0f1da349
       m_Name: BuildTarget

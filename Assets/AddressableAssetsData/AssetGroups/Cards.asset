@@ -229,6 +229,10 @@ MonoBehaviour:
     m_Address: CardBack2
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: d005aa2f45c4e9e47a90e26f910736ae
+    m_Address: CardBack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a180d5a4809222c4b998fb3936a9604d, type: 2}
   m_SchemaSet:
