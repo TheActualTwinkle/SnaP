@@ -50,8 +50,9 @@ public class PocketCardsUI : MonoBehaviour
         {
             case GameStage.Preflop:
             {
-                _cardImage1.sprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Cards.CardBack);
-                _cardImage2.sprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Cards.CardBack);
+                Sprite backSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Cards.CardBack);
+                _cardImage1.sprite = backSprite;
+                _cardImage2.sprite = backSprite;
         
                 _animator.ResetAllTriggers();
                 _animator.SetTrigger(GetCards);

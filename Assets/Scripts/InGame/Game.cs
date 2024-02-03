@@ -19,8 +19,8 @@ public class Game : NetworkBehaviour
     public bool IsPlaying => _isPlaying.Value;
     private readonly NetworkVariable<bool> _isPlaying = new();
     
-    public bool IsSeatLeaveBlocked => _isSeatLeaveBlocked.Value;
-    private readonly NetworkVariable<bool> _isSeatLeaveBlocked = new();
+    public bool CanPerformSeatAction => _canPerformSeatAction.Value;
+    private readonly NetworkVariable<bool> _canPerformSeatAction = new();
 
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
@@ -44,7 +44,7 @@ public class Game : NetworkBehaviour
     [SerializeField] private float _roundsIntervalSeconds;
     [SerializeField] private float _showdownEndTimeSeconds;
     
-    [SerializeField] private float _playerSeatLeaveDenySeconds;
+    [SerializeField] private float _playerPerformSeatActionTimeoutSeconds;
 
     private void Awake()
     {
@@ -283,19 +283,16 @@ public class Game : NetworkBehaviour
         }
         
         yield return new WaitUntil(() => ConditionToStartDeal == true);
-        // yield return new WaitForSeconds(0.05f);
 
-        print("Blocking");
-        _isSeatLeaveBlocked.Value = true;
+        _canPerformSeatAction.Value = true;
         
         S_StartDeal();
 
         _startDealWhenСonditionTrueCoroutine = null;
 
-        yield return new WaitForSeconds(_playerSeatLeaveDenySeconds);
+        yield return new WaitForSeconds(_playerPerformSeatActionTimeoutSeconds);
 
-        print("UnBlocking");
-        _isSeatLeaveBlocked.Value = false;
+        _canPerformSeatAction.Value = false;
     }
 
     private void SetStageCoroutine(GameStage gameStage)

@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Chips
+  m_EditorClassIdentifier: 
+  m_GroupName: Chips
+  m_Data:
+    m_SerializedData: []
+  m_GUID: d8d2c8f599229904da37a127c2fb3fc6
+  m_SerializeEntries:
+  - m_GUID: 7be57f38961560e4482f607355dd9bbd
+    m_Address: ChipsStack_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8b1aef70b568214479a6e86997c9a862
+    m_Address: ChipsStack_2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3210a8c32f1aeee4d82b27b12f05b05b
+    m_Address: ChipsStack_3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a6fc98f6eaae6c94e895d9217074b2c4
+    m_Address: ChipsStack_4
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 8ab8e837c9f9fa541b145bca10c8b700
+    m_Address: ChipsStack_5
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: bebb7c08972e4c546bd87dc216b023d3
+    m_Address: ChipsStack_6
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b3f9753e28666424eacaeb10d3f9e929
+    m_Address: ChipsStack_7
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: a180d5a4809222c4b998fb3936a9604d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2e10a28529a155949a85dd151a22d5ef, type: 2}
+    - {fileID: 11400000, guid: beade6595ec506e4c8227942f9580e2f, type: 2}

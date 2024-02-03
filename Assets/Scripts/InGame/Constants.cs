@@ -35,6 +35,13 @@ public abstract class Constants
         {
             public const string CardBack = "CardBack2";
         }
+
+        public abstract class Chips
+        {
+            public const string ChipsStack = "ChipsStack_";
+            public const uint AssetsCount = 7;
+            public const string Pot = "ChipsStack_7";
+        }
     }
 
     public abstract class Sound
@@ -73,10 +80,5 @@ public abstract class Constants
                 { "BGMusic3"}
             };
         }
-    }
-
-    public abstract class ResourcesPaths
-    {
-        public const string Chips = "Sprites/Chips";
     }
 }

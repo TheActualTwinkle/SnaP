@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class CardsAddressablesContentUser : MonoBehaviour, IAddressableContentUser
+public class CardsAddressableContentUser : MonoBehaviour, IAddressableContentUser
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => 13 * 4 + 1; // 13 cards * 4 suits + 1 card back.
@@ -33,7 +33,7 @@ public class CardsAddressablesContentUser : MonoBehaviour, IAddressableContentUs
             }
         }
         
-        Sprite cardBackSprite = await AddressablesLoader.LoadAsync<Sprite>("CardBack2");
+        Sprite cardBackSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Cards.CardBack);
         _loadedSprites.Add(cardBackSprite);
         LoadedCount++;
     }

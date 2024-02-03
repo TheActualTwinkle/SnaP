@@ -12,16 +12,16 @@ using Application = UnityEngine.Application;
 
 public static class Logger
 {
-    public static readonly string PokerLogViewerFilePath;
+    public static readonly string LogFilePath;
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
     
     private static readonly List<LogSource> AcceptableLogSources = new()
     {
-        // LogSource.General,
-        // LogSource.SnaPDataTransfer,
-        // LogSource.Addressables,
+        LogSource.General,
+        LogSource.SnaPDataTransfer,
+        LogSource.Addressables,
     };
     
     [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
@@ -33,14 +33,14 @@ public static class Logger
         
 #pragma warning disable CS0162
         
-        PokerLogViewerFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.snp";
+        LogFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.snp";
         
-        if (File.Exists(PokerLogViewerFilePath) == false)
+        if (File.Exists(LogFilePath) == false)
         {
-            File.Create(PokerLogViewerFilePath).Close();
+            File.Create(LogFilePath).Close();
         }
 
-        File.WriteAllText(PokerLogViewerFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
+        File.WriteAllText(LogFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
         
 #pragma warning restore CS0162
     }
@@ -86,7 +86,7 @@ public static class Logger
     {
         try
         {
-            using StreamWriter sw = new(PokerLogViewerFilePath, true);
+            using StreamWriter sw = new(LogFilePath, true);
             sw.WriteLine(message.ToString());
         }
         catch (Exception e)

@@ -51,7 +51,7 @@ MonoBehaviour:
     _cards: []
   _roundsIntervalSeconds: 1.75
   _showdownEndTimeSeconds: 3.5
-  _playerSeatLeaveDenySeconds: 2
+  _playerPerformSeatActionTimeoutSeconds: 1
 --- !u!114 &5515698721813201346
 MonoBehaviour:
   m_ObjectHideFlags: 0

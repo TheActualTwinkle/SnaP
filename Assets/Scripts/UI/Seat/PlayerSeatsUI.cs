@@ -114,7 +114,7 @@ public class PlayerSeatsUI : MonoBehaviour
             _seatsUI[previousIndex].transform.localPosition = _defaultSeatPositions[newIndex];
         }
         
-        Debug.Log($"Changed central view to {centralSeatNumber}.");
+        Logger.Log($"Changed central view to {centralSeatNumber}.");
     }
 
     private static int[] GetCentredIndexes(int centralSeatNumber)

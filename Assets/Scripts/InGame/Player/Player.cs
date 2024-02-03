@@ -366,11 +366,11 @@ public class Player : NetworkBehaviour
 
     private bool CanPerformSeatAction()
     {
-        if (Game.IsSeatLeaveBlocked == true)
+        if (Game.CanPerformSeatAction == true)
         {
             return false;
         }
-        
+
         if (_lastSeatActionTime + SeatActionCooldownSeconds > Time.realtimeSinceStartup)
         {
             return false;
