@@ -22,6 +22,7 @@ public static class Logger
         LogSource.General,
         LogSource.SnaPDataTransfer,
         LogSource.Addressables,
+        // LogSource.AddressablesLoader
     };
     
     [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
@@ -107,5 +108,6 @@ public static class Logger
         General,
         SnaPDataTransfer,
         Addressables,
+        AddressablesLoader,
     }
 }

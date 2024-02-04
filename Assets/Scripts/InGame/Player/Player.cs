@@ -353,7 +353,7 @@ public class Player : NetworkBehaviour
         {
             AppendAvatarDataServerRpc(packages[i]);
             yield return new WaitUntil(() => _avatarData.Value.CodedValue.Length == (i+1) * maxBytesPerRpc); // Wait for RPC to apply.
-            Debug.Log($"Loading player avatar. {i+1}/{packageAmount} done.");
+            Logger.Log($"Loading player avatar. {i+1}/{packageAmount} done.");
         }
         
         AppendAvatarDataServerRpc(packages[packageAmount - 1]);

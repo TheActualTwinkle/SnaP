@@ -13,10 +13,11 @@ public static class AddressablesLoader
 
         if (handle.Status != AsyncOperationStatus.Succeeded)
         {
-            throw new NullReferenceException($"Object of type {typeof(T)} with id {assetId} can`t be loaded via Addressables");
+            Logger.Log($"Object of type {typeof(T)} with id {assetId} can`t be loaded via Addressables", Logger.LogLevel.Error, Logger.LogSource.Addressables);
+            return default;
         }
         
-        Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.Addressables);
+        Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.AddressablesLoader);
         
         return handle.Result;
     }
@@ -33,7 +34,7 @@ public static class AddressablesLoader
 
         Addressables.Release(obj);
         
-        Logger.Log($"Unloaded asset: Type: {objectType}; Name: {objectName}", Logger.LogSource.Addressables);
+        Logger.Log($"Unloaded asset: Type: {objectType}; Name: {objectName}", Logger.LogSource.AddressablesLoader);
     }
     
     public static void UnloadInstance(GameObject go)
@@ -49,6 +50,6 @@ public static class AddressablesLoader
         go.SetActive(false);
         Addressables.ReleaseInstance(go);
         
-        Logger.Log($"Unloaded instance of asset: Type: {goType}; Name: {goName}", Logger.LogSource.Addressables);
+        Logger.Log($"Unloaded instance of asset: Type: {goType}; Name: {goName}", Logger.LogSource.AddressablesLoader);
     }
 }

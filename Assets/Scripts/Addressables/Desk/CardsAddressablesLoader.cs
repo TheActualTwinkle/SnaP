@@ -4,17 +4,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class CardsAddressableContentUser : MonoBehaviour, IAddressableContentUser
+public class CardsAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => 13 * 4 + 1; // 13 cards * 4 suits + 1 card back.
 
     private readonly List<Sprite> _loadedSprites = new();
-
-    private async void Start()
-    {
-        await LoadContent();
-    }
 
     private void OnDestroy()
     {

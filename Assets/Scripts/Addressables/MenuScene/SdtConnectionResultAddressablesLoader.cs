@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(SdtConnectionResultUI))]
-public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddressableContentUser
+public class SdtConnectionResultAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => 5;
@@ -26,7 +26,6 @@ public class SdtConnectionResultAddressableContentUser : MonoBehaviour, IAddress
     private async void Awake()
     {
         _sdtConnectionResultUi = GetComponent<SdtConnectionResultUI>();
-        await LoadContent();
     }
 
     private void OnEnable()

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(MusicAudio))]
-public class MusicAudioAddressableContentUser : MonoBehaviour, IAddressableContentUser
+public class MusicAudioAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => (uint)Constants.Sound.Music.Paths.Count;
@@ -28,11 +28,6 @@ public class MusicAudioAddressableContentUser : MonoBehaviour, IAddressableConte
         _musicAudio = GetComponent<MusicAudio>();
     }
 
-    private async void Start()
-    {
-        await LoadContent();
-    }
-
     private void OnApplicationQuit()
     {
         UnloadContent();
@@ -40,6 +35,11 @@ public class MusicAudioAddressableContentUser : MonoBehaviour, IAddressableConte
 
     public async Task LoadContent()
     {
+        if (LoadedCount == AssetsCount)
+        {
+            return;
+        }
+        
         foreach (string path in Constants.Sound.Music.Paths)
         {
             _clips.Add(await AddressablesLoader.LoadAsync<AudioClip>(path));
@@ -54,8 +54,8 @@ public class MusicAudioAddressableContentUser : MonoBehaviour, IAddressableConte
     {
         foreach (AudioClip audioClip in _clips)
         {
-            LoadedCount--;
             AddressablesLoader.Unload(audioClip);
+            LoadedCount--;
         }
     }
 }

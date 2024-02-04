@@ -22,7 +22,7 @@ public class LoadingUI : MonoBehaviour
     [Range(0, 2000)]
     [SerializeField] private uint _disposeDelayMs; 
     
-    private static AddressablesContentUserHandler LoadingHandler => AddressablesContentUserHandler.Instance;
+    private static AddressablesLoaderHandler LoadingHandler => AddressablesLoaderHandler.Instance;
 
     private void Awake()
     {
@@ -45,7 +45,6 @@ public class LoadingUI : MonoBehaviour
 
             if (LoadingHandler.LoadedAssetsCount == LoadingHandler.AssetsCount)
             {
-                Logger.Log($"All {LoadingHandler.AssetsCount} assets loaded", Logger.LogSource.Addressables);
                 break;
             }
             

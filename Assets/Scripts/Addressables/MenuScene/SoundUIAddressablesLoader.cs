@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(SoundUI))]
-public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentUser
+public class SoundUIAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => 2;
@@ -15,11 +15,6 @@ public class SoundUIAddressableContentUser : MonoBehaviour, IAddressableContentU
     [SerializeField] private Image _sfxCrossImage;
 
     private readonly List<Sprite> _loadedSprites = new();
-
-    private async void Start()
-    {
-        await LoadContent();
-    }
 
     private void OnApplicationQuit()
     {

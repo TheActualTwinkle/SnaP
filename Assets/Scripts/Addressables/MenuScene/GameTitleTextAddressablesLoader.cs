@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class GameTitleTextAddressableContentUser : MonoBehaviour, IAddressableContentUser
+public class GameTitleTextAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => 1;
@@ -11,9 +11,15 @@ public class GameTitleTextAddressableContentUser : MonoBehaviour, IAddressableCo
     
     private GameObject _loadedGo;
 
-    private async void Start()
+    private void OnDestroy()
     {
-        await LoadContent();
+        UnloadContent();
+    }
+
+    public async Task LoadContent()
+    {
+        _loadedGo = await AddressablesLoader.LoadAsync<GameObject>(Constants.Prefabs.GameTitleText + _part);
+        LoadedCount = 1;
 
         InstantiateContent();
     }
@@ -27,18 +33,7 @@ public class GameTitleTextAddressableContentUser : MonoBehaviour, IAddressableCo
         
         Instantiate(_loadedGo, gameObject.transform);
         
-        Logger.Log($"Instantiated asset: {_loadedGo}", Logger.LogSource.Addressables);
-    }
-
-    private void OnDestroy()
-    {
-        UnloadContent();
-    }
-
-    public async Task LoadContent()
-    {
-        _loadedGo = await AddressablesLoader.LoadAsync<GameObject>(Constants.Prefabs.GameTitleText + _part);
-        LoadedCount = 1;
+        Logger.Log($"Instantiated asset: {_loadedGo}", Logger.LogSource.AddressablesLoader);
     }
 
     public void UnloadContent()

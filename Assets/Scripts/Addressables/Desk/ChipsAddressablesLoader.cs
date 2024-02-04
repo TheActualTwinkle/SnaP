@@ -4,17 +4,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ChipsAddressableContentUser : MonoBehaviour, IAddressableContentUser
+public class ChipsAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => Constants.Sprites.Chips.AssetsCount; // 7 chips stack. (Pot is included as ChipsStack_7)
 
     private readonly List<Sprite> _loadedSprites = new();
-
-    private async void Start()
-    {
-        await LoadContent();
-    }
 
     private void OnDestroy()
     {

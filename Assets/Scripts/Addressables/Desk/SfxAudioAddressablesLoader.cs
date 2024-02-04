@@ -4,20 +4,14 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(SfxAudio))]
-public class SfxAudioAddressableContentUser : MonoBehaviour, IAddressableContentUser
+public class SfxAudioAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
-    public uint AssetsCount { get; private set; }
+    public uint AssetsCount => (uint)Constants.Sound.Sfx.Paths.Count;
 
     [SerializeField] private SfxAudio _sfxAudio;
     
-    private Dictionary<Constants.Sound.Sfx.Type, AudioClip> _clips = new();
-
-    
-    private async void Start()
-    {
-        await LoadContent();
-    }
+    private readonly Dictionary<Constants.Sound.Sfx.Type, AudioClip> _clips = new();
 
     private void OnDestroy()
     {
@@ -30,6 +24,8 @@ public class SfxAudioAddressableContentUser : MonoBehaviour, IAddressableContent
         {
             AudioClip audioClip = await AddressablesLoader.LoadAsync<AudioClip>(keyValuePair.Value);
             _clips.Add(keyValuePair.Key, audioClip);
+
+            LoadedCount++;
         }
         
         _sfxAudio.SetupAudioClips(_clips);
@@ -40,6 +36,7 @@ public class SfxAudioAddressableContentUser : MonoBehaviour, IAddressableContent
         foreach (KeyValuePair<Constants.Sound.Sfx.Type, AudioClip> keyValuePair in _clips)
         {
             AddressablesLoader.Unload(keyValuePair.Value);
+            LoadedCount--;
         }
     }
 }

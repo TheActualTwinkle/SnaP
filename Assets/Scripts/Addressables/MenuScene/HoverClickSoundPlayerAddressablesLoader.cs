@@ -1,25 +1,24 @@
-using System;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class HoverClickSoundPlayerAddressableContentUser : IAddressableContentUser
+[RequireComponent(typeof(HoverClickSoundPlayer))]
+public class HoverClickSoundPlayerAddressablesLoader : MonoBehaviour, IAddressablesLoader
 {
+    public Constants.Sound.Sfx.Type HoverType { get; set; }
+    public Constants.Sound.Sfx.Type ClickType { get; set; }
+    
     public uint LoadedCount { get; private set; }
 
     public uint AssetsCount => 2;
-
-    private readonly HoverClickSoundPlayer _soundPlayer;
     
     private AudioClip _hoverAudioClip;
     private AudioClip _clickAudioClip;
 
     private static bool _isLoading;
-    
-    public HoverClickSoundPlayerAddressableContentUser(HoverClickSoundPlayer soundPlayer)
+
+    private void OnApplicationQuit()
     {
-        AddressablesContentUserHandler.Instance.AddContentUser(this);
-        _soundPlayer = soundPlayer;
+        UnloadContent();
     }
 
     public async Task LoadContent()
@@ -35,14 +34,14 @@ public class HoverClickSoundPlayerAddressableContentUser : IAddressableContentUs
             _isLoading = true;
         }
         
-        _hoverAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[Constants.Sound.Sfx.Type.ButtonHover]);
+        _hoverAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[HoverType]);
         LoadedCount++;
-        _clickAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[Constants.Sound.Sfx.Type.ButtonClick]);
+        _clickAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[ClickType]);
         LoadedCount++;
 
         _isLoading = false;
         
-        _soundPlayer.SetClips(_hoverAudioClip, _clickAudioClip);
+        HoverClickSoundPlayer.SetClips(_hoverAudioClip, _clickAudioClip);
     }
 
     public void UnloadContent()

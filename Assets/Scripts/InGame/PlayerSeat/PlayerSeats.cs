@@ -78,17 +78,6 @@ public class PlayerSeats : MonoBehaviour
 #endif
     }
 
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.H))
-        {
-            foreach (Player player in Players)
-            {
-                Debug.Log($"Id: {player.OwnerClientId}. {player.PocketCard1} and {player.PocketCard2}");
-            }
-        }
-    }
-
     public bool TryTake(Player player, int seatNumber, bool forceToSeat = false)
     {
         if (IsFree(seatNumber) == false)

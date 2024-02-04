@@ -9,15 +9,16 @@ using UnityEngine.UI;
 public class HoverClickSoundPlayer : EventTrigger  
 {
     private AudioSource _audioSource;
-    private AudioClip _hoverAudioClip;
-    private AudioClip _clickAudioClip;
+    private static AudioClip _hoverAudioClip;
+    private static AudioClip _clickAudioClip;
 
     private Button _button;
-
-    private HoverClickSoundPlayerAddressableContentUser _loader;
-
-    private void Awake()
+    
+    protected virtual void Awake()
     {
+        // Set up the loader
+        SetupLoader();
+
         _audioSource = GetComponent<AudioSource>();
 
         TryGetComponent(out _button);
@@ -43,27 +44,24 @@ public class HoverClickSoundPlayer : EventTrigger
         _button.onClick.RemoveListener(OnButtonClick);
     }
 
-    private void Start()
-    {
-        LoadClips();
-    }
-
-    public void SetClips(AudioClip hoverAudioClip, AudioClip clickAudioClip)
+    public static void SetClips(AudioClip hoverAudioClip, AudioClip clickAudioClip)
     {
         _hoverAudioClip = hoverAudioClip;
         _clickAudioClip = clickAudioClip;
-    }
-    
-    private async void LoadClips()
-    {
-        _loader = new HoverClickSoundPlayerAddressableContentUser(this);
-        await _loader.LoadContent();
     }
 
     public override void OnPointerEnter(PointerEventData eventData)
     {
         _audioSource.clip = _hoverAudioClip;
         _audioSource.Play();
+    }
+
+    private void SetupLoader()
+    {
+        
+        HoverClickSoundPlayerAddressablesLoader loader = gameObject.AddComponent<HoverClickSoundPlayerAddressablesLoader>();
+        loader.HoverType = Constants.Sound.Sfx.Type.ButtonHover;
+        loader.ClickType = Constants.Sound.Sfx.Type.ButtonClick;
     }
 
     private void OnButtonClick()
