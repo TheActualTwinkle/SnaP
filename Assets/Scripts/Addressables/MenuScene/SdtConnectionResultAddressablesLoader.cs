@@ -23,7 +23,7 @@ public class SdtConnectionResultAddressablesLoader : MonoBehaviour, IAddressable
     private Sprite _failSprite;
     private Sprite _abandonedSprite;
     
-    private async void Awake()
+    private void Awake()
     {
         _sdtConnectionResultUi = GetComponent<SdtConnectionResultUI>();
     }

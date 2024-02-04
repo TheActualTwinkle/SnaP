@@ -56,7 +56,7 @@ public class AddressablesLoaderHandler : MonoBehaviour
         Instance = null;
     }
 
-    public void AddContentUser(IAddressablesLoader contentUser)
+    private void AddContentUser(IAddressablesLoader contentUser)
     {
         _contentUsers.Add(contentUser);
     } 
