@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,13 +9,16 @@ using UnityEngine.UI;
 public class HoverClickSoundPlayer : EventTrigger  
 {
     private AudioSource _audioSource;
-    private AudioClip _hoverAudioClip;
-    private AudioClip _clickAudioClip;
+    private static AudioClip _hoverAudioClip;
+    private static AudioClip _clickAudioClip;
 
     private Button _button;
-
-    private void Awake()
+    
+    protected virtual void Awake()
     {
+        // Set up the loader
+        SetupLoader();
+
         _audioSource = GetComponent<AudioSource>();
 
         TryGetComponent(out _button);
@@ -39,29 +44,24 @@ public class HoverClickSoundPlayer : EventTrigger
         _button.onClick.RemoveListener(OnButtonClick);
     }
 
-    private void Start()
+    public static void SetClips(AudioClip hoverAudioClip, AudioClip clickAudioClip)
     {
-        string pathToHoverSfx = Constants.Sound.Sfx.Paths[Constants.Sound.Sfx.Type.ButtonHover];
-        _hoverAudioClip = Resources.Load<AudioClip>(pathToHoverSfx);  
-        
-        string pathToMusicSfx = Constants.Sound.Sfx.Paths[Constants.Sound.Sfx.Type.ButtonClick];
-        _clickAudioClip = Resources.Load<AudioClip>(pathToMusicSfx);
-        
-        if (_hoverAudioClip == null)
-        {
-            Logger.Log($"Audio Clip named '{pathToHoverSfx}' not found!", Logger.LogLevel.Error);
-        }      
-        
-        if (_clickAudioClip == null)
-        {
-            Logger.Log($"Audio Clip named '{pathToMusicSfx}' not found!", Logger.LogLevel.Error);
-        }
+        _hoverAudioClip = hoverAudioClip;
+        _clickAudioClip = clickAudioClip;
     }
 
     public override void OnPointerEnter(PointerEventData eventData)
     {
         _audioSource.clip = _hoverAudioClip;
         _audioSource.Play();
+    }
+
+    private void SetupLoader()
+    {
+        
+        HoverClickSoundPlayerAddressablesLoader loader = gameObject.AddComponent<HoverClickSoundPlayerAddressablesLoader>();
+        loader.HoverType = Constants.Sound.Sfx.Type.ButtonHover;
+        loader.ClickType = Constants.Sound.Sfx.Type.ButtonClick;
     }
 
     private void OnButtonClick()

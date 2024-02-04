@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -5,6 +6,7 @@ using UnityEngine.UI;
 public class SoundUI : MonoBehaviour
 {
     [SerializeField] private AudioMixer _mixer;
+    
     [SerializeField] private Image _musicCrossImage;
     [SerializeField] private Image _sfxCrossImage;
 

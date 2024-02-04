@@ -1,7 +1,7 @@
 Shader "UI/BlurShader"
 {    
     Properties {
-        _Size ("Blur", Range(0, 2)) = 1
+        _Size ("Blur", Range(0, 3)) = 1
         [HideInInspector] _MainTex ("Masking Texture", 2D) = "white" {}
         _AdditiveColor ("Additive Tint color", Color) = (0, 0, 0, 0)
         _MultiplyColor ("Multiply Tint color", Color) = (1, 1, 1, 1)

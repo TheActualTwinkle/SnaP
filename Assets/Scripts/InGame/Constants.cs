@@ -8,7 +8,42 @@ public abstract class Constants
         public const string Desk = "Desk_d";
         public const string Kickstart = "Kickstart";
     }
+
+    public abstract class Prefabs
+    {
+        public const string GameTitleText = "SnaPGameTitleText";
+    }
     
+    public abstract class Sprites
+    {
+        public const string Music = "MusicIcon";
+        public const string Cross = "Cross";
+        public const string MenuBackground = "nstu_menu";
+        public const string DeskBackground = "nstu_desk_back";
+        public const string GameMainIcon = "AppIcon";
+
+        public abstract class Sdt
+        {
+            public const string Disconnected = "disconnected";
+            public const string Loading = "loading";
+            public const string Success = "success";
+            public const string Fail = "error";
+            public const string Abandoned = "questionmark";
+        }
+
+        public abstract class Cards
+        {
+            public const string CardBack = "CardBack2";
+        }
+
+        public abstract class Chips
+        {
+            public const string ChipsStack = "ChipsStack_";
+            public const uint AssetsCount = 7;
+            public const string Pot = "ChipsStack_7";
+        }
+    }
+
     public abstract class Sound
     {
         public static readonly string MixerPath = "Sound/Mixer";
@@ -17,12 +52,12 @@ public abstract class Constants
         {
             public static readonly Dictionary<Type, string> Paths = new()
             {
-                { Type.ShowingCards, "Sound/SFX/ShowingCards" },
-                { Type.Bet, "Sound/SFX/Bet" },
-                { Type.ToPot, "Sound/SFX/ToPot" },
-                { Type.Check, "Sound/SFX/Check" },
-                { Type.ButtonHover, "Sound/SFX/ButtonHover" },
-                { Type.ButtonClick, "Sound/SFX/ButtonClick" }
+                { Type.ShowingCards, "ShowingCards" },
+                { Type.Bet, "Bet" },
+                { Type.ToPot, "ToPot" },
+                { Type.Check, "Check" },
+                { Type.ButtonHover, "ButtonHover" },
+                { Type.ButtonClick, "ButtonClick" }
 
             };
 
@@ -39,24 +74,11 @@ public abstract class Constants
     
         public abstract class Music
         {
-            public static readonly Dictionary<Type, string> Paths = new() {
-                { Type.BgMusic, "Sound/Music/BGMusic"},
-                { Type.BgMusic2, "Sound/Music/BGMusic2"},
-                { Type.BgMusic3, "Sound/Music/BGMusic3"}
-            }; 
-
-            public enum Type
-            {
-                BgMusic,
-                BgMusic2,
-                BgMusic3
-            }
+            public static readonly List<string> Paths = new() {
+                { "BGMusic"},
+                { "BGMusic2"},
+                { "BGMusic3"}
+            };
         }
-    }
-
-    public abstract class ResourcesPaths
-    {
-        public const string Cards = "Sprites/Cards";
-        public const string Chips = "Sprites/Chips";
     }
 }

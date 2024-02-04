@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -11,13 +12,19 @@ using Application = UnityEngine.Application;
 
 public static class Logger
 {
-    public static readonly string PokerLogViewerFilePath;
+    public static readonly string LogFilePath;
 
     private static DateTime DateTime => DateTime.Now;
     private static RuntimePlatform Platform => Application.platform;
-
-    private static readonly bool PrintSnaPDataTransferLogs = true; // = true; if you want to print SnaPDataTransfer logs in unity editor.
-
+    
+    private static readonly List<LogSource> AcceptableLogSources = new()
+    {
+        LogSource.General,
+        LogSource.SnaPDataTransfer,
+        LogSource.Addressables,
+        // LogSource.AddressablesLoader
+    };
+    
     [SuppressMessage("ReSharper", "HeuristicUnreachableCode")]
     static Logger()
     {
@@ -26,33 +33,32 @@ public static class Logger
 #endif
         
 #pragma warning disable CS0162
-        PrintSnaPDataTransferLogs = Environment.GetCommandLineArgs().Contains("-sdt");
         
-        PokerLogViewerFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.snp";
+        LogFilePath = $"{Application.persistentDataPath}\\Log_{DateTime.UtcNow.ToString(CultureInfo.CurrentCulture).ReplaceAll(new[] {' ', '.', ':', '\\', '/'}, '_')}.snp";
         
-        if (File.Exists(PokerLogViewerFilePath) == false)
+        if (File.Exists(LogFilePath) == false)
         {
-            File.Create(PokerLogViewerFilePath).Close();
+            File.Create(LogFilePath).Close();
         }
-        else
-        {
-            File.WriteAllText(PokerLogViewerFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
-        }
+
+        File.WriteAllText(LogFilePath, $"App Version: {Application.version}. Runtime platform: {Platform.ToString()}.\n\r");
+        
 #pragma warning restore CS0162
     }
 
     public static void Log(object message, LogLevel logLevel = LogLevel.Info, LogSource logSource = LogSource.General)
     {
-#if !UNITY_EDITOR
-        LogMessage logMessage = new(DateTime, message, logLevel, logSource);
-        WriteToFile(logMessage);
-#endif
-        
-        if (logSource == LogSource.SnaPDataTransfer && PrintSnaPDataTransferLogs == false)
+        if (AcceptableLogSources.Contains(logSource) == false)
         {
             return;
         }
         
+        
+#if !UNITY_EDITOR
+        LogMessage logMessage = new(DateTime, message, logLevel, logSource);
+        WriteToFile(logMessage);
+#endif
+
         string logSourceString = logSource == LogSource.General ? string.Empty : $"[{logSource.ToString()}] ";
         string fullMessage = logSourceString + message;
         
@@ -81,7 +87,7 @@ public static class Logger
     {
         try
         {
-            using StreamWriter sw = new(PokerLogViewerFilePath, true);
+            using StreamWriter sw = new(LogFilePath, true);
             sw.WriteLine(message.ToString());
         }
         catch (Exception e)
@@ -101,5 +107,7 @@ public static class Logger
     {
         General,
         SnaPDataTransfer,
+        Addressables,
+        AddressablesLoader,
     }
 }

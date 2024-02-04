@@ -23,6 +23,11 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
 
     private void Awake()
     {
+#if !UNITY_STANDALONE
+        Destroy(gameObject);
+        return;
+#endif
+        
         _recyclableScrollRect.DataSource = this;
     }
 

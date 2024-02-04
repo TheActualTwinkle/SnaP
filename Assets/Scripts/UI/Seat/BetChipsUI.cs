@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,7 +48,7 @@ public class BetChipsUI : MonoBehaviour
         StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
     }
     
-    private void OnPlayerSit(Player player, int index)
+    private async void OnPlayerSit(Player player, int index)
     {
         if (index != _index)
         {
@@ -61,7 +63,7 @@ public class BetChipsUI : MonoBehaviour
         }
 
         _betValueText.text = player.BetAmount.ToString();
-        SetImage(player.BetAmount);
+        await SetImage(player.BetAmount);
         
         _animator.ResetAllTriggers();
         _animator.SetTrigger(Bet);
@@ -79,7 +81,7 @@ public class BetChipsUI : MonoBehaviour
         player.BetNetworkVariable.OnValueChanged -= OnBetValueChanged;
     }
     
-    private void OnBetValueChanged(uint oldValue, uint newValue)
+    private async void OnBetValueChanged(uint oldValue, uint newValue)
     {
         if (newValue <= 0)
         {
@@ -87,12 +89,19 @@ public class BetChipsUI : MonoBehaviour
         }
 
         _betValueText.text = newValue.ToString();
-        SetImage(newValue);
+        await SetImage(newValue);
         
         _animator.ResetAllTriggers();
         _animator.SetTrigger(Bet);
 
-        SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
+        try
+        {
+            SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
+        }
+        catch (Exception)
+        {
+            Logger.Log("SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet) failed.", Logger.LogLevel.Error);
+        }
     }
     
     private IEnumerator DelayToPotAnimation(float delay)
@@ -103,7 +112,7 @@ public class BetChipsUI : MonoBehaviour
         _animator.SetTrigger(ToPot);
     }
 
-    private void SetImage(uint betValue)
+    private async Task SetImage(uint betValue)
     {
         uint smallBlindValue = Betting.SmallBlind;
 
@@ -138,7 +147,8 @@ public class BetChipsUI : MonoBehaviour
             imageId = 1;
         }
 
-        _image.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Chips}/ChipsStack_" + imageId);
+        
+        _image.sprite = await AddressablesLoader.LoadAsync<Sprite>($"{Constants.Sprites.Chips.ChipsStack}" + imageId);
         //_image.SetNativeSize(); todo: Fix chips stack size.
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,9 +23,7 @@ public class PocketCardsUI : MonoBehaviour
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
-
-    private IEnumerator _loadFrontSpriteForCardsCoroutine;
-
+    
     private void OnEnable()
     {
         Game.GameStageBeganEvent += GameStageBeganEvent;
@@ -39,7 +38,7 @@ public class PocketCardsUI : MonoBehaviour
         Betting.PlayerEndBettingEvent -= OnPlayerEndBetting;
     }
 
-    private void GameStageBeganEvent(GameStage gameStage)
+    private async void GameStageBeganEvent(GameStage gameStage)
     {
         Player player = PlayerSeats.Players[_position];
         if (player == null || player.IsOwner == true)
@@ -51,8 +50,9 @@ public class PocketCardsUI : MonoBehaviour
         {
             case GameStage.Preflop:
             {
-                _cardImage1.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/CardBack");
-                _cardImage2.sprite = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/CardBack");
+                Sprite backSprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Cards.CardBack);
+                _cardImage1.sprite = backSprite;
+                _cardImage2.sprite = backSprite;
         
                 _animator.ResetAllTriggers();
                 _animator.SetTrigger(GetCards);
@@ -60,7 +60,7 @@ public class PocketCardsUI : MonoBehaviour
             }
             case GameStage.Showdown:
             {
-                StartCoroutine(LoadFrontSpriteForCards(player));
+                await LoadFrontSpriteForCards(player);
 
                 _animator.ResetAllTriggers();
                 _animator.SetTrigger(OpenCards);
@@ -70,7 +70,7 @@ public class PocketCardsUI : MonoBehaviour
             {
                 if (Betting.IsAllIn == true)
                 {
-                    StartCoroutine(LoadFrontSpriteForCards(player));
+                    await LoadFrontSpriteForCards(player);
 
                     _animator.ResetAllTriggers();;
                     _animator.SetTrigger(OpenCards);
@@ -102,12 +102,15 @@ public class PocketCardsUI : MonoBehaviour
         _animator.SetTrigger(Fold);
     }
 
-    private IEnumerator LoadFrontSpriteForCards(Player player)
+    private async Task LoadFrontSpriteForCards(Player player)
     {
-        yield return new WaitUntil(() => ReferenceEquals(player.PocketCard1, null) == false && ReferenceEquals(player.PocketCard2, null) == false);
+        while (ReferenceEquals(player.PocketCard1, null) == true || ReferenceEquals(player.PocketCard2, null) == true)
+        {
+            await Task.Yield();
+        }
 
-        _cardSprite1 = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit}");
-        _cardSprite2 = Resources.Load<Sprite>($"{Constants.ResourcesPaths.Cards}/{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit}");
+        _cardSprite1 = await AddressablesLoader.LoadAsync<Sprite>($"{(int)player.PocketCard1.Value}_{player.PocketCard1.Suit}");
+        _cardSprite2 = await AddressablesLoader.LoadAsync<Sprite>($"{(int)player.PocketCard2.Value}_{player.PocketCard2.Suit}");
     }  
     
     // Animator

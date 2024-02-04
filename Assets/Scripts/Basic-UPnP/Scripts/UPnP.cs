@@ -54,7 +54,7 @@ public static class UPnP
 		}
         catch (MappingException e)
         {
-            Debug.LogError(e.Message);
+	        Logger.Log(e.Message, Logger.LogLevel.Error);
             return false;
         }
 

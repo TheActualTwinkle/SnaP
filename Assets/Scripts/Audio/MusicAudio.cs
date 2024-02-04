@@ -8,10 +8,12 @@ public class MusicAudio : MonoBehaviour
     private static MusicAudio Instance { get; set; }
 
     [SerializeField] private AudioSource _audioSource;
-    private Dictionary<Constants.Sound.Music.Type, AudioClip> _audioClips = new();
+    private List<AudioClip> _audioClips;
 
     [SerializeField] private float _musicInterval;
 
+    private bool _isClipsReady;
+    
     private void Awake()
     {
         if (Instance == null)
@@ -23,8 +25,6 @@ public class MusicAudio : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
-        SetupAudioClips();
     }
 
     private void Start()
@@ -39,15 +39,18 @@ public class MusicAudio : MonoBehaviour
 
     private IEnumerator PlayAllClips()
     {
+        yield return new WaitWhile(() => _audioClips == null);
+        
         while (true)
         {
             Shuffle(ref _audioClips);
             
-            foreach (AudioClip audioClip in _audioClips.Values)
+            foreach (AudioClip audioClip in _audioClips)
             {
                 _audioSource.clip = audioClip;
                 _audioSource.Play();
 
+                yield return new WaitForSeconds(audioClip.length);
                 yield return new WaitUntil(() => _audioSource.isPlaying == false);
                 yield return new WaitForSeconds(_musicInterval);
             }
@@ -55,25 +58,14 @@ public class MusicAudio : MonoBehaviour
         // ReSharper disable once IteratorNeverReturns
     }
 
-    private static void Shuffle<T1, T2>(ref Dictionary<T1, T2> dictionary)
+    public void SetClips(IEnumerable<AudioClip> clips)
     {
-        System.Random random = new();
-        dictionary = dictionary.OrderBy(x => random.Next()).ToDictionary(item => item.Key, item => item.Value); 
+        _audioClips = clips.ToList();
     }
 
-    private void SetupAudioClips()
+    private static void Shuffle<T>(ref List<T> list)
     {
-        foreach (KeyValuePair<Constants.Sound.Music.Type, string> keyValuePair in Constants.Sound.Music.Paths)
-        {
-            AudioClip audioClip = Resources.Load<AudioClip>(keyValuePair.Value);
-
-            if (audioClip == null)
-            {
-                Logger.Log($"Audio Clip named '{keyValuePair.Value}' not found!", Logger.LogLevel.Error);
-                continue;
-            }
-            
-            _audioClips.Add(keyValuePair.Key, audioClip);
-        }
+        System.Random random = new();
+        list = list.OrderBy(_ => random.Next()).ToList(); 
     }
 }

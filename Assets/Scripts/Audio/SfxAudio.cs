@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -7,7 +9,7 @@ public class SfxAudio : MonoBehaviour
     public static SfxAudio Instance { get; private set; }
 
     [SerializeField] private AudioSource _audioSource;
-    private readonly Dictionary<Constants.Sound.Sfx.Type, AudioClip> _audioClips = new();
+    private Dictionary<Constants.Sound.Sfx.Type, AudioClip> _audioClips = new();
 
     private void Awake()
     {
@@ -19,8 +21,11 @@ public class SfxAudio : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
 
-        SetupAudioClips();
+    public void SetupAudioClips(Dictionary<Constants.Sound.Sfx.Type, AudioClip> audioClips)
+    {
+        _audioClips = audioClips;
     }
 
     public void Play(Constants.Sound.Sfx.Type audioClipType)
@@ -32,21 +37,5 @@ public class SfxAudio : MonoBehaviour
         
         _audioSource.clip = _audioClips[audioClipType];
         _audioSource.Play();
-    }
-    
-    private void SetupAudioClips()
-    {
-        foreach (KeyValuePair<Constants.Sound.Sfx.Type, string> keyValuePair in Constants.Sound.Sfx.Paths)
-        {
-            AudioClip audioClip = Resources.Load<AudioClip>(keyValuePair.Value);
-
-            if (audioClip == null)
-            {
-                Logger.Log($"Audio Clip named '{keyValuePair.Value}' not found!", Logger.LogLevel.Error);
-                continue;
-            }
-            
-            _audioClips.Add(keyValuePair.Key, audioClip);
-        }
     }
 }

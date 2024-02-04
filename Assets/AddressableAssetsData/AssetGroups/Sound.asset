@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Sound
+  m_EditorClassIdentifier: 
+  m_GroupName: Sound
+  m_Data:
+    m_SerializedData: []
+  m_GUID: ea90a3ef6166d7b43931d451593a0b2b
+  m_SerializeEntries:
+  - m_GUID: 7380a284625c4b14abce3bab78115c45
+    m_Address: ToPot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 91f65dc47254c144c87fd056f5d1828f
+    m_Address: ShowingCards
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 45eae6c96fc074a4d8f60abf92093076
+    m_Address: Check
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e9afb492a3519fc4da2bffdea1f25a7b
+    m_Address: ButtonHover
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b03fa0f4c2b3fda438604f86279b65be
+    m_Address: ButtonClick
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 78ce634540e2bd34fbea632bcc8c7856
+    m_Address: BetSliderValueChanged
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 97e7973ad7e4d9440a57334ffc5430ee
+    m_Address: BGMusic3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: be7df1446c825bd418768e2cb0104ccb
+    m_Address: BGMusic2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: aa53f27e20203ca4ba4cf64151fb7bee
+    m_Address: BGMusic
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3eaac25878984f24dad3fc1c1b46a23e
+    m_Address: Bet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: a180d5a4809222c4b998fb3936a9604d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7b0dea1a43e844a4d8e2c048cdefa1b7, type: 2}
+    - {fileID: 11400000, guid: 347ef084d4881fe4eb3f5e1aca2850d8, type: 2}

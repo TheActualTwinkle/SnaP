@@ -50,6 +50,9 @@ public class Player : NetworkBehaviour
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static PlayerSeatsUI PlayerSeatUI => PlayerSeatsUI.Instance;
 
+    private float _lastSeatActionTime;
+    private const float SeatActionCooldownSeconds = 2f;
+
     private void OnEnable()
     {
         Game.GameStageOverEvent += OnGameStageOver;
@@ -78,7 +81,7 @@ public class Player : NetworkBehaviour
 
     private void Start()
     {
-        // Set data and UI to non owner players.
+        // Set data and UI of non-owner players.
         if (IsOwner == false && _seatNumber.Value != NullSeatNumber)
         {
             TakeSeat(_seatNumber.Value, true); // go to false todo
@@ -87,24 +90,36 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) == true && IsOwner == true)
+        if (IsOwner == false)
         {
-            if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
-            {
-                SetSeatServerRpc(NullSeatNumber);
+            return;
+        }
 
-                LeaveSeat(PlayerSeats.SeatLeaveReason.CommonLeave);
+        if (Input.GetKeyDown(KeyCode.Escape) == false)
+        {
+            return;
+        }
+        
+        if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
+        {
+            if (CanPerformSeatAction() == false)
+            {
+                return;
+            }
+            
+            SetSeatServerRpc(NullSeatNumber);
+
+            LeaveSeat(PlayerSeats.SeatLeaveReason.UserInput);
+        }
+        else
+        {
+            if (IsServer)
+            {
+                StartCoroutine(HostShutdown());
             }
             else
             {
-                if (IsServer)
-                {
-                    StartCoroutine(HostShutdown());
-                }
-                else
-                {
-                    Shutdown();
-                }
+                Shutdown();
             }
         }
     }
@@ -212,6 +227,11 @@ public class Player : NetworkBehaviour
         {
             return;
         }
+     
+        if (CanPerformSeatAction() == false)
+        {
+            return;
+        }
         
         SetSeatServerRpc(seatNumber);
 
@@ -232,7 +252,7 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            LeaveSeat(PlayerSeats.SeatLeaveReason.CommonLeave);
+            LeaveSeat(PlayerSeats.SeatLeaveReason.UserInput);
         }
     }    
     
@@ -294,11 +314,13 @@ public class Player : NetworkBehaviour
     
     private void TakeSeat(int seatNumber, bool forceToSeat = false)
     {
+        _lastSeatActionTime = Time.realtimeSinceStartup;
         PlayerSeats.TryTake(this, seatNumber, forceToSeat);
     }
 
     private void LeaveSeat(PlayerSeats.SeatLeaveReason leaveReason)
     {
+        _lastSeatActionTime = Time.realtimeSinceStartup;
         PlayerSeats.TryLeave(this, leaveReason);
     }
 
@@ -331,7 +353,7 @@ public class Player : NetworkBehaviour
         {
             AppendAvatarDataServerRpc(packages[i]);
             yield return new WaitUntil(() => _avatarData.Value.CodedValue.Length == (i+1) * maxBytesPerRpc); // Wait for RPC to apply.
-            Debug.Log($"Loading player avatar. {i+1}/{packageAmount} done.");
+            Logger.Log($"Loading player avatar. {i+1}/{packageAmount} done.");
         }
         
         AppendAvatarDataServerRpc(packages[packageAmount - 1]);
@@ -340,6 +362,21 @@ public class Player : NetworkBehaviour
         Logger.Log("Player avatar loaded.");
 
         SetIsImageReadyServerRpc(true);
+    }
+
+    private bool CanPerformSeatAction()
+    {
+        if (Game.CanPerformSeatAction == true)
+        {
+            return false;
+        }
+
+        if (_lastSeatActionTime + SeatActionCooldownSeconds > Time.realtimeSinceStartup)
+        {
+            return false;
+        }
+
+        return true;
     }
     
     public override string ToString()

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.addressables": "1.19.19",
     "com.unity.collab-proxy": "2.0.7",
     "com.unity.editorcoroutines": "1.0.0",
     "com.unity.feature.2d": "1.0.0",
@@ -8,7 +9,6 @@
     "com.unity.ide.vscode": "1.2.5",
     "com.unity.netcode.gameobjects": "1.5.1",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
-    "com.unity.render-pipelines.universal": "12.1.11",
     "com.unity.services.authentication": "2.4.0",
     "com.unity.services.relay": "1.0.5",
     "com.unity.test-framework": "1.1.33",

@@ -18,6 +18,9 @@ public class Game : NetworkBehaviour
 
     public bool IsPlaying => _isPlaying.Value;
     private readonly NetworkVariable<bool> _isPlaying = new();
+    
+    public bool CanPerformSeatAction => _canPerformSeatAction.Value;
+    private readonly NetworkVariable<bool> _canPerformSeatAction = new();
 
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
@@ -38,8 +41,10 @@ public class Game : NetworkBehaviour
                                          PlayerSeats.PlayersAmount >= 2 && 
                                          PlayerSeats.Players.Where(x => x != null).All(x => x.BetAmount == 0);
 
-    [SerializeField] private float _roundsInterval;
-    [SerializeField] private float _showdownEndTime;
+    [SerializeField] private float _roundsIntervalSeconds;
+    [SerializeField] private float _showdownEndTimeSeconds;
+    
+    [SerializeField] private float _playerPerformSeatActionTimeoutSeconds;
 
     private void Awake()
     {
@@ -85,7 +90,7 @@ public class Game : NetworkBehaviour
         
         S_EndStage();
 
-        yield return new WaitForSeconds(_roundsInterval);
+        yield return new WaitForSeconds(_roundsIntervalSeconds);
 
         S_StartNextStage();
     }
@@ -107,7 +112,7 @@ public class Game : NetworkBehaviour
 
         S_EndStage();
 
-        yield return new WaitForSeconds(_roundsInterval);
+        yield return new WaitForSeconds(_roundsIntervalSeconds);
         
         S_StartNextStage();
     }
@@ -151,7 +156,7 @@ public class Game : NetworkBehaviour
 
         S_EndStage();
         
-        yield return new WaitForSeconds(_showdownEndTime);
+        yield return new WaitForSeconds(_showdownEndTimeSeconds);
 
         List<WinnerInfo> winnerInfo = new();
         foreach (Player winner in winners)
@@ -254,7 +259,7 @@ public class Game : NetworkBehaviour
 
     private IEnumerator StartDealAfterRoundsInterval()
     {
-        yield return new WaitForSeconds(_roundsInterval);
+        yield return new WaitForSeconds(_roundsIntervalSeconds);
 
         PlayerSeats.SitEveryoneWaiting();
         PlayerSeats.KickPlayersWithZeroStack();
@@ -272,12 +277,22 @@ public class Game : NetworkBehaviour
     
     private IEnumerator StartDealWhenСonditionTrue()
     {
+        if (IsServer == false)
+        {
+            yield break;
+        }
+        
         yield return new WaitUntil(() => ConditionToStartDeal == true);
-        yield return new WaitForSeconds(0.05f);
 
+        _canPerformSeatAction.Value = true;
+        
         S_StartDeal();
 
         _startDealWhenСonditionTrueCoroutine = null;
+
+        yield return new WaitForSeconds(_playerPerformSeatActionTimeoutSeconds);
+
+        _canPerformSeatAction.Value = false;
     }
 
     private void SetStageCoroutine(GameStage gameStage)
@@ -353,7 +368,7 @@ public class Game : NetworkBehaviour
         }
         
         Logger.Log("Starting Deal.");
-        
+
         _cardDeck = new CardDeck();
         
         Logger.Log($"Deck created: {string.Join(", ", _cardDeck)}.");

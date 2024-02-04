@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,8 +20,10 @@ public class PotUI : MonoBehaviour
         Pot.ValueNetworkVariable.OnValueChanged -= OnPotNetworkVariableValueChanged;
     }
 
-    private void Start()
+    private async void Start()
     {
+        await LoadSprite();
+        
         uint potValue = Pot.ValueNetworkVariable.Value;
         if (potValue == 0)
         {
@@ -46,12 +49,17 @@ public class PotUI : MonoBehaviour
         Show(newValue);
     }
 
+    private async Task LoadSprite()
+    {
+        _chipsImage.sprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Chips.Pot);
+    }
+
     private void Show(uint value)
     {
         _chipsImage.enabled = true;
         _valueText.text = value.ToString();
     }
-    
+
     private void Hide()
     {
         _valueText.text = string.Empty;
