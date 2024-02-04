@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class AddressablesLoaderHandler : MonoBehaviour
 {
     public static AddressablesLoaderHandler Instance { get; private set; }
+
+    public static string LoadTarget => GetLoadTarget();
 
     public uint AssetsCount => GetAssetsCount();
     public uint LoadedAssetsCount => GetLoadedAssetsCount();
@@ -14,11 +17,11 @@ public class AddressablesLoaderHandler : MonoBehaviour
     
     private void Awake()
     {
-#if !UNITY_STANDALONE
+#if UNITY_SERVER
         Destroy(gameObject);
         return;
 #endif
-        
+
         if (Instance == null)
         {
             Instance = this;
@@ -27,6 +30,7 @@ public class AddressablesLoaderHandler : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
     private async void Start()
@@ -76,5 +80,20 @@ public class AddressablesLoaderHandler : MonoBehaviour
     private uint GetLoadedAssetsCount()
     {
         return (uint)_contentUsers.Sum(x => x.LoadedCount);
+    }
+    
+    private static string GetLoadTarget()
+    {
+        switch (Application.platform)
+        {
+            case RuntimePlatform.WindowsPlayer:
+                return "StandaloneWindows64";
+            case RuntimePlatform.LinuxPlayer:
+                return "StandaloneLinux64";;
+            case RuntimePlatform.OSXPlayer:
+                return "StandaloneOSX";
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

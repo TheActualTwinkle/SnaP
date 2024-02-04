@@ -81,7 +81,7 @@ MonoBehaviour:
       - m_Id: 3f85a70f6dbc1d04b89ae3fd8e64bc8d
         m_Value: ServerData/[BuildTarget]
       - m_Id: daf435f3201515046b280416f2e7c9c2
-        m_Value: http://90.189.208.37:47925/[BuildTarget]
+        m_Value: http://90.189.208.37:47925/[AddressablesLoaderHandler.LoadTarget]
     - m_InheritedParent: 
       m_Id: e6cec4c2825d2754c88a93a68b3da47f
       m_ProfileName: Dev
