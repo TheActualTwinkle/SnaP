@@ -29,10 +29,16 @@ public class LoadingUI : MonoBehaviour
 
     private async void Start()
     {
+#if UNITY_SERVER
+        Destroy(gameObject);
+        return;
+#endif
+        
         if (LoadingHandler == null)
         {
             Logger.Log("LoadingHandler is null", Logger.LogLevel.Warning, Logger.LogSource.Addressables);
             Destroy(gameObject);
+            return;
         }
         
         while (true)
