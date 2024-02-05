@@ -638,8 +638,9 @@ GameObject:
   m_Component:
   - component: {fileID: 667586894}
   - component: {fileID: 667586895}
+  - component: {fileID: 667586896}
   m_Layer: 0
-  m_Name: RouterRuleDeleter
+  m_Name: InspectorTools
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -673,6 +674,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _portToDelete: 10002
+--- !u!114 &667586896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667586893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08527db1fd060c449974a68daff676d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1154301284
 PrefabInstance:
   m_ObjectHideFlags: 0

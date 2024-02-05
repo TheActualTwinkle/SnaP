@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class LoadingUI : MonoBehaviour
@@ -55,7 +56,6 @@ public class LoadingUI : MonoBehaviour
 
         await Task.Delay((int)_disposeDelayMs);
 
-        
         Destroy(gameObject);
     }
 
