@@ -30,7 +30,6 @@ public class AddressablesLoaderHandler : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     private async void Start()
@@ -47,7 +46,14 @@ public class AddressablesLoaderHandler : MonoBehaviour
         // Load all content
         foreach (IAddressablesLoader user in _contentUsers)
         {
-            await user.LoadContent();
+            try
+            {
+                await user.LoadContent();
+            }
+            catch(Exception e)
+            {
+                Logger.Log($"Error while loading content: {e.Message}", Logger.LogLevel.Error, Logger.LogSource.Addressables);
+            }
         }
         
         float endTime = Time.realtimeSinceStartup;
@@ -92,6 +98,8 @@ public class AddressablesLoaderHandler : MonoBehaviour
                 return "StandaloneLinux64";;
             case RuntimePlatform.OSXPlayer:
                 return "StandaloneOSX";
+            case RuntimePlatform.WindowsEditor:
+                return "StandaloneWindows64";
             default:
                 throw new ArgumentOutOfRangeException();
         }
