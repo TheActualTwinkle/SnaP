@@ -18,11 +18,6 @@ public class AddressablesLoaderHandler : MonoBehaviour
     
     private void Awake()
     {
-#if UNITY_SERVER
-        Destroy(gameObject);
-        return;
-#endif
-
         if (Instance == null)
         {
             Instance = this;
@@ -35,6 +30,11 @@ public class AddressablesLoaderHandler : MonoBehaviour
 
     private async void Start()
     {
+#if UNITY_SERVER
+        Destroy(gameObject);
+        return;
+#endif
+        
         // Take all objects with IAddressableContentUser component
         List<IAddressablesLoader> addressableContentUsers = FindObjectsOfType<MonoBehaviour>().OfType<IAddressablesLoader>().ToList();
         foreach (IAddressablesLoader user in addressableContentUsers)
