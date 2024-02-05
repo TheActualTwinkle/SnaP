@@ -17,7 +17,7 @@ MonoBehaviour:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
-  m_BuildRemoteCatalog: 0
+  m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
   m_CatalogRequestsTimeout: 0
   m_DisableCatalogUpdateOnStart: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
   m_RemoteCatalogLoadPath:
     m_Id: daf435f3201515046b280416f2e7c9c2
   m_ContentStateBuildPath: 
-  m_BuildAddressablesWithPlayerBuild: 0
+  m_BuildAddressablesWithPlayerBuild: 1
   m_overridePlayerVersion: 
   m_GroupAssets:
   - {fileID: 11400000, guid: 722301fe8e23aeb4d90350f93f3b5b6a, type: 2}
@@ -95,7 +95,7 @@ MonoBehaviour:
       - m_Id: 3f85a70f6dbc1d04b89ae3fd8e64bc8d
         m_Value: ServerData/[BuildTarget]
       - m_Id: daf435f3201515046b280416f2e7c9c2
-        m_Value: http://[PrivateIpAddress]:8000/[BuildTarget]
+        m_Value: http://192.168.0.69:8000/{AddressablesLoaderHandler.LoadTarget}
     m_ProfileEntryNames:
     - m_Id: 26dbc172d5f92cc4a9ed454d0f1da349
       m_Name: BuildTarget

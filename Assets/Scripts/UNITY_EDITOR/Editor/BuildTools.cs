@@ -231,6 +231,8 @@ public class BuildTools : EditorWindow
 
     bool BuildIndividualTarget(BuildTarget target)
     {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(GetTargetGroupForTarget(target), target);
+        
         try
         {
             BuildPlayerOptions options = new();

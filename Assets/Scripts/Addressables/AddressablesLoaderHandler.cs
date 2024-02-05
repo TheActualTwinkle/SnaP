@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class AddressablesLoaderHandler : MonoBehaviour
 {
@@ -58,7 +59,7 @@ public class AddressablesLoaderHandler : MonoBehaviour
         
         float endTime = Time.realtimeSinceStartup;
         
-        Logger.Log($"All {AssetsCount} assets loaded for {endTime - startTime} seconds", Logger.LogSource.Addressables);
+        Logger.Log($"{LoadedAssetsCount}/{AssetsCount} assets loaded for {endTime - startTime} seconds", Logger.LogSource.Addressables);
     }
 
     private void OnDestroy()
