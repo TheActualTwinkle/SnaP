@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -10,8 +11,9 @@ public class HoverClickSoundPlayerAddressablesLoader : MonoBehaviour, IAddressab
     public uint LoadedCount { get; private set; }
 
     public uint AssetsCount => 2;
-    
+
     private AudioClip _hoverAudioClip;
+
     private AudioClip _clickAudioClip;
 
     private static bool _isLoading;
@@ -33,14 +35,23 @@ public class HoverClickSoundPlayerAddressablesLoader : MonoBehaviour, IAddressab
         {
             _isLoading = true;
         }
-        
-        _hoverAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[HoverType]);
-        LoadedCount++;
-        _clickAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[ClickType]);
-        LoadedCount++;
 
-        _isLoading = false;
-        
+        try
+        {
+            _hoverAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[HoverType]);
+            LoadedCount++;
+            _clickAudioClip = await AddressablesLoader.LoadAsync<AudioClip>(Constants.Sound.Sfx.Paths[ClickType]);
+            LoadedCount++;
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Error while loading content: {e.Message} for {gameObject.name}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+
         HoverClickSoundPlayer.SetClips(_hoverAudioClip, _clickAudioClip);
     }
 
