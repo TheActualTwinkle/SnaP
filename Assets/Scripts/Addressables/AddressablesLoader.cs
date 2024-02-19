@@ -8,8 +8,12 @@ public static class AddressablesLoader
 {
     public static async Task<T> LoadAsync<T>(string assetId)
     {
+        float startTime = Time.realtimeSinceStartup;
+        
         AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(assetId);
         await handle.Task;
+        
+        float endTime = Time.realtimeSinceStartup;
 
         if (handle.Status != AsyncOperationStatus.Succeeded)
         {
@@ -17,7 +21,7 @@ public static class AddressablesLoader
             return default;
         }
         
-        Logger.Log($"Loaded asset: {assetId}", Logger.LogSource.AddressablesLoader);
+        Logger.Log($"Loaded asset: {assetId} for {endTime - startTime} seconds", Logger.LogSource.AddressablesLoader);
         
         return handle.Result;
     }
