@@ -26,7 +26,7 @@ namespace SDT
 
         private const uint BufferSize = 512;
         
-        private const string GetCountCommand = "get-count";
+        private const string GetGuidsCommand = "get-guids";
         private const string GetInfoCommand = "get-info";
         private const string CloseCommand = "close";
         
@@ -153,9 +153,9 @@ namespace SDT
 
         private async Task<List<LobbyInfo>> GetLobbyInfoAsyncInternal(CancellationTokenSource token)
         {
-            string message = _destroyed ? CloseCommand : GetCountCommand;
+            string message = _destroyed ? CloseCommand : GetGuidsCommand;
             
-            // Send "get-count" or "close" request.
+            // Send "get-guids" or "close" request.
             await WriteAsync(message);
 
             // If we are dead - return.
@@ -164,21 +164,21 @@ namespace SDT
             {
                 return new List<LobbyInfo>();
             }
-            
-            int length = await GetCountOfLobbies();
 
-            Logger.Log($"Received {length} lobbies count.", Logger.LogSource.SnaPDataTransfer);
+            List<Guid> guids = await GetLobbiesGuids();
+
+            Logger.Log($"Received {guids.Count} lobbies count.", Logger.LogSource.SnaPDataTransfer);
 
             List<LobbyInfo> lobbyInfos = new();
-            // Using the count of lobbies, get all lobbies info. 
-            for (var i = 0; i < length; i++)
+            // Using the lobbies guids, get all lobbies info. 
+            for (var i = 0; i < guids.Count; i++)
             {
                 if (token.IsCancellationRequested == true)
                 {
                     return lobbyInfos;
                 }
 
-                message = $"{GetInfoCommand} {i}";
+                message = $"{GetInfoCommand} {guids[i]}";
                 await WriteAsync(message);
                 
                 string response = await ReadAsync();
@@ -192,35 +192,63 @@ namespace SDT
                 }
                 catch (Exception e)
                 {
-                    Logger.Log($"Can`t deserialize json to LobbyInfo at {i}/{length-1}. " + e, Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                    Logger.Log($"Can`t deserialize json to LobbyInfo at {i}/{guids.Count-1}. " + e, Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
                 }
             }
 
             return lobbyInfos;
         }
 
-        private async Task<int> GetCountOfLobbies()
+        private async Task<List<Guid>> GetLobbiesGuids()
         {
+            var lobbyGuidsJson = string.Empty;
+            
             // Getting count of lobbies.
-            string lengthString = await ReadAsync();
-
-            if (int.TryParse(lengthString, out int length) == false)
+            try
             {
-                Logger.Log($"Can`t parse {lengthString} to int.", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
-                return -1;
+                lobbyGuidsJson = await ReadAsync();
+                List<Guid> lobbyGuids = JsonConvert.DeserializeObject<List<Guid>>(lobbyGuidsJson);
+                return lobbyGuids;
             }
-
-            return length;
+            catch (Exception e)
+            {
+                Logger.Log($"Can`t deserialize lobbies guids from {lobbyGuidsJson}.", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                return new List<Guid>();
+            }
         }
 
         private async Task<string> ReadAsync()
         {
-            var buffer = new byte[BufferSize];
-
-            int read = await NetworkStream.ReadAsync(buffer);
-            string message = Encoding.ASCII.GetString(buffer, 0, read);
-
-            return message;
+            // Start with a reasonable initial buffer size
+            const int initialBufferSize = 1024;
+    
+            // Initialize a MemoryStream to store the incoming data
+            using MemoryStream memoryStream = new();
+        
+            // Create a temporary buffer for reading data
+            var buffer = new byte[initialBufferSize];
+            int bytesRead;
+        
+            // Loop until the end of the message is reached
+            while ((bytesRead = await NetworkStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                // Write the read bytes to the memory stream
+                memoryStream.Write(buffer, 0, bytesRead);
+            
+                // If there's more data available, resize the buffer and continue reading
+                if (NetworkStream.DataAvailable)
+                {
+                    Array.Resize(ref buffer, buffer.Length * 2);
+                }
+                else
+                {
+                    // No more data available, break out of the loop
+                    break;
+                }
+            }
+        
+            // Convert the accumulated bytes to a string using ASCII encoding
+            return Encoding.ASCII.GetString(memoryStream.ToArray());
         }
         
         private async Task WriteAsync(string message)

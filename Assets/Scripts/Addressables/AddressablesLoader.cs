@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -18,7 +19,7 @@ public static class AddressablesLoader
         if (handle.Status != AsyncOperationStatus.Succeeded)
         {
             Logger.Log($"Object of type {typeof(T)} with id {assetId} can`t be loaded via Addressables", Logger.LogLevel.Error, Logger.LogSource.Addressables);
-            return default;
+            throw new FileLoadException();
         }
         
         Logger.Log($"Loaded asset: {assetId} for {endTime - startTime} seconds", Logger.LogSource.AddressablesLoader);
