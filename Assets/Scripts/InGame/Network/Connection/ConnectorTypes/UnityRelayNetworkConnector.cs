@@ -17,8 +17,8 @@ public class UnityRelayNetworkConnector : INetworkConnector
 
     public Task Init()
     {
-        IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.UnityRelay);
-
+        IReadOnlyList<string> connectionData = ConnectionInputFields.Instance.GetConnectionData(NetworkConnectorType.UnityRelay);
+        
         _joinCode = connectionData[0];
         
         return Task.CompletedTask;
@@ -32,7 +32,7 @@ public class UnityRelayNetworkConnector : INetworkConnector
             return false;
         }
         
-        await TryAuthenticate();
+        await Authenticate();
         
         Allocation allocation = await RelayService.Instance.CreateAllocationAsync((int)NetworkConnectorHandler.MaxPlayersAmount);
         _joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
@@ -64,7 +64,7 @@ public class UnityRelayNetworkConnector : INetworkConnector
             return false;
         }
         
-        await TryAuthenticate();
+        await Authenticate();
 
         JoinAllocation allocation;
         try
@@ -100,22 +100,13 @@ public class UnityRelayNetworkConnector : INetworkConnector
         return true;
     }    
     
-    private static async Task TryAuthenticate() 
+    private static async Task Authenticate() 
     {
-        try
-        {
-            if (UnityServices.State == ServicesInitializationState.Initialized ||
-                AuthenticationService.Instance.IsAuthorized == true)
-            {
-                return;
-            }
-        }
-        catch (ServicesInitializationException e)
-        {
-            Logger.Log($"Can`t TryAuthenticate(). {e}", Logger.LogLevel.Error);
-        }
-
         await UnityServices.InitializeAsync();
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        if (!AuthenticationService.Instance.IsSignedIn)
+        {
+            //If not already logged, log the user in
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        }
     }
 }

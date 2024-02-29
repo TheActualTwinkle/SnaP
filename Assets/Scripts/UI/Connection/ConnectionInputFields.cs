@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ConnectionInputField : MonoBehaviour
+public class ConnectionInputFields : MonoBehaviour
 {
-    public static ConnectionInputField Instance { get; private set; }
+    public static ConnectionInputFields Instance { get; private set; }
 
     [SerializeField] private TMP_InputField _ipAddressInputField;
     [SerializeField] private TMP_InputField _portInputField;
@@ -22,6 +22,11 @@ public class ConnectionInputField : MonoBehaviour
             Destroy(gameObject);
         }
 
+        if (_ipAddressInputField == null)
+        {
+            return;
+        }
+        
         _ipAddressInputField.text = (await ConnectionDataPresenter.GetLocalIpAddressAsync()).ToString();
     }
 

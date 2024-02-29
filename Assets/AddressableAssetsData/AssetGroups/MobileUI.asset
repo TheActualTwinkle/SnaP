@@ -10,24 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Prefabs
+  m_Name: MobileUI
   m_EditorClassIdentifier: 
-  m_GroupName: Prefabs
+  m_GroupName: MobileUI
   m_Data:
     m_SerializedData: []
-  m_GUID: 9983215e1d001c94da2f6a4252003bee
+  m_GUID: ddbe4d0a9b6c017478202fb6b08a6032
   m_SerializeEntries:
-  - m_GUID: 5353d656a428b584280bdc91ec7ba0bc
-    m_Address: SnaPGameTitleText1
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3d6f2067339773b4d82f3100b28b0a23
-    m_Address: SnaPGameTitleText2
+  - m_GUID: f760396e4f860114ab3fa051c267bb96
+    m_Address: MenuUI_Mobile
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: a180d5a4809222c4b998fb3936a9604d, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 608636969fd01e44ab7b2500b72d0060, type: 2}
-    - {fileID: 11400000, guid: e578106ba578d3448ba306c4036711f9, type: 2}
+    - {fileID: 11400000, guid: ceb9dec0d0f29be409101e6fa0286b13, type: 2}
+    - {fileID: 11400000, guid: 480698e5fdb6d0b46b52ecf7a03652c4, type: 2}

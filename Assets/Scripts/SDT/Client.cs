@@ -23,15 +23,13 @@ namespace SDT
         public static Client Instance { get; private set; }
 
         public ConnectionState ConnectionState { get; private set; } = ConnectionState.Disconnected;
-
-        private const uint BufferSize = 512;
+        
+        [SerializeField] private string _serverIpAddress;
+        [SerializeField] private ushort _serverPort;
         
         private const string GetGuidsCommand = "get-guids";
         private const string GetInfoCommand = "get-info";
         private const string CloseCommand = "close";
-        
-        [SerializeField] private string _serverIpAddress;
-        [SerializeField] private ushort _serverPort;
 
         private bool _destroyed;
 
@@ -212,7 +210,7 @@ namespace SDT
             }
             catch (Exception e)
             {
-                Logger.Log($"Can`t deserialize lobbies guids from {lobbyGuidsJson}.", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
+                Logger.Log($"Can`t deserialize lobbies guids from {lobbyGuidsJson}. {e.Message}", Logger.LogLevel.Error, Logger.LogSource.SnaPDataTransfer);
                 return new List<Guid>();
             }
         }

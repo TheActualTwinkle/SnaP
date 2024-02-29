@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -9,7 +10,8 @@ public class AddressablesLoaderHandler : MonoBehaviour
 {
     public static AddressablesLoaderHandler Instance { get; private set; }
 
-    public static string LoadTarget => GetLoadTarget();
+    // Used by Unity Addressables.
+    [UsedImplicitly] public static string LoadTarget => GetLoadTarget();
 
     public uint AssetsCount => GetAssetsCount();
     public uint LoadedAssetsCount => GetLoadedAssetsCount();

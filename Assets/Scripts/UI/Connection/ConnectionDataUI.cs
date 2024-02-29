@@ -12,7 +12,7 @@ public class ConnectionDataUI : MonoBehaviour
     {
         if (NetworkConnectorHandler.CurrentConnector == null)
         {
-            _text.text = "Null";
+            _text.text = "N/A";
             return;
         }
         
