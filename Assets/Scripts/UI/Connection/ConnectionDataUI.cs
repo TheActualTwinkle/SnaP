@@ -10,13 +10,13 @@ public class ConnectionDataUI : MonoBehaviour
     
     private void Start()
     {
-        if (NetworkConnectorHandler.CurrentConnector == null)
+        if (NetworkConnectorHandler.Connector == null)
         {
             _text.text = "N/A";
             return;
         }
         
-        IEnumerable<string> connectionData = NetworkConnectorHandler.CurrentConnector.ConnectionData;
+        IEnumerable<string> connectionData = NetworkConnectorHandler.Connector.ConnectionData;
         _text.text = string.Join(_dataSeparator, connectionData);
     }
 }

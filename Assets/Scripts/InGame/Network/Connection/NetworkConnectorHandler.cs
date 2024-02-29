@@ -17,11 +17,14 @@ public static class NetworkConnectorHandler
     
     public static event Action<ConnectionState> ConnectionStateChangedEvent;
     
-    private static ConnectionState _connectionState = ConnectionState.Disconnected;
+    public static INetworkConnector Connector { get; private set; }
+
+    public static ConnectionState State { get; private set; } = ConnectionState.Disconnected;
 
     public static bool ShutdownTrigger;
-    
+
     public const uint MaxPlayersAmount = 5;
+    
 
     private const uint MaxConnectAttempts = 4;
     private const uint ConnectTimeoutMS = 3000;
@@ -30,21 +33,19 @@ public static class NetworkConnectorHandler
     
     private const string ConnectionDataSeparator = ":";
     
-    public static INetworkConnector CurrentConnector { get; private set; }
-
     private static bool _isSubscribedToUserConnectionEvents;
     
     public static async Task CreateGame(NetworkConnectorType connectorType)
     {
-        if (_connectionState == ConnectionState.Connecting)
+        if (State == ConnectionState.Connecting)
         {
             Logger.Log("Already connecting. Aborting...", Logger.LogLevel.Error);
             return;
         }
 
-        INetworkConnector connector = GetConnector(connectorType);
+        INetworkConnector connector = NetworkConnectorFactory.Get(connectorType);
         
-        CurrentConnector = connector;
+        Connector = connector;
         await connector.Init();
 
 #if !UNITY_EDITOR
@@ -60,8 +61,8 @@ public static class NetworkConnectorHandler
             if (ShutdownTrigger == true)
             {
                 ShutdownTrigger = false;
-                _connectionState = ConnectionState.Canceled;
-                ConnectionStateChangedEvent?.Invoke(_connectionState);
+                State = ConnectionState.Canceled;
+                ConnectionStateChangedEvent?.Invoke(State);
                 return;
             }
 
@@ -77,8 +78,8 @@ public static class NetworkConnectorHandler
                     await Task.Delay((int)DelayBeforeErrorShutdownMS);
                     Application.Quit(-1);
 #endif
-                    _connectionState = ConnectionState.Canceled;
-                    ConnectionStateChangedEvent?.Invoke(_connectionState);
+                    State = ConnectionState.Canceled;
+                    ConnectionStateChangedEvent?.Invoke(State);
                     return;
                 }
                 
@@ -105,21 +106,21 @@ public static class NetworkConnectorHandler
             _isSubscribedToUserConnectionEvents = true;
         }
 
-        _connectionState = ConnectionState.Successful;
-        ConnectionStateChangedEvent?.Invoke(_connectionState);
+        State = ConnectionState.Successful;
+        ConnectionStateChangedEvent?.Invoke(State);
     }
 
     public static async Task JoinGame(NetworkConnectorType connectorType)
     {
-        if (_connectionState == ConnectionState.Connecting)
+        if (State == ConnectionState.Connecting)
         {
             Logger.Log($"Already connecting. Aborting...", Logger.LogLevel.Error);
             return;
         }
 
-        INetworkConnector connector = GetConnector(connectorType);
+        INetworkConnector connector = NetworkConnectorFactory.Get(connectorType);
         
-        CurrentConnector = connector;
+        Connector = connector;
         await connector.Init();
 
         Logger.Log($"==== JOINING TO: {string.Join(ConnectionDataSeparator, connector.ConnectionData)} ====");
@@ -127,8 +128,8 @@ public static class NetworkConnectorHandler
         if (await connector.TryJoinGame() == false)
         {
             Logger.Log("Failed to join to " + string.Join(ConnectionDataSeparator, connector.ConnectionData), Logger.LogLevel.Error);
-            _connectionState = ConnectionState.Failed;
-            ConnectionStateChangedEvent?.Invoke(_connectionState);
+            State = ConnectionState.Failed;
+            ConnectionStateChangedEvent?.Invoke(State);
             return;
         }
         
@@ -141,16 +142,16 @@ public static class NetworkConnectorHandler
         switch (eventType)
         {
             case NetworkEvent.Connect:
-                Logger.Log($"Successfully connected to {string.Join(ConnectionDataSeparator, CurrentConnector.ConnectionData)}");
-                _connectionState = ConnectionState.Successful;
+                Logger.Log($"Successfully connected to {string.Join(ConnectionDataSeparator, Connector.ConnectionData)}");
+                State = ConnectionState.Successful;
                 break;
             case NetworkEvent.Disconnect:
-                Logger.Log($"Failed to connect to {string.Join(ConnectionDataSeparator, CurrentConnector.ConnectionData)}", Logger.LogLevel.Error);
-                _connectionState = ConnectionState.Failed;
+                Logger.Log($"Failed to connect to {string.Join(ConnectionDataSeparator, Connector.ConnectionData)}", Logger.LogLevel.Error);
+                State = ConnectionState.Failed;
                 break;
         }
         
-        ConnectionStateChangedEvent?.Invoke(_connectionState);
+        ConnectionStateChangedEvent?.Invoke(State);
         
         NetworkManager.Singleton.NetworkConfig.NetworkTransport.OnTransportEvent -= OnNetworkTransportEvent;
     }
@@ -165,19 +166,5 @@ public static class NetworkConnectorHandler
     private static void OnClientDisconnected(ulong id)
     {
         Logger.Log($"User disconnected. ID: '{id}'");
-    }
-    
-    private static INetworkConnector GetConnector(NetworkConnectorType connectorType)
-    {
-        INetworkConnector connector = connectorType switch
-        {
-            NetworkConnectorType.IpAddress => new IPAddressNetworkConnector(),
-            NetworkConnectorType.UnityRelay => new UnityRelayNetworkConnector(),
-            NetworkConnectorType.DedicatedServer => new DedicatedServerNetworkConnector(),
-            NetworkConnectorType.UPnP => new UPnPNetworkConnector(),
-            _ => throw new ArgumentOutOfRangeException(nameof(connectorType), connectorType, null)
-        };
-        
-        return connector;
     }
 }

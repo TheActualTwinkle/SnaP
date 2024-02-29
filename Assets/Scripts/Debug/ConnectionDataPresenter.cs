@@ -29,9 +29,9 @@ public static class ConnectionDataPresenter
 
     public static ushort GetGamePort()
     {
-        if (ushort.TryParse(NetworkConnectorHandler.CurrentConnector.ConnectionData.Last(), out ushort port) == false)
+        if (ushort.TryParse(NetworkConnectorHandler.Connector.ConnectionData.Last(), out ushort port) == false)
         {
-            throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.CurrentConnector.ConnectionData.Last()}");
+            throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.Connector.ConnectionData.Last()}");
         }
 
         return port;

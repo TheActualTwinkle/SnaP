@@ -23,9 +23,17 @@ public class SdtConnectionResultUI : MonoBehaviour
 
     private void Awake()
     {
+        // Shouldn`t be on the client in Desk scene.
         if (NetworkManager.Singleton.IsServer == false && _sdtType == SdtType.Server)
         {
-            print("SdtConnectionResultUI should only be on the server.");
+            Destroy(gameObject);
+            return;
+        }
+        
+        // Unity Relay is not supported by SDT.
+        if (NetworkConnectorHandler.State != NetworkConnectorHandler.ConnectionState.Disconnected && 
+            NetworkConnectorFactory.GetEnumType(NetworkConnectorHandler.Connector) is NetworkConnectorType.UnityRelay)
+        {
             Destroy(gameObject);
             return;
         }
