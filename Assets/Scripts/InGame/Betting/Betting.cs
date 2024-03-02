@@ -346,7 +346,7 @@ public class Betting : NetworkBehaviour
 
         if (betAction == BetAction.Check)
         {
-            SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Check);
+            SfxAudioPlayer.Instance.Play(Constants.Sound.Sfx.Type.Check);
         }
     }
 

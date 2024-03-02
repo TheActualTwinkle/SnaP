@@ -45,7 +45,7 @@ public static class Logger
         
 #pragma warning restore CS0162
     }
-
+    
     public static void Log(object message, LogLevel logLevel = LogLevel.Info, LogSource logSource = LogSource.General)
     {
         if (AcceptableLogSources.Contains(logSource) == false)

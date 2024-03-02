@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3786033947581942262}
   - component: {fileID: 3786033947581942265}
   - component: {fileID: 3786033947581942264}
-  - component: {fileID: 2638748385867071149}
+  - component: {fileID: 8669122572005788251}
   m_Layer: 0
   m_Name: Music Audio Source
   m_TagString: Untagged
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _audioSource: {fileID: 3786033947581942265}
   _musicInterval: 2
---- !u!114 &2638748385867071149
+--- !u!114 &8669122572005788251
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,6 +153,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3786033947581942267}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7d04cd3e7b32534a996d31a2087e912, type: 3}
+  m_Script: {fileID: 11500000, guid: 5de339739bff44f19063399109acf40f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _musicAudio: {fileID: 3786033947581942264}

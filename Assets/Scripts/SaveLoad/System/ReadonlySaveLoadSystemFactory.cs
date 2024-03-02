@@ -33,7 +33,6 @@ public class ReadonlySaveLoadSystemFactory : MonoBehaviour
         _saveLoadSystem = _chosenSaveLoadSystemType switch
         {
             SaveLoadSystemType.Binary => new BinarySaveLoadSystem(),
-            SaveLoadSystemType.MySql => new MySqlSaveLoadSystem(),
             _ => throw new ArgumentOutOfRangeException(nameof(_chosenSaveLoadSystemType))
         };
     }

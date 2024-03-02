@@ -1,4 +1,6 @@
-﻿namespace SDT
+﻿using JetBrains.Annotations;
+
+namespace SDT
 {
     public class LobbyInfo
     {
@@ -19,6 +21,7 @@
             LobbyName = lobbyName;
         }
         
+        [UsedImplicitly]
         public void Deconstruct(ref LobbyInfo lobbyInfo)
         {
             lobbyInfo.PublicIpAddress = PublicIpAddress;

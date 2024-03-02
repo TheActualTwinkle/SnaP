@@ -24,13 +24,14 @@ public class SdtConnectionStatusHoverTooltip : HoverTooltip
             SdtType.Client => SdtClient.ConnectionState,
             _ => throw new ArgumentOutOfRangeException()
         };
+        
         Text.text = state switch
         {
             ConnectionState.Connecting => "Connecting to SnaP Data Transfer server...",
             ConnectionState.Successful => "You are connected to SnaP Data Transfer server!",
             ConnectionState.Failed => "Connection to SnaP Data Transfer server failed.\nClick to reconnect.",
             ConnectionState.Disconnected => "Disconnected (unknown reason).\nClick to reconnect.",
-            ConnectionState.DisconnectedPortClosed => "Disconnected.\nYour lobby not visible outside your LAN.\nClick to reconnect.",
+            ConnectionState.DisconnectedPortClosed => "Disconnected.\nYour lobby is not visible.\nClick to reconnect.",
             ConnectionState.Abandoned => "Abandoned.\nConnection to SnaP Data Transfer corrupted.\nPlease restart the game.",
             _ => throw new ArgumentOutOfRangeException()
         };

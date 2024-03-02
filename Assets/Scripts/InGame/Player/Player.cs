@@ -48,7 +48,7 @@ public class Player : NetworkBehaviour
     private static Game Game => Game.Instance;
     private static Betting Betting => Betting.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
-    private static PlayerSeatsUI PlayerSeatUI => PlayerSeatsUI.Instance;
+    private static PlayerSeatsUI PlayerSeatsUI => PlayerSeatsUI.Instance;
 
     private float _lastSeatActionTime;
     private const float SeatActionCooldownSeconds = 2f;
@@ -61,9 +61,16 @@ public class Player : NetworkBehaviour
         OwnerBetUI.BetInputFieldValueChangedEvent += OnBetInputFieldValueChanged;
         _seatNumber.OnValueChanged += OnSeatNumberChanged;
         
-        PlayerSeatUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatButton;
-        
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+
+        if (PlayerSeatsUI == null)
+        {
+            PlayerSeatsUI.InstantiatedEvent += SubscribeToPlayerClickTakeButton;
+        }
+        else
+        {
+            SubscribeToPlayerClickTakeButton();
+        }
     }
 
     private void OnDisable()
@@ -74,9 +81,12 @@ public class Player : NetworkBehaviour
         OwnerBetUI.BetInputFieldValueChangedEvent -= OnBetInputFieldValueChanged;
         _seatNumber.OnValueChanged -= OnSeatNumberChanged;
         
-        PlayerSeatUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatButton;
-        
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+
+        if (PlayerSeatsUI != null)
+        {
+            PlayerSeatsUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatsButton;
+        }
     }
 
     private void Start()
@@ -199,6 +209,11 @@ public class Player : NetworkBehaviour
 
         Shutdown();
     }
+    
+    private void SubscribeToPlayerClickTakeButton()
+    {
+        PlayerSeatsUI.PlayerClickTakeButtonEvent += OnPlayerClickTakeSeatsButton;
+    }
 
     private void OnClientDisconnected(ulong id)
     {
@@ -221,7 +236,7 @@ public class Player : NetworkBehaviour
     }
     
     // Set data to owner.
-    private void OnPlayerClickTakeSeatButton(int seatNumber)
+    private void OnPlayerClickTakeSeatsButton(int seatNumber)
     {
         if (IsOwner == false)
         {

@@ -10,6 +10,8 @@ public class SoundUI : MonoBehaviour
     [SerializeField] private Image _musicCrossImage;
     [SerializeField] private Image _sfxCrossImage;
 
+    [SerializeField] private Image _musixButtonImage;
+    
     private void Start()
     {
         _mixer.GetFloat("MusicVol", out float value);
@@ -22,9 +24,17 @@ public class SoundUI : MonoBehaviour
         _sfxCrossImage.enabled = active;
         _mixer.SetFloat("SFXVol", value);
     }
+    
+    public void SetSprites(Sprite musicSprite, Sprite crossSprite)
+    {
+        _musixButtonImage.sprite = musicSprite;
+        
+        _musicCrossImage.sprite = crossSprite;
+        _sfxCrossImage.sprite = crossSprite;
+    }
 
     // Button
-    private void ChangeMusicState()
+    public void ChangeMusicState()
     {
         _mixer.GetFloat("MusicVol", out float value);
         bool active = value > -80;
@@ -43,7 +53,7 @@ public class SoundUI : MonoBehaviour
     }
 
     // Button
-    private void ChangeSfxState()
+    public void ChangeSfxState()
     {
         _mixer.GetFloat("SFXVol", out float value);
         bool active = value > -80;

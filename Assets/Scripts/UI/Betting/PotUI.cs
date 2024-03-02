@@ -1,14 +1,17 @@
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PotUI : MonoBehaviour
+public class PotUI : MonoBehaviour, IChipsAssetUser
 {
     [SerializeField] private Image _chipsImage;
     [SerializeField] private TextMeshProUGUI _valueText;
 
     private static Pot Pot => Pot.Instance;
+    
+    private List<Sprite> _preloadedChipsSprites;
     
     private void OnEnable()
     {
@@ -20,10 +23,8 @@ public class PotUI : MonoBehaviour
         Pot.ValueNetworkVariable.OnValueChanged -= OnPotNetworkVariableValueChanged;
     }
 
-    private async void Start()
+    private void Start()
     {
-        await LoadSprite();
-        
         uint potValue = Pot.ValueNetworkVariable.Value;
         if (potValue == 0)
         {
@@ -33,6 +34,14 @@ public class PotUI : MonoBehaviour
         Show(potValue);
     }
 
+    public void SetChipsSprites(IEnumerable<Sprite> sprite)
+    {
+        _preloadedChipsSprites = sprite.ToList();
+        
+        const string assetId = Constants.Sprites.Chips.Pot;
+        _chipsImage.sprite = _preloadedChipsSprites.Find(x => x.name == assetId);
+    }
+    
     private void OnPotNetworkVariableValueChanged(uint previousValue, uint newValue)
     {
         if (newValue == 0)
@@ -43,15 +52,10 @@ public class PotUI : MonoBehaviour
         
         if (_valueText.text != newValue.ToString())
         {
-            SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.ToPot);
+            SfxAudioPlayer.Instance.Play(Constants.Sound.Sfx.Type.ToPot);
         }
         
         Show(newValue);
-    }
-
-    private async Task LoadSprite()
-    {
-        _chipsImage.sprite = await AddressablesLoader.LoadAsync<Sprite>(Constants.Sprites.Chips.Pot);
     }
 
     private void Show(uint value)

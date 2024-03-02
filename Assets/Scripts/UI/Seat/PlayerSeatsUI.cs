@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class PlayerSeatsUI : MonoBehaviour
 {
+    public static event Action InstantiatedEvent; 
+    
     public static PlayerSeatsUI Instance { get; private set; }
 
     public event Action<int> PlayerClickTakeButtonEvent;
@@ -56,6 +58,8 @@ public class PlayerSeatsUI : MonoBehaviour
         {
             _defaultSeatPositions.Add(seatPosition);
         }
+        
+        InstantiatedEvent?.Invoke();
     }
         
     private void OnPlayerSit(Player player, int seatNumber)

@@ -27,7 +27,7 @@ public static class NetworkConnectorHandler
     
 
     private const uint MaxConnectAttempts = 4;
-    private const uint ConnectTimeoutMS = 3000;
+    private const uint ConnectTimeoutMs = 3000;
     
     [UsedImplicitly] private const uint DelayBeforeErrorShutdownMS = 3000;
     
@@ -69,13 +69,13 @@ public static class NetworkConnectorHandler
             if (await connector.TryCreateGame() == false)
             {
                 Logger.Log($"Failed to start at {string.Join(ConnectionDataSeparator, connector.ConnectionData)}. Attempt {i+1}/{MaxConnectAttempts}", Logger.LogLevel.Error);
-                await Task.Delay((int)ConnectTimeoutMS);
+                await Task.Delay(TimeSpan.FromMilliseconds(ConnectTimeoutMs));
                 
                 if (i == MaxConnectAttempts - 1)
                 {
 #if !UNITY_STANDALONE
                     Logger.Log($"Connection timeout. Shuts-downing in {DelayBeforeErrorShutdownMS} milliseconds.");
-                    await Task.Delay((int)DelayBeforeErrorShutdownMS);
+                    await Task.Delay(TimeSpan.FromMilliseconds(DelayBeforeErrorShutdownMS));
                     Application.Quit(-1);
 #endif
                     State = ConnectionState.Canceled;

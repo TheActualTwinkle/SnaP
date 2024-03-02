@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4160609684519608492}
   - component: {fileID: 705205731656394730}
   m_Layer: 5
-  m_Name: ProgressText
+  m_Name: LoadingInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Progress Text
+  m_text: Loading Info
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 45693bd3ea90c99408d1037fd2b3dc99, type: 2}
   m_sharedMaterial: {fileID: -9129270107332301358, guid: 45693bd3ea90c99408d1037fd2b3dc99, type: 2}
@@ -93,7 +93,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 119.55
+  m_fontSize: 119.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -251,7 +251,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 7696893423603922639}
   m_FillRect: {fileID: 7696893423649571702}
   m_HandleRect: {fileID: 7696893423603922638}
@@ -427,7 +427,7 @@ Canvas:
   m_GameObject: {fileID: 7696893423035378143}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -491,11 +491,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92bca2d55a46e7644b01f9e4f2f462d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _backgroundImage: {fileID: 7696893423759771045}
-  _slider: {fileID: 7696893422334338708}
-  _progressText: {fileID: 705205731656394730}
-  _pollingIntervalMs: 250
-  _disposeDelayMs: 750
+  _canvas: {fileID: 7696893423035378138}
+  _progressBar: {fileID: 7696893422334338708}
+  _loadingInfo: {fileID: 705205731656394730}
+  _barSpeed: 5
+  _loadEndDelaySeconds: 0
 --- !u!1 &7696893423603922637
 GameObject:
   m_ObjectHideFlags: 0

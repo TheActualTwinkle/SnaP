@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6497534480173792729}
   - component: {fileID: 6497534480173792728}
   - component: {fileID: 6497534480173792711}
-  - component: {fileID: 6497534480173792710}
+  - component: {fileID: 3048455466110428169}
   m_Layer: 5
   m_Name: UI_Mobile
   m_TagString: Untagged
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &6497534480173792710
+--- !u!114 &3048455466110428169
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -455,7 +455,8 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5231294857612428494, guid: fc708891173c08c48b3806aadeda1476, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: fc708891173c08c48b3806aadeda1476, type: 3}
 --- !u!224 &7300438856528137992 stripped
 RectTransform:

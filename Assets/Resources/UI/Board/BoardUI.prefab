@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5084385057578158001}
   - component: {fileID: 5084385057578158003}
   - component: {fileID: 5084385057578158002}
+  - component: {fileID: 1049221350101458838}
   m_Layer: 5
   m_Name: BoardUI
   m_TagString: Untagged
@@ -84,7 +85,18 @@ MonoBehaviour:
   - {fileID: 8790537505814019681}
   - {fileID: 331852054420897279}
   - {fileID: 3367200856411395639}
-  _backSprite: {fileID: 21300000, guid: 81712adfe5d92ec46afd8393dce9f860, type: 3}
+--- !u!114 &1049221350101458838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5084385057578158000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf3f2be40184615b8c28bd76f89711c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1972026812979405494
 PrefabInstance:
   m_ObjectHideFlags: 0

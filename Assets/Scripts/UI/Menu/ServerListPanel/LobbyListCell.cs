@@ -96,7 +96,7 @@ public class LobbyListCell : MonoBehaviour, ICell
                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
         }
 
-        await Task.Delay((int)(_joinButtonDisabledTimeSeconds * 1000));
+        await Task.Delay(TimeSpan.FromSeconds(_joinButtonDisabledTimeSeconds));
 
         if (_buttonText == null || _joinButton == null)
         {

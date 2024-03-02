@@ -187,7 +187,7 @@ namespace SDT
                     break;
                 }
                 
-                await Task.Delay(_awaitLobbyInitializationIntervalMs);
+                await Task.Delay(TimeSpan.FromMilliseconds(_awaitLobbyInitializationIntervalMs));
             }
         }
         
