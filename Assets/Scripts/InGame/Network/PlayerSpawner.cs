@@ -4,14 +4,11 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerSpawner : NetworkBehaviour, ILoadingOperation
+public class PlayerSpawner : NetworkBehaviour
 {
     public string Description => "Player spawning...";
     
     [SerializeField] private Player _playerPrefab;
-    
-    private ulong _clientId;
-    private string _sceneName = string.Empty;
 
     public override void OnNetworkSpawn()
     {
@@ -22,34 +19,17 @@ public class PlayerSpawner : NetworkBehaviour, ILoadingOperation
     {
         NetworkManager.Singleton.SceneManager.OnLoadComplete -= OnLoadComplete;
     }
-
-    public Task Load(Action<float> onProgress)
+    
+    private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
     {
-        onProgress?.Invoke(Constants.Loading.FakeLoadStartValue);
-        
-        Spawn();
-        
-        onProgress?.Invoke(1);
-        
-        return Task.CompletedTask;
-    }
-
-    private void Spawn()
-    {
-        if (_sceneName.Contains(Constants.SceneNames.Desk) == true && IsServer == true)
+        if (sceneName.Contains(Constants.SceneNames.Desk) == true && IsServer == true)
         {
-            if (IsHost == false && NetworkManager.Singleton.LocalClientId == _clientId)
+            if (IsHost == false && NetworkManager.Singleton.LocalClientId == clientId)
             {
                 return;
             }
             
-            NetworkObjectSpawner.SpawnNetworkObjectChangeOwnershipToClient(_playerPrefab.gameObject, Vector3.zero, _clientId, true).GetComponent<Player>();
+            NetworkObjectSpawner.SpawnNetworkObjectChangeOwnershipToClient(_playerPrefab.gameObject, Vector3.zero, clientId, true).GetComponent<Player>();
         }
-    }
-    
-    private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
-    {
-        _clientId = clientId;
-        _sceneName = sceneName;
     }
 }

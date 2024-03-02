@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class DeskSceneStartup : MonoBehaviour
 {
     [SerializeField] private AddressablesProviderHandler _addressablesProviderHandler;
-    [SerializeField] private PlayerSpawner _playerSpawner;
     
     private void Start()
     {
@@ -22,8 +21,6 @@ public class DeskSceneStartup : MonoBehaviour
         
         // Setup assets.
         loadingOperations.Enqueue(_addressablesProviderHandler);    
-        
-        loadingOperations.Enqueue(_playerSpawner);    
         
         LoadingUI.Instance.Load(loadingOperations);
     }

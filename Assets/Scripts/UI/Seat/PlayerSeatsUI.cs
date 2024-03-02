@@ -60,6 +60,31 @@ public class PlayerSeatsUI : MonoBehaviour
         }
         
         InstantiatedEvent?.Invoke();
+        
+        FetchSeats();
+    }
+
+    private void FetchSeats()
+    {
+        for (var i = 0; i < PlayerSeats.Players.Count; i++)
+        {
+            if (PlayerSeats.Players[i] == null)
+            {
+                continue;
+            }
+            
+            OnPlayerSit(PlayerSeats.Players[i], i);
+        }
+
+        for (var i = 0; i < PlayerSeats.WaitingPlayers.Count; i++)
+        {
+            if (PlayerSeats.WaitingPlayers[i] == null)
+            {
+                continue;
+            }
+            
+            OnPlayerWaitForSit(PlayerSeats.WaitingPlayers[i], i);
+        }
     }
         
     private void OnPlayerSit(Player player, int seatNumber)

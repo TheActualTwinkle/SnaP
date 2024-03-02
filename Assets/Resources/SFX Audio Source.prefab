@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6870207707321139272}
   - component: {fileID: 6870207707321139273}
   - component: {fileID: 6870207707321139279}
+  - component: {fileID: -6839847197541912035}
   m_Layer: 0
   m_Name: SFX Audio Source
   m_TagString: Untagged
@@ -142,3 +143,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _audioSource: {fileID: 6870207707321139273}
+--- !u!114 &-6839847197541912035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6870207707321139274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ea64d5665234b9a87711880c88946a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sfxAudioPlayer: {fileID: 6870207707321139279}
