@@ -11,7 +11,7 @@ using UnityEngine;
 public class AddressablesProviderHandler : MonoBehaviour, ILoadingOperation
 {
     // Used by Unity Addressables.
-    [UsedImplicitly] public static string LoadTarget => GetLoadTarget();
+    public static string LoadTarget => GetLoadTarget();
     
     public string Description => "Setup assets...";
 
@@ -68,7 +68,7 @@ public class AddressablesProviderHandler : MonoBehaviour, ILoadingOperation
             case RuntimePlatform.WindowsPlayer:
                 return "StandaloneWindows64";
             case RuntimePlatform.LinuxPlayer:
-                return "StandaloneLinux64";;
+                return "StandaloneLinux64";
             case RuntimePlatform.OSXPlayer:
                 return "StandaloneOSX";
             case RuntimePlatform.Android:
