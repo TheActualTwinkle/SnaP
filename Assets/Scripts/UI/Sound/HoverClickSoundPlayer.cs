@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -46,6 +47,11 @@ public class HoverClickSoundPlayer : EventTrigger
         }
         
         _button.onClick.RemoveListener(OnButtonClick);
+    }
+
+    private void Start()
+    {
+        _audioSource.outputAudioMixerGroup = MixerSingleton.Instance.SfxGroup;
     }
 
     public override void OnPointerEnter(PointerEventData eventData)

@@ -123,6 +123,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &101238792
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 101238793}
+  - component: {fileID: 101238794}
+  m_Layer: 0
+  m_Name: MixerSingleton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &101238793
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101238792}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &101238794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101238792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb00de904e93f294f920fe3aedb60695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mixer: {fileID: 24100000, guid: 0ad00adf51236334e919a15e647d7961, type: 2}
+  _musicGroup: {fileID: 9048940691871364107, guid: 0ad00adf51236334e919a15e647d7961, type: 2}
+  _sfxGroup: {fileID: 3742157179831243423, guid: 0ad00adf51236334e919a15e647d7961, type: 2}
 --- !u!1001 &248906901
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -519,8 +566,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3786033947581942267, guid: f2f88e24bb771e142ac4415dc893fa60, type: 3}
       propertyPath: m_Name
-      value: Music Audio Source
+      value: Music Audio Player
       objectReference: {fileID: 0}
+    - target: {fileID: 8669122572005788251, guid: f2f88e24bb771e142ac4415dc893fa60, type: 3}
+      propertyPath: _musicAudioPlayer
+      value: 
+      objectReference: {fileID: 2007071698}
     m_RemovedComponents:
     - {fileID: 2638748385867071149, guid: f2f88e24bb771e142ac4415dc893fa60, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f2f88e24bb771e142ac4415dc893fa60, type: 3}
@@ -694,6 +745,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _chosenSaveLoadSystemType: 0
+--- !u!114 &2007071698 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3786033947581942264, guid: f2f88e24bb771e142ac4415dc893fa60, type: 3}
+  m_PrefabInstance: {fileID: 1154301284}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75ba04dd9a05bb74cb187885f1313b20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2124454554
 GameObject:
   m_ObjectHideFlags: 0

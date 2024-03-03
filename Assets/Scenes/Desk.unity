@@ -750,7 +750,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6870207707321139274, guid: 7342a87b0a6e325499b5438688ddb62c, type: 3}
       propertyPath: m_Name
-      value: SFX Audio Source
+      value: SFX Audio Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7342a87b0a6e325499b5438688ddb62c, type: 3}

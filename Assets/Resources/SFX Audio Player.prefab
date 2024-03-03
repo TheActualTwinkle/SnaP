@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6870207707321139279}
   - component: {fileID: -6839847197541912035}
   m_Layer: 0
-  m_Name: SFX Audio Source
+  m_Name: SFX Audio Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class MusicAudio : MonoBehaviour
+public class MusicAudioPlayer : MonoBehaviour
 {
-    private static MusicAudio Instance { get; set; }
+    private static MusicAudioPlayer Instance { get; set; }
 
     [SerializeField] private AudioSource _audioSource;
     private List<AudioClip> _audioClips;
@@ -29,6 +30,8 @@ public class MusicAudio : MonoBehaviour
 
     private void Start()
     {
+        _audioSource.outputAudioMixerGroup = MixerSingleton.Instance.MusicGroup;
+        
         if (_audioSource.isPlaying == true)
         {
             _audioSource.Stop();

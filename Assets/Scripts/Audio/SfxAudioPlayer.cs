@@ -23,6 +23,11 @@ public class SfxAudioPlayer : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _audioSource.outputAudioMixerGroup = MixerSingleton.Instance.SfxGroup;
+    }
+
     public void SetClips(Dictionary<Constants.Sound.Sfx.Type, AudioClip> audioClips)
     {
         _audioClips = audioClips;

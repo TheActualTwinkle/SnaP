@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(MusicAudio))]
+[RequireComponent(typeof(MusicAudioPlayer))]
 public class MusicAudioAddressablesProvider : MonoBehaviour, IAddressablesProvider
 {
-    [SerializeField] private MusicAudio _musicAudio;
+    [SerializeField] private MusicAudioPlayer _musicAudioPlayer;
     
     public void Set()
     {
         MusicAudioAddressablesLoader loader = AddressablesLoaderFactory.Get<MusicAudioAddressablesLoader>();
-        _musicAudio.SetClips(loader.Clips);
+        _musicAudioPlayer.SetClips(loader.Clips);
     }
 }
