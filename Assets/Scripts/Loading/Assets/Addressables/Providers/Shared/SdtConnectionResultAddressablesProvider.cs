@@ -14,6 +14,7 @@ public class SdtConnectionResultAddressablesProvider : MonoBehaviour, IAddressab
     public void Set()
     {
         SdtConnectionResultAddressablesLoader loader = AddressablesLoaderFactory.Get<SdtConnectionResultAddressablesLoader>();
+        
         _sdtUi.SetSprites(loader.Sprites);
     }
 }

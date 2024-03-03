@@ -17,14 +17,29 @@ public class AddressablesLoaderHandler : ILoadingOperation
         List<IAddressablesLoader> loaders = AddressablesLoaderFactory.GetAllForScene(sceneName).ToList();
 
         long assetsCount = loaders.Sum(x => x.AssetsCount);
+        long loadedCount = 0;
         
         foreach (IAddressablesLoader loader in loaders)
         {
-            await loader.LoadContent();
+            try
+            {
+                await loader.LoadContent();
+            }
+            catch (Exception)
+            {
+                // ignore
+            }
             
             // Report to the loading operation.
-            long loadedCount = loaders.Sum(x => x.LoadedCount);
+            loadedCount = loaders.Sum(x => x.LoadedCount);
             onProgress?.Invoke(loadedCount/(float)assetsCount);
+        }
+        
+        // TODO: Issue #42
+        // https://github.com/TheActualTwinkle/SnaP/issues/42
+        if (loadedCount < assetsCount)
+        {
+            while (true) await Task.Delay(1000);
         }
     }
 

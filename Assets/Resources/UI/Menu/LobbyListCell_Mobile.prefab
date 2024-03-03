@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 2993705085319118858}
   - component: {fileID: 2537175642316452715}
   m_Layer: 5
-  m_Name: LobbyListCell
+  m_Name: LobbyListCell_Mobile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -251,8 +251,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 130}
+  m_AnchoredPosition: {x: -0.00048828, y: 0}
+  m_SizeDelta: {x: 1080, y: 127.4}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5475080509278057964
 CanvasRenderer:
@@ -589,8 +589,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 659.28, y: 0}
-  m_SizeDelta: {x: 1318.6, y: -28.099}
+  m_AnchoredPosition: {x: 301.41998, y: 0}
+  m_SizeDelta: {x: 602.88, y: -28.099}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5457731095327256633
 CanvasRenderer:
@@ -663,7 +663,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
@@ -724,8 +724,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -442.70996, y: 0}
-  m_SizeDelta: {x: 317.42, y: -28.099}
+  m_AnchoredPosition: {x: -380.57, y: 0}
+  m_SizeDelta: {x: 193.14, y: -28.099}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2251431761163695927
 CanvasRenderer:
@@ -798,7 +798,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}

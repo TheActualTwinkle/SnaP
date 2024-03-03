@@ -54,7 +54,7 @@ public static class AddressablesAssetLoader
         
         string objectType = obj.GetType().Name;
         var objectName = obj.ToString();
-
+        
         Addressables.Release(obj);
         
         Logger.Log($"Unloaded asset: Type: {objectType}; Name: {objectName}", Logger.LogSource.AddressablesLoader);

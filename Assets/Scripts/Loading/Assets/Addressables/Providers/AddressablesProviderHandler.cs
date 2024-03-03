@@ -11,10 +11,10 @@ using UnityEngine;
 public class AddressablesProviderHandler : MonoBehaviour, ILoadingOperation
 {
     // Used by Unity Addressables.
-    public static string LoadTarget => GetLoadTarget();
+    [UsedImplicitly] public static string LoadTarget => GetLoadTarget();
     
     public string Description => "Setup assets...";
-
+    
     private void Start()
     {
 #if UNITY_SERVER
@@ -25,7 +25,7 @@ public class AddressablesProviderHandler : MonoBehaviour, ILoadingOperation
     
     public Task Load(Action<float> onProgress)
     {
-        onProgress?.Invoke(Constants.Loading.FakeLoadStartValue);
+        onProgress?.Invoke(Constants.LoadingUI.FakeLoadStartValue);
         
         SetAssets();
         

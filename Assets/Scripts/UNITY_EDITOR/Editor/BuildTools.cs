@@ -278,6 +278,9 @@ public class BuildTools : EditorWindow
                 case BuildTarget.StandaloneOSX:
                     options.locationPathName = System.IO.Path.Combine("..\\SnaPBuild\\Mac" + suffix, PlayerSettings.productName + suffix, PlayerSettings.productName + suffix + ".app");
                     break;
+                case BuildTarget.Android:
+                    options.locationPathName = System.IO.Path.Combine("..\\SnaPBuild\\Android" + suffix, PlayerSettings.productName + suffix, PlayerSettings.productName + suffix + ".apk");
+                    break;
                 default:
                     options.locationPathName = System.IO.Path.Combine("..\\SnaPBuild\\Unknown" + suffix, PlayerSettings.productName, PlayerSettings.productName);
                     break;

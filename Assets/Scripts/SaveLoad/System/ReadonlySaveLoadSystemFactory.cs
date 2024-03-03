@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// TODO: Has to ne zenjected
 public class ReadonlySaveLoadSystemFactory : MonoBehaviour
 {
     public static ReadonlySaveLoadSystemFactory Instance { get; private set; }

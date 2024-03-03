@@ -85,6 +85,7 @@ public class Player : NetworkBehaviour
 
         if (PlayerSeatsUI != null)
         {
+            PlayerSeatsUI.InstantiatedEvent -= SubscribeToPlayerClickTakeButton;
             PlayerSeatsUI.PlayerClickTakeButtonEvent -= OnPlayerClickTakeSeatsButton;
         }
     }
@@ -110,28 +111,7 @@ public class Player : NetworkBehaviour
             return;
         }
         
-        if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
-        {
-            if (CanPerformSeatAction() == false)
-            {
-                return;
-            }
-            
-            SetSeatServerRpc(NullSeatNumber);
-
-            LeaveSeat(PlayerSeats.SeatLeaveReason.UserInput);
-        }
-        else
-        {
-            if (IsServer)
-            {
-                StartCoroutine(HostShutdown());
-            }
-            else
-            {
-                Shutdown();
-            }
-        }
+        HandleEscapeButton();
     }
 
     public override void OnNetworkSpawn()
@@ -193,6 +173,32 @@ public class Player : NetworkBehaviour
         ClientRpcParams rpcParams = default;
         rpcParams.Send.TargetClientIds = new[] { playerId };
         SetLocalPocketCardsClientRpc(card1, card2, rpcParams);
+    }
+
+    public void HandleEscapeButton()
+    {
+        if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
+        {
+            if (CanPerformSeatAction() == false)
+            {
+                return;
+            }
+            
+            SetSeatServerRpc(NullSeatNumber);
+
+            LeaveSeat(PlayerSeats.SeatLeaveReason.UserInput);
+        }
+        else
+        {
+            if (IsServer)
+            {
+                StartCoroutine(HostShutdown());
+            }
+            else
+            {
+                Shutdown();
+            }
+        }
     }
 
     private void Shutdown()

@@ -87,7 +87,7 @@ public abstract class Constants
         }
     }
     
-    public abstract class Loading
+    public abstract class LoadingUI
     {
         // Used for fake loading on LoadingUI.
         public const float FakeLoadStartValue = 0.3f;

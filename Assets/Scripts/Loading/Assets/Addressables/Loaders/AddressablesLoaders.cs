@@ -74,6 +74,8 @@ public class CardsAddressablesLoader : IAddressablesLoader
             AddressablesAssetLoader.Unload(sprite);
             LoadedCount--;
         }
+        
+        Sprites.Clear();
     }
 }
 
@@ -104,6 +106,8 @@ public class ChipsAddressablesLoader : IAddressablesLoader
             AddressablesAssetLoader.Unload(sprite);
             LoadedCount--;
         }
+        
+        Sprites.Clear();
     }
 }
 
@@ -135,6 +139,8 @@ public class SfxAudioAddressablesLoader : IAddressablesLoader
             AddressablesAssetLoader.Unload(keyValuePair.Value);
             LoadedCount--;
         }
+        
+        Clips.Clear();
     }
 }
 
@@ -168,6 +174,8 @@ public class MusicAudioAddressablesLoader : IAddressablesLoader
             AddressablesAssetLoader.Unload(audioClip);
             LoadedCount--;
         }
+        
+        Clips.Clear();
     }
 }
 
@@ -199,6 +207,8 @@ public class BackgroundImageAddressablesLoader : IAddressablesLoader
     {
         AddressablesAssetLoader.Unload(Sprite);
         LoadedCount = 0;
+
+        Sprite = null;
     }
 }
 
@@ -240,8 +250,10 @@ public class SdtConnectionResultAddressablesLoader : IAddressablesLoader
         AddressablesAssetLoader.Unload(_successSprite);
         AddressablesAssetLoader.Unload(_failSprite);
         AddressablesAssetLoader.Unload(_abandonedSprite);
-
+        
         LoadedCount = 0;
+
+        Sprites = new SdtConnectionResultUI.Sprites();
     }
 }
 
@@ -274,6 +286,9 @@ public class SoundUIAddressablesLoader : IAddressablesLoader
         AddressablesAssetLoader.Unload(CrossSprite);
 
         LoadedCount = 0;
+
+        MusicSprite = null;
+        CrossSprite = null;
     }
 }
 
@@ -301,6 +316,11 @@ public class UIAddressablesLoader : IAddressablesLoader
     {
         _uiPrefab = await Addressables.InstantiateAsync(prefabId).Task;
 
+        if (_uiPrefab == null)
+        {
+            throw new NullReferenceException();
+        }
+        
         Logger.Log($"Instantiated asset: {_uiPrefab}", Logger.LogSource.AddressablesLoader);
     }
     
@@ -308,6 +328,8 @@ public class UIAddressablesLoader : IAddressablesLoader
     {
         AddressablesAssetLoader.UnloadInstance(_uiPrefab);
         LoadedCount = 0;
+
+        _uiPrefab = null;
     }
 
     private string GetPrefabId()

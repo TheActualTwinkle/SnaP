@@ -155,7 +155,10 @@ namespace SDT
                 return;
             }
 
-            await WriteAsync();
+            if (_tcpClient is { Connected: true })
+            {
+                await WriteAsync();
+            }
         }
 
         private async void Disconnect(DisconnectReason reason)
