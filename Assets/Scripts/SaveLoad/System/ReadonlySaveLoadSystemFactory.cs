@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// TODO: Has to ne zenjected
 public class ReadonlySaveLoadSystemFactory : MonoBehaviour
 {
     public static ReadonlySaveLoadSystemFactory Instance { get; private set; }
@@ -33,7 +34,6 @@ public class ReadonlySaveLoadSystemFactory : MonoBehaviour
         _saveLoadSystem = _chosenSaveLoadSystemType switch
         {
             SaveLoadSystemType.Binary => new BinarySaveLoadSystem(),
-            SaveLoadSystemType.MySql => new MySqlSaveLoadSystem(),
             _ => throw new ArgumentOutOfRangeException(nameof(_chosenSaveLoadSystemType))
         };
     }

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class PlayerSeatsUI : MonoBehaviour
 {
+    public static event Action InstantiatedEvent; 
+    
     public static PlayerSeatsUI Instance { get; private set; }
 
     public event Action<int> PlayerClickTakeButtonEvent;
@@ -55,6 +57,33 @@ public class PlayerSeatsUI : MonoBehaviour
         foreach (Vector3 seatPosition in _seatsUI.Select(x => x.transform.localPosition))
         {
             _defaultSeatPositions.Add(seatPosition);
+        }
+        
+        InstantiatedEvent?.Invoke();
+        
+        FetchSeats();
+    }
+
+    private void FetchSeats()
+    {
+        for (var i = 0; i < PlayerSeats.Players.Count; i++)
+        {
+            if (PlayerSeats.Players[i] == null)
+            {
+                continue;
+            }
+            
+            OnPlayerSit(PlayerSeats.Players[i], i);
+        }
+
+        for (var i = 0; i < PlayerSeats.WaitingPlayers.Count; i++)
+        {
+            if (PlayerSeats.WaitingPlayers[i] == null)
+            {
+                continue;
+            }
+            
+            OnPlayerWaitForSit(PlayerSeats.WaitingPlayers[i], i);
         }
     }
         

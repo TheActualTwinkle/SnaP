@@ -199,10 +199,18 @@ public class PlayerSeats : MonoBehaviour
     private Player GetLocalPlayer()
     {
         Player localPlayer = _players.FirstOrDefault(x => x != null && x.IsOwner == true);
-        if (localPlayer == null)
+        if (localPlayer != null)
         {
-            localPlayer = _waitingPlayers.FirstOrDefault(x => x != null && x.IsOwner == true);
+            return localPlayer;
         }
+
+        localPlayer = _waitingPlayers.FirstOrDefault(x => x != null && x.IsOwner == true);
+        if (localPlayer != null)
+        {
+            return localPlayer;
+        }
+        
+        localPlayer = FindObjectsOfType<Player>().FirstOrDefault(x => x.IsOwner);
 
         return localPlayer;
     }

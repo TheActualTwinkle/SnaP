@@ -221,10 +221,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8794211279622767171}
   - component: {fileID: -3604168884431438884}
+  - component: {fileID: 3245064969183279496}
   - component: {fileID: 4071232693766735385}
   - component: {fileID: 4004329030615924157}
   - component: {fileID: 4755744851147177510}
-  - component: {fileID: 7604523661995256254}
   - component: {fileID: 3134481003359079120}
   - component: {fileID: 4273956128979896103}
   - component: {fileID: 8500396804231475322}
@@ -269,13 +269,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f15b8c57dd068489dcf7b9ca596a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sdtType: 0
+  _sdtType: 1
   _image: {fileID: 7448436689564620527}
-  _disconnectedSprite: {fileID: 21300000, guid: 3bda4e7a979a75f429d26e005f67aeaf, type: 3}
-  _loadingSprite: {fileID: 21300000, guid: 7d263c15602f8b342a73745ff1383b9b, type: 3}
-  _successSprite: {fileID: 21300000, guid: 3ebd705d1dd7b6b419ab993c579b6f8a, type: 3}
-  _failSprite: {fileID: 21300000, guid: 714880d45ea86394c9db5ff897aa8354, type: 3}
-  _abandonedSprite: {fileID: 21300000, guid: 7bd9bf9f527f85d4196c352c393e3a28, type: 3}
+--- !u!114 &3245064969183279496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6035838246162821601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a80989686dff446c964586c83f1f5353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4071232693766735385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,19 +362,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &7604523661995256254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6035838246162821601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6aed227607e58b849a1021bff8a3c37a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _image: {fileID: 7448436689564620527}
 --- !u!114 &3134481003359079120
 MonoBehaviour:
   m_ObjectHideFlags: 0

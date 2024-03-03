@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator), typeof(Image))]
-public class BetChipsUI : MonoBehaviour
+public class BetChipsUI : MonoBehaviour, IChipsAssetUser
 {
     [SerializeField] private int _index;
     [SerializeField] private Image _image;
@@ -21,6 +23,8 @@ public class BetChipsUI : MonoBehaviour
     private static Game Game => Game.Instance;
     private static PlayerSeats PlayerSeats => PlayerSeats.Instance;
     private static Betting Betting => Betting.Instance;
+    
+    private List<Sprite> _preloadedChipsSprites;
     
     private void OnEnable()
     {
@@ -38,6 +42,11 @@ public class BetChipsUI : MonoBehaviour
         PlayerSeats.PlayerLeaveEvent -= OnPlayerLeave;
     }
 
+    public void SetChipsSprites(IEnumerable<Sprite> sprite)
+    {
+        _preloadedChipsSprites = sprite.ToList();
+    }
+    
     private void OnGameStageOver(GameStage gameStage)
     {
         StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
@@ -48,7 +57,7 @@ public class BetChipsUI : MonoBehaviour
         StartCoroutine(DelayToPotAnimation(_delayToPotAnimation));
     }
     
-    private async void OnPlayerSit(Player player, int index)
+    private void OnPlayerSit(Player player, int index)
     {
         if (index != _index)
         {
@@ -63,12 +72,12 @@ public class BetChipsUI : MonoBehaviour
         }
 
         _betValueText.text = player.BetAmount.ToString();
-        await SetImage(player.BetAmount);
+        SetImage(player.BetAmount);
         
         _animator.ResetAllTriggers();
         _animator.SetTrigger(Bet);
 
-        SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
+        SfxAudioPlayer.Instance.Play(Constants.Sound.Sfx.Type.Bet);
     }
 
     private void OnPlayerLeave(Player player, int index)
@@ -81,7 +90,7 @@ public class BetChipsUI : MonoBehaviour
         player.BetNetworkVariable.OnValueChanged -= OnBetValueChanged;
     }
     
-    private async void OnBetValueChanged(uint oldValue, uint newValue)
+    private void OnBetValueChanged(uint oldValue, uint newValue)
     {
         if (newValue <= 0)
         {
@@ -89,14 +98,14 @@ public class BetChipsUI : MonoBehaviour
         }
 
         _betValueText.text = newValue.ToString();
-        await SetImage(newValue);
+        SetImage(newValue);
         
         _animator.ResetAllTriggers();
         _animator.SetTrigger(Bet);
 
         try
         {
-            SfxAudio.Instance.Play(Constants.Sound.Sfx.Type.Bet);
+            SfxAudioPlayer.Instance.Play(Constants.Sound.Sfx.Type.Bet);
         }
         catch (Exception)
         {
@@ -112,7 +121,7 @@ public class BetChipsUI : MonoBehaviour
         _animator.SetTrigger(ToPot);
     }
 
-    private async Task SetImage(uint betValue)
+    private void SetImage(uint betValue)
     {
         uint smallBlindValue = Betting.SmallBlind;
 
@@ -147,8 +156,9 @@ public class BetChipsUI : MonoBehaviour
             imageId = 1;
         }
 
-        
-        _image.sprite = await AddressablesLoader.LoadAsync<Sprite>($"{Constants.Sprites.Chips.ChipsStack}" + imageId);
+
+        string assetId = $"{Constants.Sprites.Chips.ChipsStackTemplate}" + imageId;
+        _image.sprite = _preloadedChipsSprites.Find(x => x.name == assetId);
         //_image.SetNativeSize(); todo: Fix chips stack size.
     }
 }

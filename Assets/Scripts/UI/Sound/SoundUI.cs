@@ -5,28 +5,41 @@ using UnityEngine.UI;
 
 public class SoundUI : MonoBehaviour
 {
-    [SerializeField] private AudioMixer _mixer;
-    
     [SerializeField] private Image _musicCrossImage;
     [SerializeField] private Image _sfxCrossImage;
 
+    [SerializeField] private Image _musixButtonImage;
+    
+    private AudioMixer Mixer => MixerSingleton.Instance.Mixer;
+
+    private string MusicParameterName => MixerSingleton.MusicParameterName;
+    private string SfxParameterName => MixerSingleton.SfxParameterName;
+
     private void Start()
     {
-        _mixer.GetFloat("MusicVol", out float value);
+        Mixer.GetFloat(MusicParameterName, out float value);
         bool active = value <= -80;
         _musicCrossImage.enabled = active;
-        _mixer.SetFloat("MusicVol", value);
+        Mixer.SetFloat(MusicParameterName, value);
         
-        _mixer.GetFloat("SFXVol", out value);
+        Mixer.GetFloat(SfxParameterName, out value);
         active = value <= -80;
         _sfxCrossImage.enabled = active;
-        _mixer.SetFloat("SFXVol", value);
+        Mixer.SetFloat(SfxParameterName, value);
+    }
+    
+    public void SetSprites(Sprite musicSprite, Sprite crossSprite)
+    {
+        _musixButtonImage.sprite = musicSprite;
+        
+        _musicCrossImage.sprite = crossSprite;
+        _sfxCrossImage.sprite = crossSprite;
     }
 
     // Button
-    private void ChangeMusicState()
+    public void ChangeMusicState()
     {
-        _mixer.GetFloat("MusicVol", out float value);
+        Mixer.GetFloat(MusicParameterName, out float value);
         bool active = value > -80;
 
         if (active == true)
@@ -39,13 +52,13 @@ public class SoundUI : MonoBehaviour
         }
         
         _musicCrossImage.enabled = active;
-        _mixer.SetFloat("MusicVol", value);
+        Mixer.SetFloat(MusicParameterName, value);
     }
 
     // Button
-    private void ChangeSfxState()
+    public void ChangeSfxState()
     {
-        _mixer.GetFloat("SFXVol", out float value);
+        Mixer.GetFloat(SfxParameterName, out float value);
         bool active = value > -80;
 
         if (active == true)
@@ -58,6 +71,6 @@ public class SoundUI : MonoBehaviour
         }
         
         _sfxCrossImage.enabled = active;
-        _mixer.SetFloat("SFXVol", value);
+        Mixer.SetFloat(SfxParameterName, value);
     }
 }

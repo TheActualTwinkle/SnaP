@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 2975029522263859207}
   - component: {fileID: 7547011042309484728}
   - component: {fileID: 8004363553720597212}
+  - component: {fileID: 1842437765334581667}
   m_Layer: 5
   m_Name: BetChips
   m_TagString: Untagged
@@ -208,6 +209,18 @@ MonoBehaviour:
   _betValueText: {fileID: 6544205447828123932}
   _animator: {fileID: 7547011042309484728}
   _delayToPotAnimation: 0
+--- !u!114 &1842437765334581667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 878440264812856578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74719af3542c4669895d3822f3e67a68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1026550805292741723
 GameObject:
   m_ObjectHideFlags: 0
@@ -1096,6 +1109,7 @@ GameObject:
   - component: {fileID: 1350340914142827439}
   - component: {fileID: 8062709047056504017}
   - component: {fileID: 7718901892273406111}
+  - component: {fileID: 5544540782133176456}
   m_Layer: 0
   m_Name: PocketCardsUI
   m_TagString: Untagged
@@ -1157,6 +1171,18 @@ MonoBehaviour:
   _animator: {fileID: 8062709047056504017}
   _cardImage1: {fileID: 2983862710717617704}
   _cardImage2: {fileID: 438765354031865956}
+--- !u!114 &5544540782133176456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6648614148782940300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf3f2be40184615b8c28bd76f89711c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6851119842655167893
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SDT;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,6 +8,24 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Animator), typeof(SdtConnectionStatusHoverTooltip))]
 public class SdtConnectionResultUI : MonoBehaviour
 {
+    public struct Sprites
+    {
+        public Sprite DisconnectedSprite { get; }
+        public Sprite LoadingSprite { get; }
+        public Sprite SuccessSprite { get; }
+        public Sprite FailSprite { get; }
+        public Sprite AbandonedSprite { get; }
+
+        public Sprites(Sprite disconnectedSprite, Sprite loadingSprite, Sprite successSprite, Sprite failSprite, Sprite abandonedSprite)
+        {
+            DisconnectedSprite = disconnectedSprite;
+            LoadingSprite = loadingSprite;
+            SuccessSprite = successSprite;
+            FailSprite = failSprite;
+            AbandonedSprite = abandonedSprite;
+        }
+    }
+    
     public static Server SdtServer => Server.Instance;
     public static Client SdtClient => Client.Instance;
 
@@ -21,11 +40,21 @@ public class SdtConnectionResultUI : MonoBehaviour
     
     private static readonly int Loading = Animator.StringToHash("Loading");
 
+    private Sprites _sprites;
+
     private void Awake()
     {
+        // Shouldn`t be on the client in Desk scene.
         if (NetworkManager.Singleton.IsServer == false && _sdtType == SdtType.Server)
         {
-            print("SdtConnectionResultUI should only be on the server.");
+            Destroy(gameObject);
+            return;
+        }
+        
+        // Unity Relay is not supported by SDT.
+        if (NetworkConnectorHandler.State != NetworkConnectorHandler.ConnectionState.Disconnected && 
+            NetworkConnectorFactory.GetEnumType(NetworkConnectorHandler.Connector) is NetworkConnectorType.UnityRelay)
+        {
             Destroy(gameObject);
             return;
         }
@@ -57,18 +86,52 @@ public class SdtConnectionResultUI : MonoBehaviour
         if (SdtClient != null) SdtClient.ConnectionStateChangedEvent -= OnSdtConnectionStateChanged;
     }
 
+    public void SetSprites(Sprites sprites)
+    {
+        _sprites = sprites;
+        
+        switch (_sdtType)
+        {
+            case SdtType.Server:
+                OnSdtConnectionStateChanged(SdtServer.ConnectionState);
+                break;
+            case SdtType.Client:
+                OnSdtConnectionStateChanged(SdtClient.ConnectionState);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     private void OnSdtConnectionStateChanged(ConnectionState connectionState)
     {
         _animator.SetBool(Loading, connectionState == ConnectionState.Connecting);
 
+        switch (connectionState)
+        {
+            case ConnectionState.Connecting:
+                _image.sprite = _sprites.LoadingSprite;
+                break;
+            case ConnectionState.Successful:
+                _image.sprite = _sprites.SuccessSprite;
+                break;
+            case ConnectionState.Failed:
+                _image.sprite = _sprites.FailSprite;
+                break;
+            case ConnectionState.Disconnected:
+            case ConnectionState.DisconnectedPortClosed:
+                _image.sprite = _sprites.DisconnectedSprite;
+                break;
+            case ConnectionState.Abandoned:
+                _image.sprite = _sprites.AbandonedSprite;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(connectionState), connectionState, null);
+        }
+        
         _hoverTooltip.SetupText();
     }
 
-    public void SetSprite(Sprite sprite)
-    {
-        _image.sprite = sprite;
-    }
-    
     // Button.
     public void Reconnect()
     {

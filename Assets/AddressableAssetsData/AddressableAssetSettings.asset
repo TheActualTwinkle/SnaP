@@ -43,10 +43,11 @@ MonoBehaviour:
   m_GroupAssets:
   - {fileID: 11400000, guid: 722301fe8e23aeb4d90350f93f3b5b6a, type: 2}
   - {fileID: 11400000, guid: 7d1e82ee85d431646b8d802438d7f199, type: 2}
-  - {fileID: 11400000, guid: 0d9889e1943f95746a61aa651a65ed92, type: 2}
   - {fileID: 11400000, guid: 6bd186424781c964ca2c2475e434ef9b, type: 2}
   - {fileID: 11400000, guid: c82de6d3f3d765942bf83c969bce6b38, type: 2}
   - {fileID: 11400000, guid: 0d26589dfae2980419479cbab24751f9, type: 2}
+  - {fileID: 11400000, guid: 0d9889e1943f95746a61aa651a65ed92, type: 2}
+  - {fileID: 11400000, guid: 23ad0b28028df2a4f9c10abc1ecc2c3a, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -81,7 +82,7 @@ MonoBehaviour:
       - m_Id: 3f85a70f6dbc1d04b89ae3fd8e64bc8d
         m_Value: ServerData/[BuildTarget]
       - m_Id: daf435f3201515046b280416f2e7c9c2
-        m_Value: http://90.189.208.37:47925/{AddressablesLoaderHandler.LoadTarget}
+        m_Value: http://90.189.208.37:47925/{AddressablesProviderHandler.LoadTarget}
     - m_InheritedParent: 
       m_Id: e6cec4c2825d2754c88a93a68b3da47f
       m_ProfileName: Dev
@@ -95,7 +96,7 @@ MonoBehaviour:
       - m_Id: 3f85a70f6dbc1d04b89ae3fd8e64bc8d
         m_Value: ServerData/[BuildTarget]
       - m_Id: daf435f3201515046b280416f2e7c9c2
-        m_Value: http://192.168.0.69:8000/{AddressablesLoaderHandler.LoadTarget}
+        m_Value: http://192.168.0.69:8000/{AddressablesProviderHandler.LoadTarget}
     m_ProfileEntryNames:
     - m_Id: 26dbc172d5f92cc4a9ed454d0f1da349
       m_Name: BuildTarget

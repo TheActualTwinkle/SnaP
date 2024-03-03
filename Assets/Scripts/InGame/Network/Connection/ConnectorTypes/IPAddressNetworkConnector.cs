@@ -19,7 +19,7 @@ public class IPAddressNetworkConnector : INetworkConnector
     
     public Task Init()
     {
-        IReadOnlyList<string> connectionData = ConnectionInputField.Instance.GetConnectionData(NetworkConnectorType.IpAddress);
+        IReadOnlyList<string> connectionData = ConnectionInputFields.Instance.GetConnectionData(NetworkConnectorType.IpAddress);
 
         _ipAddress = connectionData[0];
         _port = connectionData[1];

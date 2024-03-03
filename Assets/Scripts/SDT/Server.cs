@@ -28,16 +28,13 @@ namespace SDT
         public static Server Instance { get; private set; }
         
         public ConnectionState ConnectionState { get; private set; } = ConnectionState.Disconnected;
-
-        private const string CloseCommand = "close";
         
-        public string ServerIpAddress => _serverIpAddress;
-        [SerializeField] private string _serverIpAddress;
-
-        public ushort ServerPort => _serverPort;
-        [SerializeField] private ushort _serverPort;
-
         [SerializeField] private int _awaitLobbyInitializationIntervalMs;
+        
+        [SerializeField] private string _serverIpAddress;
+        [SerializeField] private ushort _serverPort;
+        
+        private const string CloseCommand = "close";
 
         private bool _destroyed;
         
@@ -158,7 +155,10 @@ namespace SDT
                 return;
             }
 
-            await WriteAsync();
+            if (_tcpClient is { Connected: true })
+            {
+                await WriteAsync();
+            }
         }
 
         private async void Disconnect(DisconnectReason reason)
@@ -190,7 +190,7 @@ namespace SDT
                     break;
                 }
                 
-                await Task.Delay(_awaitLobbyInitializationIntervalMs);
+                await Task.Delay(TimeSpan.FromMilliseconds(_awaitLobbyInitializationIntervalMs));
             }
         }
         

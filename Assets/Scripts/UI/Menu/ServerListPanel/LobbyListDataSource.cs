@@ -14,11 +14,11 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
     public event Action EndLoadingEvent;
     
     [SerializeField] private RecyclableScrollRect _recyclableScrollRect;
-    [SerializeField] private Client _sdtClient;
     [SerializeField] private KeyCode _updateRectKeyCode;
     
     private List<LobbyInfo> _lobbyInfos = new();
 
+    private Client SdtClient => Client.Instance;
     private CancellationTokenSource _loadCancellationToken;
 
     private void Awake()
@@ -87,7 +87,7 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
         List<LobbyInfo> lobbyInfos;
         try
         {
-            lobbyInfos = await _sdtClient.GetLobbiesInfoAsync(_loadCancellationToken);
+            lobbyInfos = await SdtClient.GetLobbiesInfoAsync(_loadCancellationToken);
         }
         catch (TaskCanceledException)
         {

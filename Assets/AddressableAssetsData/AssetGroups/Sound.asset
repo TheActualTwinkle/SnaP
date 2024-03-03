@@ -29,14 +29,6 @@ MonoBehaviour:
     m_Address: Check
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: e9afb492a3519fc4da2bffdea1f25a7b
-    m_Address: ButtonHover
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: b03fa0f4c2b3fda438604f86279b65be
-    m_Address: ButtonClick
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 78ce634540e2bd34fbea632bcc8c7856
     m_Address: BetSliderValueChanged
     m_ReadOnly: 0

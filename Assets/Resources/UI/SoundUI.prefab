@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5169986678978042739}
   - component: {fileID: 6298417582802623322}
   - component: {fileID: 8345641733052026930}
-  - component: {fileID: 4193425610445396806}
+  - component: {fileID: 1115574134732910836}
   m_Layer: 5
   m_Name: MusicButton
   m_TagString: Untagged
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4565627146070263082}
+      - m_Target: {fileID: 3791474122884810453}
         m_TargetAssemblyTypeName: SoundUI, Assembly-CSharp
         m_MethodName: ChangeMusicState
         m_Mode: 1
@@ -232,7 +232,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4193425610445396806
+--- !u!114 &1115574134732910836
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -254,8 +254,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8631545224118486908}
-  - component: {fileID: 4565627146070263082}
-  - component: {fileID: 5231294857612428494}
+  - component: {fileID: 3791474122884810453}
+  - component: {fileID: 3244933204417174487}
   m_Layer: 5
   m_Name: SoundUI
   m_TagString: Untagged
@@ -285,7 +285,7 @@ RectTransform:
   m_AnchoredPosition: {x: 135.5, y: -50}
   m_SizeDelta: {x: 262.58, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4565627146070263082
+--- !u!114 &3791474122884810453
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -300,7 +300,8 @@ MonoBehaviour:
   _mixer: {fileID: 24100000, guid: 0ad00adf51236334e919a15e647d7961, type: 2}
   _musicCrossImage: {fileID: 7363627522871592829}
   _sfxCrossImage: {fileID: 2088463065950367195}
---- !u!114 &5231294857612428494
+  _musixButtonImage: {fileID: 5169986678978042739}
+--- !u!114 &3244933204417174487
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -309,12 +310,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1682409995304809340}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a58fd2ca06a9504da41ffa361de6393, type: 3}
+  m_Script: {fileID: 11500000, guid: e880924a62c84f288b3d0f9d6d343282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _musicImage: {fileID: 5169986678978042739}
-  _musicCrossImage: {fileID: 7363627522871592829}
-  _sfxCrossImage: {fileID: 2088463065950367195}
+  _soundUI: {fileID: 3791474122884810453}
 --- !u!1 &4928345095175768563
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,7 +425,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6713493086824262272
@@ -727,7 +726,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4565627146070263082}
+      - m_Target: {fileID: 3791474122884810453}
         m_TargetAssemblyTypeName: SoundUI, Assembly-CSharp
         m_MethodName: ChangeSfxState
         m_Mode: 1

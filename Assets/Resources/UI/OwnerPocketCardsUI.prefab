@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7274561765118454676}
   - component: {fileID: 6087461978643388458}
   - component: {fileID: 3806439486605415964}
+  - component: {fileID: 4639738846237455981}
   m_Layer: 5
   m_Name: OwnerPocketCardsUI
   m_TagString: Untagged
@@ -76,6 +77,18 @@ MonoBehaviour:
   _animator: {fileID: 6087461978643388458}
   _cardImage1: {fileID: 7274561766435440962}
   _cardImage2: {fileID: 7554633310205097969}
+--- !u!114 &4639738846237455981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7274561765118454683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf3f2be40184615b8c28bd76f89711c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &456033287058609557
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
-public class BoardUI : MonoBehaviour
+public class BoardUI : MonoBehaviour, ICardsAssetUser
 {
     [SerializeField] private CombinationHighlightingUI _combinationHighlighting;
     [SerializeField] private Animator _animator;
@@ -23,6 +23,9 @@ public class BoardUI : MonoBehaviour
     private static readonly int EndDeal = Animator.StringToHash("EndDeal");
 
     private static Game Game => Game.Instance;
+    
+    // All cards sprites.
+    private List<Sprite> _preloadedCardSprites = new();
 
     private void OnEnable()
     {
@@ -38,7 +41,7 @@ public class BoardUI : MonoBehaviour
 
     private async void Start()
     {
-        _backSprite = await AddressablesLoader.LoadAsync<Sprite>("CardBack2");
+        _backSprite = await AddressablesAssetLoader.LoadAsync<Sprite>("CardBack2");
 
         foreach (Image cardImage in _cardImages)
         {
@@ -54,6 +57,12 @@ public class BoardUI : MonoBehaviour
         {
             OnGameStageBegan((GameStage)i);
         }
+    }
+    
+
+    public void SetCardsSprites(IEnumerable<Sprite> sprites)
+    {
+        _preloadedCardSprites = sprites.ToList();
     }
 
     private async void OnGameStageBegan(GameStage gameStage)
@@ -96,7 +105,7 @@ public class BoardUI : MonoBehaviour
     // Animator
     private void PlaySound(Constants.Sound.Sfx.Type type)
     {
-        SfxAudio.Instance.Play(type);
+        SfxAudioPlayer.Instance.Play(type);
     }
     
     // Animator
@@ -126,7 +135,7 @@ public class BoardUI : MonoBehaviour
             
             var id = $"{(int)card.Value}_{card.Suit}";
 
-            Sprite sprite = await AddressablesLoader.LoadAsync<Sprite>(id);
+            Sprite sprite = _preloadedCardSprites.Find(x => x.name == id);
             _cardSprites.Add(sprite);
         }
     }

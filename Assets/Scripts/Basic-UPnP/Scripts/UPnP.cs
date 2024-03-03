@@ -97,7 +97,7 @@ public static class UPnP
 				return null;
 			}
 
-			await Task.Delay(discoveryIntervalMs);
+			await Task.Delay(TimeSpan.FromMilliseconds(discoveryIntervalMs));
 		}
 		
 		foreach (NatDevice device in devices)

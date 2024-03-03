@@ -5,13 +5,19 @@ public abstract class Constants
     public abstract class SceneNames
     {
         public const string Menu = "Menu";
-        public const string Desk = "Desk_d";
+        public const string Desk = "Desk";
         public const string Kickstart = "Kickstart";
     }
 
     public abstract class Prefabs
     {
-        public const string GameTitleText = "SnaPGameTitleText";
+        public const string MobileSuffix = "_Mobile";
+        
+        public abstract class UI
+        {
+            public const string Menu = "MenuUI";
+            public const string Desk = "UI";
+        }
     }
     
     public abstract class Sprites
@@ -38,7 +44,7 @@ public abstract class Constants
 
         public abstract class Chips
         {
-            public const string ChipsStack = "ChipsStack_";
+            public const string ChipsStackTemplate = "ChipsStack_";
             public const uint AssetsCount = 7;
             public const string Pot = "ChipsStack_7";
         }
@@ -50,14 +56,15 @@ public abstract class Constants
         
         public abstract class Sfx
         {
+            public const string Hover = "Sound/SFX/ButtonHover";
+            public const string Click = "Sound/SFX/ButtonClick";
+            
             public static readonly Dictionary<Type, string> Paths = new()
             {
                 { Type.ShowingCards, "ShowingCards" },
                 { Type.Bet, "Bet" },
                 { Type.ToPot, "ToPot" },
                 { Type.Check, "Check" },
-                { Type.ButtonHover, "ButtonHover" },
-                { Type.ButtonClick, "ButtonClick" }
 
             };
 
@@ -67,18 +74,22 @@ public abstract class Constants
                 Bet,
                 ToPot,
                 Check,
-                ButtonHover,
-                ButtonClick,
             }
         }
     
         public abstract class Music
         {
             public static readonly List<string> Paths = new() {
-                { "BGMusic"},
-                { "BGMusic2"},
-                { "BGMusic3"}
+                "BGMusic",
+                "BGMusic2",
+                "BGMusic3"
             };
         }
+    }
+    
+    public abstract class LoadingUI
+    {
+        // Used for fake loading on LoadingUI.
+        public const float FakeLoadStartValue = 0.3f;
     }
 }
