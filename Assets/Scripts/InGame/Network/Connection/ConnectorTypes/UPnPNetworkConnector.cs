@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 public class UPnPNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData { get; private set; } // TODO: Make struct for it: LocalIpAddress, PublicIpAddress, Port, JoinCode!!!
+    public NetworkConnectorType Type => NetworkConnectorType.UPnP;
     
     private string _localIpAddress;
     private ushort _port;
@@ -21,7 +21,6 @@ public class UPnPNetworkConnector : INetworkConnector
     // Real Init is in TryCreateGame() method.
     public Task Init()
     {
-        ConnectionData = new[] {"Some address via UPnP"};
         return Task.CompletedTask;
     }
 
@@ -29,7 +28,7 @@ public class UPnPNetworkConnector : INetworkConnector
     {
         #region Init
 
-        if (ConnectionDataPresenter.TryGetAvailablePort(out ushort port) == false)
+        if (ConnectionDataPresenter.TryGetAvailableUdpPort(out ushort port) == false)
         {
             Logger.Log($"Can`t find available port.", Logger.LogLevel.Error);
             return false;
@@ -66,7 +65,6 @@ public class UPnPNetworkConnector : INetworkConnector
             Logger.Log("Forwarding to public IP...");
         
             string publicIpAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
-            ConnectionData = new[] {publicIpAddress, port.ToString()};
         
             NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
         }
@@ -99,9 +97,7 @@ public class UPnPNetworkConnector : INetworkConnector
         }
         
         unityTransport.SetConnectionData(selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port);
-
-        ConnectionData = new[] {selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port.ToString()};
-
+        
         try
         {
             NetworkManager.Singleton.StartClient();

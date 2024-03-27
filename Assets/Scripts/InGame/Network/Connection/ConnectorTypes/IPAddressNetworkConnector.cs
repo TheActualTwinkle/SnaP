@@ -10,13 +10,13 @@ using UnityEngine.SceneManagement;
 // [Obsolete("Use UPnP connector instead.", false)]
 public class IPAddressNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData => new [] { _ipAddress, _port };
+    public NetworkConnectorType Type => NetworkConnectorType.IpAddress;
     
     private string _ipAddress;
     private string _port;
 
     private IEnumerator _connectRoutine;
-    
+
     public Task Init()
     {
         IReadOnlyList<string> connectionData = ConnectionInputFields.Instance.GetConnectionData(NetworkConnectorType.IpAddress);
