@@ -11,7 +11,9 @@ using UnityEngine.SceneManagement;
 
 public class UnityRelayNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData => new [] { _joinCode };
+    public NetworkConnectorType Type => NetworkConnectorType.UnityRelay;
+    
+    public static Guid AllocationId { get; private set; }
     
     private string _joinCode;
 
@@ -35,7 +37,7 @@ public class UnityRelayNetworkConnector : INetworkConnector
         await Authenticate();
         
         Allocation allocation = await RelayService.Instance.CreateAllocationAsync((int)NetworkConnectorHandler.MaxPlayersAmount);
-        _joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        AllocationId = allocation.AllocationId;
 
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
         unityTransport.SetHostRelayData(allocation.RelayServer.IpV4, (ushort)allocation.RelayServer.Port, allocation.AllocationIdBytes, allocation.Key, allocation.ConnectionData);
@@ -87,6 +89,8 @@ public class UnityRelayNetworkConnector : INetworkConnector
         
         NetworkManager.Singleton.Shutdown();
 
+        AllocationId = allocation.AllocationId;
+        
         try
         {
             NetworkManager.Singleton.StartClient();

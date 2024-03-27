@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 public interface INetworkConnector
 {
-    public IEnumerable<string> ConnectionData { get; }
+    NetworkConnectorType Type { get; }
 
     Task Init();
     public Task<bool> TryCreateGame();

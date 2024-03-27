@@ -31,8 +31,6 @@ public static class NetworkConnectorHandler
     
     [UsedImplicitly] private const uint DelayBeforeErrorShutdownMS = 3000;
     
-    private const string ConnectionDataSeparator = ":";
-    
     private static bool _isSubscribedToUserConnectionEvents;
     
     public static async Task CreateGame(NetworkConnectorType connectorType)
@@ -43,15 +41,13 @@ public static class NetworkConnectorHandler
             return;
         }
 
-        INetworkConnector connector = NetworkConnectorFactory.Get(connectorType);
-        
-        Connector = connector;
-        await connector.Init();
+        Connector = NetworkConnectorFactory.Get(connectorType);
+        await Connector.Init();
 
 #if !UNITY_EDITOR
         Logger.Log("=============================================================");
 #endif
-        Logger.Log($"Starting at: {string.Join(ConnectionDataSeparator, connector.ConnectionData)}");
+        Logger.Log($"Starting via {connectorType}...");
 #if !UNITY_EDITOR
         Logger.Log("=============================================================");
 #endif
@@ -66,9 +62,9 @@ public static class NetworkConnectorHandler
                 return;
             }
 
-            if (await connector.TryCreateGame() == false)
+            if (await Connector.TryCreateGame() == false)
             {
-                Logger.Log($"Failed to start at {string.Join(ConnectionDataSeparator, connector.ConnectionData)}. Attempt {i+1}/{MaxConnectAttempts}", Logger.LogLevel.Error);
+                Logger.Log($"Failed to start at {await ConnectionDataFactory.Get(connectorType)}. Attempt {i+1}/{MaxConnectAttempts}", Logger.LogLevel.Error);
                 await Task.Delay(TimeSpan.FromMilliseconds(ConnectTimeoutMs));
                 
                 if (i == MaxConnectAttempts - 1)
@@ -92,7 +88,7 @@ public static class NetworkConnectorHandler
 #if !UNITY_EDITOR
         Logger.Log("=============================================================");
 #endif
-        Logger.Log("Successfully started at " + string.Join(ConnectionDataSeparator, connector.ConnectionData));
+        Logger.Log($"Successfully started at {await ConnectionDataFactory.Get(connectorType)}");
 #if !UNITY_EDITOR
         Logger.Log("=============================================================");
 #endif
@@ -118,16 +114,14 @@ public static class NetworkConnectorHandler
             return;
         }
 
-        INetworkConnector connector = NetworkConnectorFactory.Get(connectorType);
-        
-        Connector = connector;
-        await connector.Init();
+        Connector = NetworkConnectorFactory.Get(connectorType);
+        await Connector.Init();
 
-        Logger.Log($"==== JOINING TO: {string.Join(ConnectionDataSeparator, connector.ConnectionData)} ====");
+        Logger.Log($"Joining via {connectorType}");
 
-        if (await connector.TryJoinGame() == false)
+        if (await Connector.TryJoinGame() == false)
         {
-            Logger.Log("Failed to join to " + string.Join(ConnectionDataSeparator, connector.ConnectionData), Logger.LogLevel.Error);
+            Logger.Log($"Failed to join to {await ConnectionDataFactory.Get(connectorType)}", Logger.LogLevel.Error);
             State = ConnectionState.Failed;
             ConnectionStateChangedEvent?.Invoke(State);
             return;
@@ -137,16 +131,17 @@ public static class NetworkConnectorHandler
     }
 
     // For clients only.
-    private static void OnNetworkTransportEvent(NetworkEvent eventType, ulong clientId, ArraySegment<byte> payload, float receiveTime)
+    private static async void OnNetworkTransportEvent(NetworkEvent eventType, ulong clientId, ArraySegment<byte> payload, float receiveTime)
     {
         switch (eventType)
         {
             case NetworkEvent.Connect:
-                Logger.Log($"Successfully connected to {string.Join(ConnectionDataSeparator, Connector.ConnectionData)}");
+                Logger.Log($"Successfully connected to {await ConnectionDataFactory.Get(Connector.Type)}");
                 State = ConnectionState.Successful;
                 break;
             case NetworkEvent.Disconnect:
-                Logger.Log($"Failed to connect to {string.Join(ConnectionDataSeparator, Connector.ConnectionData)}", Logger.LogLevel.Error);
+            case NetworkEvent.TransportFailure: 
+                Logger.Log($"Failed to connect to {await ConnectionDataFactory.Get(Connector.Type)}", Logger.LogLevel.Error);
                 State = ConnectionState.Failed;
                 break;
         }

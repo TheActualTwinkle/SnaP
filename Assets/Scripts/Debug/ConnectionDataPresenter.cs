@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 
 public static class ConnectionDataPresenter
 {
@@ -29,15 +31,15 @@ public static class ConnectionDataPresenter
 
     public static ushort GetGamePort()
     {
-        if (ushort.TryParse(NetworkConnectorHandler.Connector.ConnectionData.Last(), out ushort port) == false)
+        if (NetworkManager.Singleton.TryGetComponent(out UnityTransport transport) == false)
         {
-            throw new ArgumentException($"Can`t parse port from {NetworkConnectorHandler.Connector.ConnectionData.Last()}");
+            throw new ArgumentException($"Can`t get transport component from NetworkManager.");
         }
 
-        return port;
+        return transport.ConnectionData.Port;
     }
 
-    public static bool TryGetAvailablePort(out ushort port)
+    public static bool TryGetAvailableUdpPort(out ushort port)
     {
         const ushort lowerPort = 10000; 
         const ushort upperPort = ushort.MaxValue - 1;

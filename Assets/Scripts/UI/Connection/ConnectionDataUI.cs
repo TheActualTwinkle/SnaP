@@ -6,9 +6,8 @@ using UnityEngine;
 public class ConnectionDataUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text _text;
-    [SerializeField] private string _dataSeparator;
     
-    private void Start()
+    private async void Start()
     {
         if (NetworkConnectorHandler.Connector == null)
         {
@@ -16,7 +15,6 @@ public class ConnectionDataUI : MonoBehaviour
             return;
         }
         
-        IEnumerable<string> connectionData = NetworkConnectorHandler.Connector.ConnectionData;
-        _text.text = string.Join(_dataSeparator, connectionData);
+        _text.text = await ConnectionDataFactory.Get(NetworkConnectorHandler.Connector.Type);
     }
 }

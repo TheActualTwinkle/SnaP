@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class DedicatedServerNetworkConnector : INetworkConnector
 {
-    public IEnumerable<string> ConnectionData { get; private set; }
-
+    public NetworkConnectorType Type => NetworkConnectorType.IpAddressDedicatedServer;
+    
     private string _ipAddress;
     private string _port;
 
@@ -24,16 +24,14 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         string[] args = Environment.GetCommandLineArgs();
         int portArgIndex = Array.IndexOf(args, "-port");
         _port = portArgIndex != -1 ? args[portArgIndex + 1] : DefaultPort.ToString();
-
-        ConnectionData = new[] {_ipAddress, _port};
     }
 
-    public async Task<bool> TryCreateGame()
+    public Task<bool> TryCreateGame()
     {
         if (NetworkManager.Singleton.IsListening == true)
         {
             Logger.Log("Can`t create game: NetworkManager is already listening.", Logger.LogLevel.Error);
-            return false;
+            return Task.FromResult(false);
         }
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
@@ -41,7 +39,7 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         if (ushort.TryParse(_port, out ushort port) == false)
         {
             Logger.Log($"Can`t parse port: {_port}.", Logger.LogLevel.Error);
-            return false;
+            return Task.FromResult(false);
         }
         unityTransport.SetConnectionData(_ipAddress, port);
 
@@ -55,13 +53,12 @@ public class DedicatedServerNetworkConnector : INetworkConnector
         catch (Exception)
         {
             Logger.Log($"Can`t StartServer().", Logger.LogLevel.Error);
-            return false;
+            return Task.FromResult(false);
         }
  
         Logger.Log("Forwarding to public IP...");
-        ConnectionData = new[] {await ConnectionDataPresenter.GetPublicIpAddressAsync(), _port};
         
-        return true;
+        return Task.FromResult(true);
     }
 
     public Task<bool> TryJoinGame()

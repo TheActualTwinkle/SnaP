@@ -14,7 +14,7 @@ public static class NetworkConnectorFactory
         {
             NetworkConnectorType.IpAddress => new IPAddressNetworkConnector(),
             NetworkConnectorType.UnityRelay => new UnityRelayNetworkConnector(),
-            NetworkConnectorType.DedicatedServer => new DedicatedServerNetworkConnector(),
+            NetworkConnectorType.IpAddressDedicatedServer => new DedicatedServerNetworkConnector(),
             NetworkConnectorType.UPnP => new UPnPNetworkConnector(),
             _ => throw new ArgumentOutOfRangeException(nameof(connectorType), connectorType, null)
         };
@@ -34,7 +34,7 @@ public static class NetworkConnectorFactory
         {
             IPAddressNetworkConnector _ => NetworkConnectorType.IpAddress,
             UnityRelayNetworkConnector _ => NetworkConnectorType.UnityRelay,
-            DedicatedServerNetworkConnector _ => NetworkConnectorType.DedicatedServer,
+            DedicatedServerNetworkConnector _ => NetworkConnectorType.IpAddressDedicatedServer,
             UPnPNetworkConnector _ => NetworkConnectorType.UPnP,
             _ => throw new ArgumentOutOfRangeException(nameof(connector))
         };
