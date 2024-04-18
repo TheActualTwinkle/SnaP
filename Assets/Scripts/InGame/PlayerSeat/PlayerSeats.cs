@@ -36,6 +36,7 @@ public class PlayerSeats : MonoBehaviour
     [ReadOnly] [SerializeField] private List<Player> _waitingPlayers;
 
     public Player LocalPlayer => GetLocalPlayer();
+    public bool IsLocalPlayerSitting => _players.Contains(LocalPlayer) || _waitingPlayers.Contains(LocalPlayer);
 
     public int PlayersAmount => _players.Count(x => x != null);
 

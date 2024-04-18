@@ -925,6 +925,7 @@ GameObject:
   - component: {fileID: 5301510473586880159}
   - component: {fileID: 6085736415215157060}
   - component: {fileID: 2349465345116943110}
+  - component: {fileID: 3896519420899736259}
   m_Layer: 5
   m_Name: ServerListScrollViewWindow
   m_TagString: Untagged
@@ -1066,6 +1067,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!225 &3896519420899736259
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5188975615774660153}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &5189253708221898567
 GameObject:
   m_ObjectHideFlags: 0
