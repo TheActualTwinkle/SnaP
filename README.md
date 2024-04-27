@@ -1,6 +1,6 @@
 # **SnaP - poker game with [NSTU](https://en.nstu.ru/)-like graphics.**
 
-"SnaP" -  **Shurely not a Poker**
+"SnaP" -  **Surely not a Poker**
 
 The [rules](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) of **Texas Hold 'em** as one of the most popular poker card game variants was used.
 
