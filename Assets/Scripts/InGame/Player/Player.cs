@@ -123,8 +123,8 @@ public class Player : NetworkBehaviour
 
         SetIsImageReadyServerRpc(false);
         
-        PlayerData playerData = ReadonlySaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
-        PlayerAvatarData avatarData = ReadonlySaveLoadSystemFactory.Instance.Get().Load<PlayerAvatarData>();
+        PlayerData playerData = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
+        PlayerAvatarData avatarData = SaveLoadSystemFactory.Instance.Get().Load<PlayerAvatarData>();
         
         try
         {
