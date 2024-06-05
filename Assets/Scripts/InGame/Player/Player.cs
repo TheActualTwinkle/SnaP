@@ -123,8 +123,8 @@ public class Player : NetworkBehaviour
 
         SetIsImageReadyServerRpc(false);
         
-        PlayerData playerData = ReadonlySaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
-        PlayerAvatarData avatarData = ReadonlySaveLoadSystemFactory.Instance.Get().Load<PlayerAvatarData>();
+        PlayerData playerData = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
+        PlayerAvatarData avatarData = SaveLoadSystemFactory.Instance.Get().Load<PlayerAvatarData>();
         
         try
         {
@@ -177,30 +177,33 @@ public class Player : NetworkBehaviour
 
     public void HandleEscapeButton()
     {
-        if (PlayerSeats.Players.Contains(this) == true || PlayerSeats.WaitingPlayers.Contains(this) == true)
+        if (PlayerSeats.Players.Contains(this) == false && PlayerSeats.WaitingPlayers.Contains(this) == false)
         {
-            if (CanPerformSeatAction() == false)
-            {
-                return;
-            }
-            
-            SetSeatServerRpc(NullSeatNumber);
+            return;
+        }
 
-            LeaveSeat(PlayerSeats.SeatLeaveReason.UserInput);
+        if (CanPerformSeatAction() == false)
+        {
+            return;
+        }
+            
+        SetSeatServerRpc(NullSeatNumber);
+
+        LeaveSeat(PlayerSeats.SeatLeaveReason.UserInput);
+    }
+
+    public void LeaveGame()
+    {
+        if (IsServer)
+        {
+            StartCoroutine(HostShutdown());
         }
         else
         {
-            if (IsServer)
-            {
-                StartCoroutine(HostShutdown());
-            }
-            else
-            {
-                Shutdown();
-            }
+            Shutdown();
         }
     }
-
+    
     private void Shutdown()
     {
         NetworkManager.Singleton.Shutdown();

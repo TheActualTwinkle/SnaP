@@ -47,7 +47,7 @@ public static class CardObjectConverter
         {
             var suit = (int)card.Suit;
             var value = (int)card.Value;
-            codedCards += (suit * 100 + value) + ";";
+            codedCards += (suit * 100 + value) + Separator;
         }
 
         return codedCards;

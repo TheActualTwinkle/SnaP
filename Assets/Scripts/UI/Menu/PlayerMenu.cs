@@ -33,7 +33,7 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 
     private void Start()
     {
-        _saveLoadSystem = ReadonlySaveLoadSystemFactory.Instance.Get();
+        _saveLoadSystem = SaveLoadSystemFactory.Instance.Get();
         SetupUI();
         SetupBetSliderStep();
     }

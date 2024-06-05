@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 
 // TODO: Has to ne zenjected
-public class ReadonlySaveLoadSystemFactory : MonoBehaviour
+public class SaveLoadSystemFactory : MonoBehaviour
 {
-    public static ReadonlySaveLoadSystemFactory Instance { get; private set; }
+    public static SaveLoadSystemFactory Instance { get; private set; }
 
     [SerializeField] private SaveLoadSystemType _chosenSaveLoadSystemType;
 
@@ -21,7 +21,7 @@ public class ReadonlySaveLoadSystemFactory : MonoBehaviour
             Destroy(gameObject);
         }
 
-        SetChosen();
+        SetupSystemFromInspector();
     }
 
     public ISaveLoadSystem Get()
@@ -29,7 +29,7 @@ public class ReadonlySaveLoadSystemFactory : MonoBehaviour
         return _saveLoadSystem;
     }
 
-    private void SetChosen()
+    private void SetupSystemFromInspector()
     {
         _saveLoadSystem = _chosenSaveLoadSystemType switch
         {

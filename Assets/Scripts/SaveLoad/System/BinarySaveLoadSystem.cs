@@ -24,12 +24,14 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
         fileStream.Close();
     }
 
-    public T Load<T>() where T : ISaveLoadData
+    public T Load<T>() where T : ISaveLoadData, new()
     {
         var saveFileName = $"{SavePath}/{typeof(T).Name}.{SaveFileExtension}";
         if (File.Exists(saveFileName) == false)
         {
-            return default;
+            T t = new();
+            t.SetDefaultValues();
+            return t;
         }
         
         FileStream fileStream = new(saveFileName, FileMode.Open);
@@ -38,15 +40,17 @@ public class BinarySaveLoadSystem : ISaveLoadSystem
         {
             ISaveLoadData data = BinaryFormatter.Deserialize(fileStream) as ISaveLoadData;
 
-            fileStream.Close();
-
             return (T)data;
         }
         catch
         {
+            T t = new();
+            t.SetDefaultValues();
+            return t;
+        }
+        finally
+        {
             fileStream.Close();
-
-            return default;
         }
     }
 }
