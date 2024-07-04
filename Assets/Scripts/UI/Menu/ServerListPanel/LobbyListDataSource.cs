@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PolyAndCode.UI;
-using SDT;
-using Unity.VisualScripting;
+using LobbyService;
+using LobbyService.Interfaces;
+using LobbyService.TcpIp;
 using UnityEngine;
+using Zenject;
 
 public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSource
 {
@@ -16,11 +18,18 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
     [SerializeField] private RecyclableScrollRect _recyclableScrollRect;
     [SerializeField] private KeyCode _updateRectKeyCode;
     
-    private List<LobbyInfo> _lobbyInfos = new();
+    private List<LobbyDto> _lobbyInfos = new();
 
-    private Client SdtClient => Client.Instance;
+    private IClientsLobbyService _clientsLobbyService;
+    
     private CancellationTokenSource _loadCancellationToken;
 
+    [Inject]
+    private void Construct(IClientsLobbyService clientsLobbyService)
+    {
+        _clientsLobbyService = clientsLobbyService;
+    }
+    
     private void Awake()
     {
 #if !UNITY_STANDALONE
@@ -84,10 +93,10 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
         StartLoadingEvent?.Invoke();
         
         _loadCancellationToken = new CancellationTokenSource();
-        List<LobbyInfo> lobbyInfos;
+        List<LobbyDto> lobbyInfos;
         try
         {
-            lobbyInfos = await SdtClient.GetLobbiesInfoAsync(_loadCancellationToken);
+            lobbyInfos = await _clientsLobbyService.GetLobbiesInfoAsync(_loadCancellationToken.Token);
         }
         catch (TaskCanceledException)
         {
@@ -98,7 +107,7 @@ public class LobbyListDataSource : MonoBehaviour, IRecyclableScrollRectDataSourc
         
         if (lobbyInfos == null)
         {
-            _lobbyInfos = new List<LobbyInfo>();
+            _lobbyInfos = new List<LobbyDto>();
             EndLoadingEvent?.Invoke();
             return false;
         }

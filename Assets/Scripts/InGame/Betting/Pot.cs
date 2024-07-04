@@ -64,7 +64,7 @@ public class Pot : NetworkBehaviour
         return bank;
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         _bets?.Clear();
         _stageBets?.Clear();

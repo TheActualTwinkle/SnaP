@@ -40,22 +40,22 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 
     private void SetupUI()
     {
-        PlayerData playerData = _saveLoadSystem.Load<PlayerData>();
-        if (playerData.Equals(default(PlayerData)) == true)
+        PlayerDto playerDto = _saveLoadSystem.Load<PlayerDto>();
+        if (playerDto.Equals(default(PlayerDto)) == true)
         {
-            playerData.SetDefaultValues();
+            playerDto.SetDefaultValues();
         }
         
-        PlayerAvatarData avatarData = _saveLoadSystem.Load<PlayerAvatarData>();
-        if (avatarData.Equals(default(PlayerAvatarData)) == true)
+        PlayerAvatarDto avatarDto = _saveLoadSystem.Load<PlayerAvatarDto>();
+        if (avatarDto.Equals(default(PlayerAvatarDto)) == true)
         {
-            avatarData.SetDefaultValues();
+            avatarDto.SetDefaultValues();
         }
         
-        _nickNameInputField.text = playerData.NickName;
-        _stackSlider.value = playerData.Stack;
+        _nickNameInputField.text = playerDto.NickName;
+        _stackSlider.value = playerDto.Stack;
 
-        _image.sprite = TextureConverter.GetSprite(avatarData.CodedValue, AvatarImageWidth, AvatarImageHeight);
+        _image.sprite = TextureConverter.GetSprite(avatarDto.CodedValue, AvatarImageWidth, AvatarImageHeight);
 
         SavePlayerData();
         SavePlayerAvatarData();
@@ -119,9 +119,9 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
             case UnityWebRequest.Result.ConnectionError:
                 // todo make a error window.
                 Logger.Log($"An error occurred while trying to set image. {webRequest.error}.", Logger.LogLevel.Error);
-                PlayerAvatarData avatarData = new();
-                avatarData.SetDefaultValues();
-                _image.sprite = TextureConverter.GetSprite(avatarData.CodedValue, AvatarImageWidth, AvatarImageHeight);
+                PlayerAvatarDto avatarDto = new();
+                avatarDto.SetDefaultValues();
+                _image.sprite = TextureConverter.GetSprite(avatarDto.CodedValue, AvatarImageWidth, AvatarImageHeight);
                 break;
             case UnityWebRequest.Result.Success:
                 Texture2D texture = DownloadHandlerTexture.GetContent(webRequest);
@@ -134,15 +134,15 @@ public class PlayerMenu : MonoBehaviour, INetworkSerializeByMemcpy
 
     private void SavePlayerData()
     {
-        PlayerData playerData = new(_nickNameInputField.text, (uint)_stackSlider.value);
-        _saveLoadSystem.Save(playerData);
+        PlayerDto playerDto = new(_nickNameInputField.text, (uint)_stackSlider.value);
+        _saveLoadSystem.Save(playerDto);
     }
 
     private void SavePlayerAvatarData()
     {
         byte[] rawTexture = TextureConverter.GetRawTexture(_image.sprite.texture);
-        PlayerAvatarData avatarData = new(rawTexture);
+        PlayerAvatarDto avatarDto = new(rawTexture);
         
-        _saveLoadSystem.Save(avatarData);
+        _saveLoadSystem.Save(avatarDto);
     }
 }

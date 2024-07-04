@@ -178,7 +178,7 @@ public class Betting : NetworkBehaviour
         _timePassedSinceBetStart.Value = _betTime;
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         if (IsServer == true && IsOwner == true)
         {

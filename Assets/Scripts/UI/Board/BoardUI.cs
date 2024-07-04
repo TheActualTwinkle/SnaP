@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -91,7 +90,7 @@ public class BoardUI : MonoBehaviour, ICardsAssetUser
         }
     }
     
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         _animator.ResetAllTriggers();
         _animator.SetTrigger(EndDeal);

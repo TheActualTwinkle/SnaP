@@ -25,7 +25,7 @@ public class WinnerText : MonoBehaviour
         Game.EndDealEvent -= OnEndDeal;
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         List<Player> winners = PlayerSeats.Players.FindAll(player => player != null && winnerInfo.Select(info => info.WinnerId).Contains(player.OwnerClientId));
 

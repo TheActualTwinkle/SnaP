@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Unity.Netcode;
-using UnityEngine;
 
 public static class NetworkConnectorHandler
 {

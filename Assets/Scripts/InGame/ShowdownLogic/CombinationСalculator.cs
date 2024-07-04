@@ -3,7 +3,6 @@
 /// Source https://github.com/ccqi/TexasHoldem
 /// </summary>
 public static class CombinationСalculator
-
 {
     public static Hand GetBestHand(Hand hand)
     {

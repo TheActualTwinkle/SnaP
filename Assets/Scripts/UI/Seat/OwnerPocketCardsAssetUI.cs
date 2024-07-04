@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -62,7 +61,7 @@ public class OwnerPocketCardsAssetUI : MonoBehaviour, ICardsAssetUser
         await ShowCards(player);
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         _animator.ResetAllTriggers();
         _animator.SetTrigger(ThrowCards);

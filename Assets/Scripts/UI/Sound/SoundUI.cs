@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -77,7 +75,7 @@ public class SoundUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        SaveLoadSystemFactory.Instance.Get().Save(new SoundData(MusicEnabled, SfxEnabled));
+        SaveLoadSystemFactory.Instance.Get().Save(new SoundDto(MusicEnabled, SfxEnabled));
     }
 
     private void SetupSoundData()
@@ -87,11 +85,11 @@ public class SoundUI : MonoBehaviour
             return;
         }
         
-        SoundData soundData = SaveLoadSystemFactory.Instance.Get().Load<SoundData>();
-        Mixer.SetFloat(MusicParameterName, soundData.MusicEnabled ? MusicDefaultVolume : MusicMuteVolume);
-        _musicCrossImage.enabled = !soundData.MusicEnabled;
+        SoundDto soundDto = SaveLoadSystemFactory.Instance.Get().Load<SoundDto>();
+        Mixer.SetFloat(MusicParameterName, soundDto.MusicEnabled ? MusicDefaultVolume : MusicMuteVolume);
+        _musicCrossImage.enabled = !soundDto.MusicEnabled;
 
-        Mixer.SetFloat(SfxParameterName, soundData.SfxEnabled ? SfxDefaultVolume : MusicMuteVolume);
-        _sfxCrossImage.enabled = !soundData.SfxEnabled;
+        Mixer.SetFloat(SfxParameterName, soundDto.SfxEnabled ? SfxDefaultVolume : MusicMuteVolume);
+        _sfxCrossImage.enabled = !soundDto.SfxEnabled;
     }
 }

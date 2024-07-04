@@ -41,7 +41,7 @@ public class BoardButtonUI : MonoBehaviour
         MoveTo(newValue);
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         Hide();
     }

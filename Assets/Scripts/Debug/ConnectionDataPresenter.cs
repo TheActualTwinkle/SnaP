@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -10,16 +9,11 @@ using Unity.Netcode.Transports.UTP;
 
 public static class ConnectionDataPresenter
 {
-    private static string _publicIpAddress;
+    private static IPAddress _publicIpAddress;
     
-    public static async Task<string> GetPublicIpAddressAsync()
+    public static async Task<IPAddress> GetOrUpdatePublicIpAddressAsync()
     {
-        if (string.IsNullOrEmpty(_publicIpAddress) == true)
-        {
-            _publicIpAddress = (await UPnP.GetExternalIp()).ToString();
-        }
-        
-        return _publicIpAddress;
+        return _publicIpAddress ??= await UPnP.GetExternalIpAsync();
     }
     
     public static async Task<IPAddress> GetLocalIpAddressAsync()
@@ -41,8 +35,8 @@ public static class ConnectionDataPresenter
 
     public static bool TryGetAvailableUdpPort(out ushort port)
     {
-        const ushort lowerPort = 10000; 
-        const ushort upperPort = ushort.MaxValue - 1;
+        const ushort minPort = 10000; 
+        const ushort maxPort = ushort.MaxValue - 1;
         
         IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
         HashSet<int> usedPorts = Enumerable.Empty<int>()
@@ -51,7 +45,7 @@ public static class ConnectionDataPresenter
             .Concat(ipProperties.GetActiveUdpListeners().Select(l => l.Port))
             .ToHashSet();
         
-        for (ushort i = lowerPort; i <= upperPort; i++)
+        for (ushort i = minPort; i <= maxPort; i++)
         {
             if (usedPorts.Contains(i) == true)
             {

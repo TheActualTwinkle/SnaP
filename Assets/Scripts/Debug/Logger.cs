@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using PokerLogs;
 using UnityEngine;
 using Application = UnityEngine.Application;
@@ -20,7 +19,7 @@ public static class Logger
     private static readonly List<LogSource> AcceptableLogSources = new()
     {
         LogSource.General,
-        LogSource.SnaPDataTransfer,
+        LogSource.LobbyService,
         LogSource.Addressables,
         // LogSource.AddressablesLoader
     };
@@ -52,7 +51,6 @@ public static class Logger
         {
             return;
         }
-        
         
 #if !UNITY_EDITOR
         LogMessage logMessage = new(DateTime, message, logLevel, logSource);
@@ -106,7 +104,7 @@ public static class Logger
     public enum LogSource
     {
         General,
-        SnaPDataTransfer,
+        LobbyService,
         Addressables,
         AddressablesLoader,
     }

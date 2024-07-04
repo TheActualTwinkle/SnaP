@@ -215,12 +215,12 @@ public class BackgroundImageAddressablesLoader : IAddressablesLoader
 [Export(typeof(IAddressablesLoader))]
 [ExportMetadata(nameof(AddressablesLoaderMetadata.OperableSceneNames), new[] {Constants.SceneNames.Menu, Constants.SceneNames.Desk})]
 [ExportMetadata(nameof(AddressablesLoaderMetadata.IsExclusive), false)]
-public class SdtConnectionResultAddressablesLoader : IAddressablesLoader
+public class LobbyServiceConnectionResultAddressablesLoader : IAddressablesLoader
 {
     public uint LoadedCount { get; private set; }
     public uint AssetsCount => 5;
 
-    public SdtConnectionResultUI.Sprites Sprites { get; private set; }
+    public LobbyServiceConnectionResultUI.Sprites Sprites { get; private set; }
     
     private Sprite _disconnectedSprite;
     private Sprite _loadingSprite;
@@ -230,14 +230,13 @@ public class SdtConnectionResultAddressablesLoader : IAddressablesLoader
 
     public async Task LoadContent()
     {
-        _disconnectedSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Disconnected);
-        _loadingSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Loading);
-        _successSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Success);
-        _failSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Fail);
-        _abandonedSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.Sdt.Abandoned);
+        _disconnectedSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.LobbyServiceUI.Disconnected);
+        _loadingSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.LobbyServiceUI.Loading);
+        _successSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.LobbyServiceUI.Success);
+        _failSprite = await AddressablesAssetLoader.LoadAsync<Sprite>(Constants.Sprites.LobbyServiceUI.Fail);
 
-        Sprites = new SdtConnectionResultUI.Sprites(
-            _disconnectedSprite, _loadingSprite, _successSprite, _failSprite, _abandonedSprite
+        Sprites = new LobbyServiceConnectionResultUI.Sprites(
+            _disconnectedSprite, _loadingSprite, _successSprite, _failSprite
             );
 
         LoadedCount += 5;
@@ -253,7 +252,7 @@ public class SdtConnectionResultAddressablesLoader : IAddressablesLoader
         
         LoadedCount = 0;
 
-        Sprites = new SdtConnectionResultUI.Sprites();
+        Sprites = new LobbyServiceConnectionResultUI.Sprites();
     }
 }
 

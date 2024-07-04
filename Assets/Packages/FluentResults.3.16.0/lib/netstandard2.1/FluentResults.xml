@@ -1,0 +1,768 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FluentResults</name>
+    </assembly>
+    <members>
+        <member name="M:FluentResults.EnumerableExtensions.Merge(System.Collections.Generic.IEnumerable{FluentResults.Result})">
+            <summary>
+            Merge multiple result objects to one result together
+            </summary>
+        </member>
+        <member name="M:FluentResults.EnumerableExtensions.Merge``1(System.Collections.Generic.IEnumerable{FluentResults.Result{``0}})">
+            <summary>
+            Merge multiple result objects to one result together
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Setup(System.Action{FluentResults.ResultSettingsBuilder})">
+            <summary>
+            Setup global settings like logging
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Ok">
+            <summary>
+            Creates a success result
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail(FluentResults.IError)">
+            <summary>
+            Creates a failed result with the given error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail(System.String)">
+            <summary>
+            Creates a failed result with the given error message. Internally an error object from the error factory is created. 
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a failed result with the given error messages. Internally a list of error objects from the error factory is created
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail(System.Collections.Generic.IEnumerable{FluentResults.IError})">
+            <summary>
+            Creates a failed result with the given errors.
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Ok``1(``0)">
+            <summary>
+            Creates a success result with the given value
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail``1(FluentResults.IError)">
+            <summary>
+            Creates a failed result with the given error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail``1(System.String)">
+            <summary>
+            Creates a failed result with the given error message. Internally an error object from the error factory is created. 
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail``1(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a failed result with the given error messages. Internally a list of error objects from the error factory is created. 
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Fail``1(System.Collections.Generic.IEnumerable{FluentResults.IError})">
+            <summary>
+            Creates a failed result with the given errors.
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Merge(FluentResults.ResultBase[])">
+            <summary>
+            Merge multiple result objects to one result object together
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Merge``1(FluentResults.Result{``0}[])">
+            <summary>
+            Merge multiple result objects to one result object together. Return one result with a list of merged values.
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.OkIf(System.Boolean,FluentResults.IError)">
+            <summary>
+            Create a success/failed result depending on the parameter isSuccess
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.OkIf(System.Boolean,System.String)">
+            <summary>
+            Create a success/failed result depending on the parameter isSuccess
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.OkIf(System.Boolean,System.Func{FluentResults.IError})">
+            <summary>
+            Create a success/failed result depending on the parameter isSuccess
+            </summary>
+            <remarks>
+            Error is lazily evaluated.
+            </remarks>
+        </member>
+        <member name="M:FluentResults.Result.OkIf(System.Boolean,System.Func{System.String})">
+            <summary>
+            Create a success/failed result depending on the parameter isSuccess
+            </summary>
+            <remarks>
+            Error is lazily evaluated.
+            </remarks>
+        </member>
+        <member name="M:FluentResults.Result.FailIf(System.Boolean,FluentResults.IError)">
+            <summary>
+            Create a success/failed result depending on the parameter isFailure
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.FailIf(System.Boolean,System.String)">
+            <summary>
+            Create a success/failed result depending on the parameter isFailure
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.FailIf(System.Boolean,System.Func{FluentResults.IError})">
+            <summary>
+            Create a success/failed result depending on the parameter isFailure
+            </summary>
+            <remarks>
+            Error is lazily evaluated.
+            </remarks>
+        </member>
+        <member name="M:FluentResults.Result.FailIf(System.Boolean,System.Func{System.String})">
+            <summary>
+            Create a success/failed result depending on the parameter isFailure
+            </summary>
+            <remarks>
+            Error is lazily evaluated.
+            </remarks>
+        </member>
+        <member name="M:FluentResults.Result.Try(System.Action,System.Func{System.Exception,FluentResults.IError})">
+            <summary>
+            Executes the action. If an exception is thrown within the action then this exception is transformed via the catchHandler to an Error object
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Try(System.Func{System.Threading.Tasks.Task},System.Func{System.Exception,FluentResults.IError})">
+            <summary>
+            Executes the action. If an exception is thrown within the action then this exception is transformed via the catchHandler to an Error object
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Try(System.Func{System.Threading.Tasks.ValueTask},System.Func{System.Exception,FluentResults.IError})">
+            <summary>
+            Executes the action. If an exception is thrown within the action then this exception is transformed via the catchHandler to an Error object
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Try``1(System.Func{``0},System.Func{System.Exception,FluentResults.IError})">
+            <summary>
+            Executes the action. If an exception is thrown within the action then this exception is transformed via the catchHandler to an Error object
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Try``1(System.Func{System.Threading.Tasks.Task{``0}},System.Func{System.Exception,FluentResults.IError})">
+            <summary>
+            Executes the action. If an exception is thrown within the action then this exception is transformed via the catchHandler to an Error object
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.Try``1(System.Func{System.Threading.Tasks.ValueTask{``0}},System.Func{System.Exception,FluentResults.IError})">
+            <summary>
+            Executes the action. If an exception is thrown within the action then this exception is transformed via the catchHandler to an Error object
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result.MapErrors(System.Func{FluentResults.IError,FluentResults.IError})">
+            <summary>
+            Map all errors of the result via errorMapper
+            </summary>
+            <param name="errorMapper"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FluentResults.Result.MapSuccesses(System.Func{FluentResults.ISuccess,FluentResults.ISuccess})">
+            <summary>
+            Map all successes of the result via successMapper
+            </summary>
+            <param name="successMapper"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FluentResults.Result.Bind``1(System.Func{FluentResults.Result{``0}})">
+            <summary>
+            Convert result to result with value that may fail.
+            </summary>
+            <example>
+            <code>
+             var bakeryDtoResult = result.Bind(GetWhichMayFail);
+            </code>
+            </example>
+            <param name="bind">Transformation that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result.Bind``1(System.Func{System.Threading.Tasks.Task{FluentResults.Result{``0}}})">
+            <summary>
+            Convert result to result with value that may fail asynchronously.
+            </summary>
+            <example>
+            <code>
+             var bakeryDtoResult = result.Bind(GetWhichMayFail);
+            </code>
+            </example>
+            <param name="bind">Transformation that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result.Bind``1(System.Func{System.Threading.Tasks.ValueTask{FluentResults.Result{``0}}})">
+            <summary>
+            Convert result to result with value that may fail asynchronously.
+            </summary>
+            <example>
+            <code>
+             var bakeryDtoResult = result.Bind(GetWhichMayFail);
+            </code>
+            </example>
+            <param name="bind">Transformation that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result.Bind(System.Func{FluentResults.Result})">
+            <summary>
+            Execute an action which returns a <see cref="T:FluentResults.Result"/>.
+            </summary>
+            <example>
+            <code>
+             var done = result.Bind(ActionWhichMayFail);
+            </code>
+            </example>
+            <param name="action">Action that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result.Bind(System.Func{System.Threading.Tasks.Task{FluentResults.Result}})">
+            <summary>
+            Execute an action which returns a <see cref="T:FluentResults.Result"/> asynchronously.
+            </summary>
+            <example>
+            <code>
+             var done = result.Bind(ActionWhichMayFail);
+            </code>
+            </example>
+            <param name="action">Action that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result.Bind(System.Func{System.Threading.Tasks.ValueTask{FluentResults.Result}})">
+            <summary>
+            Execute an action which returns a <see cref="T:FluentResults.Result"/> asynchronously.
+            </summary>
+            <example>
+            <code>
+             var done = result.Bind(ActionWhichMayFail);
+            </code>
+            </example>
+            <param name="action">Action that may fail.</param>
+        </member>
+        <member name="T:FluentResults.Error">
+            <summary>
+            Objects from Error class cause a failed result
+            </summary>
+        </member>
+        <member name="P:FluentResults.Error.Message">
+            <summary>
+            Message of the error
+            </summary>
+        </member>
+        <member name="P:FluentResults.Error.Metadata">
+            <summary>
+            Metadata of the error
+            </summary>
+        </member>
+        <member name="P:FluentResults.Error.Reasons">
+            <summary>
+            Get the reasons of an error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.#ctor(System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:FluentResults.Error"/>
+            </summary>
+            <param name="message">Description of the error</param>
+        </member>
+        <member name="M:FluentResults.Error.#ctor(System.String,FluentResults.IError)">
+            <summary>
+            Creates a new instance of <see cref="T:FluentResults.Error"/>
+            </summary>
+            <param name="message">Description of the error</param>
+            <param name="causedBy">The root cause of the <see cref="T:FluentResults.Error"/></param>
+        </member>
+        <member name="M:FluentResults.Error.CausedBy(FluentResults.IError)">
+            <summary>
+            Set the root cause of the error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.CausedBy(System.Exception)">
+            <summary>
+            Set the root cause of the error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.CausedBy(System.String,System.Exception)">
+            <summary>
+            Set the root cause of the error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.CausedBy(System.String)">
+            <summary>
+            Set the root cause of the error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.CausedBy(System.Collections.Generic.IEnumerable{FluentResults.IError})">
+            <summary>
+            Set the root cause of the error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.CausedBy(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Set the root cause of the error
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.WithMetadata(System.String,System.Object)">
+            <summary>
+            Set the metadata
+            </summary>
+        </member>
+        <member name="M:FluentResults.Error.WithMetadata(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Set the metadata
+            </summary>
+        </member>
+        <member name="T:FluentResults.ExceptionalError">
+            <summary>
+            Error class which stores additionally the exception
+            </summary>
+        </member>
+        <member name="P:FluentResults.ExceptionalError.Exception">
+            <summary>
+            Exception of the error
+            </summary>
+        </member>
+        <member name="P:FluentResults.IError.Reasons">
+            <summary>
+            Reasons of the error
+            </summary>
+        </member>
+        <member name="T:FluentResults.Success">
+            <summary>
+            Objects from Success class cause no failed result
+            </summary>
+        </member>
+        <member name="P:FluentResults.Success.Message">
+            <summary>
+            Message of the success
+            </summary>
+        </member>
+        <member name="P:FluentResults.Success.Metadata">
+            <summary>
+            Metadata of the success
+            </summary>
+        </member>
+        <member name="M:FluentResults.Success.WithMetadata(System.String,System.Object)">
+            <summary>
+            Set the metadata
+            </summary>
+        </member>
+        <member name="M:FluentResults.Success.WithMetadata(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Set the metadata
+            </summary>
+        </member>
+        <member name="P:FluentResults.IResult`1.Value">
+            <summary>
+            Get the Value. If result is failed then an Exception is thrown because a failed result has no value. Opposite see property ValueOrDefault.
+            </summary>
+        </member>
+        <member name="P:FluentResults.IResult`1.ValueOrDefault">
+            <summary>
+            Get the Value. If result is failed then a default value is returned. Opposite see property Value.
+            </summary>
+        </member>
+        <member name="P:FluentResults.Result`1.ValueOrDefault">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:FluentResults.Result`1.Value">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result`1.WithValue(`0)">
+            <summary>
+            Set value
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result`1.MapErrors(System.Func{FluentResults.IError,FluentResults.IError})">
+            <summary>
+            Map all errors of the result via errorMapper
+            </summary>
+            <param name="errorMapper"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FluentResults.Result`1.MapSuccesses(System.Func{FluentResults.ISuccess,FluentResults.ISuccess})">
+            <summary>
+            Map all successes of the result via successMapper
+            </summary>
+            <param name="successMapper"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FluentResults.Result`1.ToResult">
+            <summary>
+            Convert result with value to result without value
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result`1.ToResult``1(System.Func{`0,``0})">
+            <summary>
+            Convert result with value to result with another value. Use valueConverter parameter to specify the value transformation logic.
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result`1.Map``1(System.Func{`0,``0})">
+            <summary>
+            Convert result with value to result with another value. Use valueConverter parameter to specify the value transformation logic.
+            </summary>
+        </member>
+        <member name="M:FluentResults.Result`1.Bind``1(System.Func{`0,FluentResults.Result{``0}})">
+            <summary>
+            Convert result with value to result with another value that may fail.
+            </summary>
+            <example>
+            <code>
+             var bakeryDtoResult = result
+                .Bind(GetWhichMayFail)
+                .Bind(ProcessWhichMayFail)
+                .Bind(FormattingWhichMayFail);
+            </code>
+            </example>
+            <param name="bind">Transformation that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result`1.Bind``1(System.Func{`0,System.Threading.Tasks.Task{FluentResults.Result{``0}}})">
+            <summary>
+            Convert result with value to result with another value that may fail asynchronously.
+            </summary>
+            <example>
+            <code>
+             var bakeryDtoResult = await result.Bind(GetWhichMayFail);
+            </code>
+            </example>
+            <param name="bind">Transformation that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result`1.Bind``1(System.Func{`0,System.Threading.Tasks.ValueTask{FluentResults.Result{``0}}})">
+            <summary>
+            Convert result with value to result with another value that may fail asynchronously.
+            </summary>
+            <example>
+            <code>
+             var bakeryDtoResult = await result.Bind(GetWhichMayFail);
+            </code>
+            </example>
+            <param name="bind">Transformation that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result`1.Bind(System.Func{`0,FluentResults.Result})">
+            <summary>
+            Execute an action which returns a <see cref="T:FluentResults.Result"/>.
+            </summary>
+            <example>
+            <code>
+             var done = result.Bind(ActionWhichMayFail);
+            </code>
+            </example>
+            <param name="action">Action that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result`1.Bind(System.Func{`0,System.Threading.Tasks.Task{FluentResults.Result}})">
+            <summary>
+            Execute an action which returns a <see cref="T:FluentResults.Result"/> asynchronously.
+            </summary>
+            <example>
+            <code>
+             var done = await result.Bind(ActionWhichMayFail);
+            </code>
+            </example>
+            <param name="action">Action that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result`1.Bind(System.Func{`0,System.Threading.Tasks.ValueTask{FluentResults.Result}})">
+            <summary>
+            Execute an action which returns a <see cref="T:FluentResults.Result"/> asynchronously.
+            </summary>
+            <example>
+            <code>
+             var done = await result.Bind(ActionWhichMayFail);
+            </code>
+            </example>
+            <param name="action">Action that may fail.</param>
+        </member>
+        <member name="M:FluentResults.Result`1.Deconstruct(System.Boolean@,System.Boolean@,`0@)">
+            <summary>
+            Deconstruct Result
+            </summary>
+            <param name="isSuccess"></param>
+            <param name="isFailed"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:FluentResults.Result`1.Deconstruct(System.Boolean@,System.Boolean@,`0@,System.Collections.Generic.List{FluentResults.IError}@)">
+            <summary>
+            Deconstruct Result
+            </summary>
+            <param name="isSuccess"></param>
+            <param name="isFailed"></param>
+            <param name="value"></param>
+            <param name="errors"></param>
+        </member>
+        <member name="P:FluentResults.IResultBase.IsFailed">
+            <summary>
+            Is true if Reasons contains at least one error
+            </summary>
+        </member>
+        <member name="P:FluentResults.IResultBase.IsSuccess">
+            <summary>
+            Is true if Reasons contains no errors
+            </summary>
+        </member>
+        <member name="P:FluentResults.IResultBase.Reasons">
+            <summary>
+            Get all reasons (errors and successes)
+            </summary>
+        </member>
+        <member name="P:FluentResults.IResultBase.Errors">
+            <summary>
+            Get all errors
+            </summary>
+        </member>
+        <member name="P:FluentResults.IResultBase.Successes">
+            <summary>
+            Get all successes
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultBase.IsFailed">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultBase.IsSuccess">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultBase.Reasons">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultBase.Errors">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultBase.Successes">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasError``1">
+            <summary>
+            Check if the result object contains an error from a specific type
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasError``1(System.Collections.Generic.IEnumerable{``0}@)">
+            <summary>
+            Check if the result object contains an error from a specific type
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasError``1(System.Func{``0,System.Boolean})">
+            <summary>
+            Check if the result object contains an error from a specific type and with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasError``1(System.Func{``0,System.Boolean},System.Collections.Generic.IEnumerable{``0}@)">
+            <summary>
+            Check if the result object contains an error from a specific type and with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasError(System.Func{FluentResults.IError,System.Boolean})">
+            <summary>
+            Check if the result object contains an error with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasError(System.Func{FluentResults.IError,System.Boolean},System.Collections.Generic.IEnumerable{FluentResults.IError}@)">
+            <summary>
+            Check if the result object contains an error with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasException``1">
+            <summary>
+            Check if the result object contains an exception from a specific type
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasException``1(System.Collections.Generic.IEnumerable{FluentResults.IError}@)">
+            <summary>
+            Check if the result object contains an exception from a specific type
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasException``1(System.Func{``0,System.Boolean})">
+            <summary>
+            Check if the result object contains an exception from a specific type and with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasException``1(System.Func{``0,System.Boolean},System.Collections.Generic.IEnumerable{FluentResults.IError}@)">
+            <summary>
+            Check if the result object contains an exception from a specific type and with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasSuccess``1">
+            <summary>
+            Check if the result object contains a success from a specific type
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasSuccess``1(System.Collections.Generic.IEnumerable{``0}@)">
+            <summary>
+            Check if the result object contains a success from a specific type
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasSuccess``1(System.Func{``0,System.Boolean})">
+            <summary>
+            Check if the result object contains a success from a specific type and with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasSuccess``1(System.Func{``0,System.Boolean},System.Collections.Generic.IEnumerable{``0}@)">
+            <summary>
+            Check if the result object contains a success from a specific type and with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasSuccess(System.Func{FluentResults.ISuccess,System.Boolean},System.Collections.Generic.IEnumerable{FluentResults.ISuccess}@)">
+            <summary>
+            Check if the result object contains a success with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.HasSuccess(System.Func{FluentResults.ISuccess,System.Boolean})">
+            <summary>
+            Check if the result object contains a success with a specific condition
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase.Deconstruct(System.Boolean@,System.Boolean@)">
+            <summary>
+            Deconstruct Result 
+            </summary>
+            <param name="isSuccess"></param>
+            <param name="isFailed"></param>
+        </member>
+        <member name="M:FluentResults.ResultBase.Deconstruct(System.Boolean@,System.Boolean@,System.Collections.Generic.List{FluentResults.IError}@)">
+            <summary>
+            Deconstruct Result
+            </summary>
+            <param name="isSuccess"></param>
+            <param name="isFailed"></param>
+            <param name="errors"></param>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithReason(FluentResults.IReason)">
+            <summary>
+            Add a reason (success or error)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithReasons(System.Collections.Generic.IEnumerable{FluentResults.IReason})">
+            <summary>
+            Add multiple reasons (success or error)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithError(System.String)">
+            <summary>
+            Add an error
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithError(FluentResults.IError)">
+            <summary>
+            Add an error
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithErrors(System.Collections.Generic.IEnumerable{FluentResults.IError})">
+            <summary>
+            Add multiple errors
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithErrors(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Add multiple errors
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithError``1">
+            <summary>
+            Add an error
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithSuccess(System.String)">
+            <summary>
+            Add a success
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithSuccess(FluentResults.ISuccess)">
+            <summary>
+            Add a success
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.WithSuccess``1">
+            <summary>
+            Add a success
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.Log(Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.Log(System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.Log(System.String,System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result with a specific logger context. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.Log``1(Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result with a typed context. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.Log``1(System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result with a typed context. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.LogIfSuccess(Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result only when it is successful. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.LogIfSuccess(System.String,System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result with a specific logger context only when it is successful. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.LogIfSuccess``1(System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result with a typed context only when it is successful. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.LogIfFailed(Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result only when it is failed. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.LogIfFailed(System.String,System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result with a specific logger context only when it is failed. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="M:FluentResults.ResultBase`1.LogIfFailed``1(System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Log the result with a typed context only when it is failed. Configure the logger via Result.Setup(..)
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultSettingsBuilder.Logger">
+            <summary>
+            Set the ResultLogger
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultSettingsBuilder.SuccessFactory">
+            <summary>
+            Factory to create an ISuccess object. Used in all scenarios where a success is created within FluentResults. 
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultSettingsBuilder.ErrorFactory">
+            <summary>
+            Factory to create an IError object. Used in all scenarios where an error is created within FluentResults. 
+            </summary>
+        </member>
+        <member name="P:FluentResults.ResultSettingsBuilder.ExceptionalErrorFactory">
+            <summary>
+            Factory to create an IExceptionalError object. Used in all scenarios where an exceptional error is created within FluentResults. 
+            </summary>
+        </member>
+    </members>
+</doc>

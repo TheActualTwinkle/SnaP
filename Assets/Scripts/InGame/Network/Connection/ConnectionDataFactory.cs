@@ -15,7 +15,7 @@ public static class ConnectionDataFactory
             case NetworkConnectorType.UPnP:
                 if (NetworkManager.Singleton.TryGetComponent(out UnityTransport transport) == true)
                 {
-                    return $"{transport.ConnectionData.Address}:{transport.ConnectionData.Port}";
+                    return $"{await UPnP.GetExternalIpAsync()}:{transport.ConnectionData.Port}";
                 }
 
                 Logger.Log("Can`t get transport component from NetworkManager.", Logger.LogLevel.Error);

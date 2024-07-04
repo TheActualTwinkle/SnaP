@@ -1,12 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using SDT;
+using LobbyService;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class UPnPNetworkConnector : INetworkConnector
@@ -64,7 +61,7 @@ public class UPnPNetworkConnector : INetworkConnector
             
             Logger.Log("Forwarding to public IP...");
         
-            string publicIpAddress = await ConnectionDataPresenter.GetPublicIpAddressAsync();
+            await ConnectionDataPresenter.GetOrUpdatePublicIpAddressAsync();
         
             NetworkManager.Singleton.SceneManager.LoadScene(Constants.SceneNames.Desk, LoadSceneMode.Single);
         }
@@ -87,16 +84,16 @@ public class UPnPNetworkConnector : INetworkConnector
         
         UnityTransport unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
         
-        LobbyInfo selectedLobbyInfo = LobbyListCell.SelectedLobbyInfo;
+        LobbyDto selectedLobbyDto = LobbyListCell.SelectedLobbyDto;
 
-        string selfPublicIP = await ConnectionDataPresenter.GetPublicIpAddressAsync();
-        if (selfPublicIP == selectedLobbyInfo.PublicIpAddress)
+        IPAddress selfPublicIP = await ConnectionDataPresenter.GetOrUpdatePublicIpAddressAsync();
+        if (selfPublicIP.ToString() == selectedLobbyDto.PublicIpAddress)
         {
             Logger.Log("Seems like you and your host using same network. Redirecting to local IP...", Logger.LogLevel.Warning);
-            selectedLobbyInfo.PublicIpAddress = (await ConnectionDataPresenter.GetLocalIpAddressAsync()).ToString();
+            selectedLobbyDto.PublicIpAddress = (await ConnectionDataPresenter.GetLocalIpAddressAsync()).ToString();
         }
         
-        unityTransport.SetConnectionData(selectedLobbyInfo.PublicIpAddress, selectedLobbyInfo.Port);
+        unityTransport.SetConnectionData(selectedLobbyDto.PublicIpAddress, selectedLobbyDto.Port);
         
         try
         {

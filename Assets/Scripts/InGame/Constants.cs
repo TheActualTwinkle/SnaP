@@ -1,7 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 
 public abstract class Constants
 {
+    public abstract class LobbyService
+    {
+        public static CancellationToken CreateTimeoutToken() => new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token;
+    }
+    
     public abstract class SceneNames
     {
         public const string Menu = "Menu";
@@ -28,13 +35,12 @@ public abstract class Constants
         public const string DeskBackground = "nstu_desk_back";
         public const string GameMainIcon = "AppIcon";
 
-        public abstract class Sdt
+        public abstract class LobbyServiceUI
         {
             public const string Disconnected = "disconnected";
             public const string Loading = "loading";
             public const string Success = "success";
             public const string Fail = "error";
-            public const string Abandoned = "questionmark";
         }
 
         public abstract class Cards

@@ -93,6 +93,8 @@ Connection timeout. Shuts-downing in 3000 milliseconds.
 ## **Requirements**:
  - Unity Version [**2021.3**](https://unity3d.com/get-unity/download) or newer
 ## **Resources:**
+* [Zenject](https://github.com/modesttree/Zenject)
+* [Zenject-DynamicObjectInjection](https://github.com/legionwfz/Zenject-DynamicObjectInjection)
 * [Holdem Combination Сalculator](https://github.com/ccqi/TexasHoldem)
 * [Standalone File Browser](https://github.com/gkngkc/UnityStandaloneFileBrowser)
 * [Open.NAT lib](https://github.com/lontivero/Open.NAT)
@@ -101,6 +103,6 @@ Connection timeout. Shuts-downing in 3000 milliseconds.
 * All Sprites and UI:
 	* [VK](https://vk.com/id607494051)
 	* [VK Public](https://vk.com/preved_medveddd)
-## Feedback:
+## **Feedback**:
 * Email: theactualtwinkle@gmail.com
 * Telegram: https://t.me/TheActualTwinkle

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "LobbyService.Grpc";
+
+import "google/protobuf/empty.proto";
+
+service ClientsHandler {
+  rpc GetGuids (google.protobuf.Empty) returns (GetGuidsResponse);
+  rpc GetLobbyInfo (GetLobbyInfoRequest) returns (GetLobbyInfoResponse);
+}
+
+message GetGuidsResponse {
+  repeated string guids = 1;
+}
+
+message GetLobbyInfoRequest {
+  string guid = 1;
+}
+
+message GetLobbyInfoResponse {
+  string public_ip_address = 1;
+  int32 port = 2;
+
+  int32 max_seats = 3;
+  int32 players_count = 4;
+
+  string lobby_name = 5;
+}

@@ -1,18 +1,15 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using PolyAndCode.UI;
-using SDT;
+using LobbyService;
 using TMPro;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyListCell : MonoBehaviour, ICell
 {
-    public static LobbyInfo SelectedLobbyInfo { get; private set; }
+    public static LobbyDto SelectedLobbyDto { get; private set; }
 
     [SerializeField] private TextMeshProUGUI _lobbyNameText;
     [SerializeField] private TextMeshProUGUI _lobbyPlayersCountText; // e.g "2/5"
@@ -24,7 +21,7 @@ public class LobbyListCell : MonoBehaviour, ICell
     
     private IEnumerator _joinCoroutine;
     
-    private LobbyInfo _lobbyInfo;
+    private LobbyDto _lobbyDto;
     
     private static bool _isJoining;
 
@@ -33,18 +30,18 @@ public class LobbyListCell : MonoBehaviour, ICell
         _isJoining = false;
     }
 
-    public void SetLobbyInfo(LobbyInfo lobbyInfo, int index)
+    public void SetLobbyInfo(LobbyDto lobbyDto, int index)
     {
-        if (lobbyInfo == null)
+        if (lobbyDto == null)
         {
             Logger.Log("LobbyInfo is null!", Logger.LogLevel.Error);
             return;
         }
         
-        _lobbyInfo = lobbyInfo;
+        _lobbyDto = lobbyDto;
         
-        _lobbyNameText.text = lobbyInfo.LobbyName;
-        _lobbyPlayersCountText.text = $"{lobbyInfo.PlayersCount}/{lobbyInfo.MaxSeats}";
+        _lobbyNameText.text = lobbyDto.LobbyName;
+        _lobbyPlayersCountText.text = $"{lobbyDto.PlayersCount}/{lobbyDto.MaxSeats}";
     }
 
     // Button.
@@ -61,7 +58,7 @@ public class LobbyListCell : MonoBehaviour, ICell
 
     private void SelectLobby()
     {
-        SelectedLobbyInfo = _lobbyInfo;
+        SelectedLobbyDto = _lobbyDto;
     }
     
     private async void Join()
@@ -91,6 +88,9 @@ public class LobbyListCell : MonoBehaviour, ICell
                 break;
             case NetworkConnectorHandler.ConnectionState.Failed:
                 _buttonText.text = "Connect failed";
+                break;
+            case NetworkConnectorHandler.ConnectionState.Disconnected:
+                _buttonText.text = "Disconnected";
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(state), state, null);

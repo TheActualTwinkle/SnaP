@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ public class Game : NetworkBehaviour
 
     public event Action<GameStage> GameStageBeganEvent;
     public event Action<GameStage> GameStageOverEvent;
-    public event Action<WinnerInfo[]> EndDealEvent;
+    public event Action<WinnerDto[]> EndDealEvent;
 
     public List<CardObject> BoardCards => _board.Cards.ToList();
 
@@ -158,10 +157,10 @@ public class Game : NetworkBehaviour
         
         yield return new WaitForSeconds(_showdownEndTimeSeconds);
 
-        List<WinnerInfo> winnerInfo = new();
+        List<WinnerDto> winnerInfo = new();
         foreach (Player winner in winners)
         {
-            winnerInfo.Add(new WinnerInfo(winner.OwnerClientId, Pot.GetWinValue(winner, winners), winnerHand.ToString()));
+            winnerInfo.Add(new WinnerDto(winner.OwnerClientId, Pot.GetWinValue(winner, winners), winnerHand.ToString()));
         }
 
         S_EndDeal(winnerInfo.ToArray());
@@ -192,7 +191,7 @@ public class Game : NetworkBehaviour
                 if (notFoldPlayers.Count == 1)
                 {
                     ulong winnerId = notFoldPlayers[0].OwnerClientId;
-                    WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}), "opponent(`s) folded")};
+                    WinnerDto[] winnerInfo = {new(winnerId, Pot.GetWinValue(notFoldPlayers[0], new []{notFoldPlayers[0]}), "opponent(`s) folded")};
 
                     if (_isPlaying.Value == true)
                     {
@@ -253,7 +252,7 @@ public class Game : NetworkBehaviour
         
         Player winner = PlayerSeats.Players.FirstOrDefault(x => x != null);
         ulong winnerId = winner!.OwnerClientId; 
-        WinnerInfo[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{winner}), "opponent(`s) folded.")};
+        WinnerDto[] winnerInfo = {new(winnerId, Pot.GetWinValue(winner, new []{winner}), "opponent(`s) folded.")};
         S_EndDeal(winnerInfo);
     }
 
@@ -383,7 +382,7 @@ public class Game : NetworkBehaviour
         S_StartNextStage();
     }
     
-    private void S_EndDeal(WinnerInfo[] winnerInfo)
+    private void S_EndDeal(WinnerDto[] winnerInfo)
     {
         if (IsServer == false)
         {
@@ -483,7 +482,7 @@ public class Game : NetworkBehaviour
     #region RPC
 
     [ClientRpc]
-    private void EndDealClientRpc(WinnerInfo[] winnerInfo)
+    private void EndDealClientRpc(WinnerDto[] winnerInfo)
     {
         _board.Cards.Clear();
         InitEndDealRoutine(winnerInfo);
@@ -517,7 +516,7 @@ public class Game : NetworkBehaviour
 
     #region Methods that has to be called both on Server and Client.
 
-    private void InitEndDealRoutine(WinnerInfo[] winnerInfo)
+    private void InitEndDealRoutine(WinnerDto[] winnerInfo)
     {
         if (_startDealAfterRoundsInterval != null)
         {

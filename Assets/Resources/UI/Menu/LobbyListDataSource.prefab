@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4352356033468263244}
   - component: {fileID: 7296007023556395529}
+  - component: {fileID: -771421576542875890}
   m_Layer: 5
   m_Name: LobbyListDataSource
   m_TagString: Untagged
@@ -50,5 +51,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _recyclableScrollRect: {fileID: 0}
-  _sdtClient: {fileID: 0}
   _updateRectKeyCode: 286
+--- !u!114 &-771421576542875890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6380773013382207212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0871f748c48352f4593c03df6c2009ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-// TODO: Has to ne zenjected
+// TODO: Has to be zenjected
 public class SaveLoadSystemFactory : MonoBehaviour
 {
     public static SaveLoadSystemFactory Instance { get; private set; }

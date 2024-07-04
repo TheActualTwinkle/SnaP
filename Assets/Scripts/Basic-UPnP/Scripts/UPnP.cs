@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 using Open.Nat;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ public static class UPnP
 	/// Try to get External IP (provided by FAI), pass this IP to Client
 	/// </summary>
 	/// <returns>Async Task, IPAddress</returns>
-	public static async Task<IPAddress> GetExternalIp()
+	public static async Task<IPAddress> GetExternalIpAsync()
 	{
 		NatDevice router = await GetInterDevice();
 
@@ -29,7 +28,7 @@ public static class UPnP
 	}
 
 	/// <summary>
-	/// Try to create a n UPnP rule on the router
+	/// Try to create a UPnP rule on the router
 	/// </summary>
 	/// <param name="port">Port to redirect to the host device</param>
 	/// <param name="ruleName">Rule name displayed on Router interface</param>

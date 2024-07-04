@@ -6684,6 +6684,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4655651364073715278}
     m_Modifications:
+    - target: {fileID: -3604168884431438884, guid: f0b8cab37c0a4544e95fbe147016a152, type: 3}
+      propertyPath: _lobbyServiceType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3245064969183279496, guid: f0b8cab37c0a4544e95fbe147016a152, type: 3}
       propertyPath: _sdt
       value: 
@@ -6694,7 +6698,7 @@ PrefabInstance:
       objectReference: {fileID: 965838781942258607}
     - target: {fileID: 6035838246162821601, guid: f0b8cab37c0a4544e95fbe147016a152, type: 3}
       propertyPath: m_Name
-      value: SdtConnectionResult
+      value: LobbyServiceConnectionResult
       objectReference: {fileID: 0}
     - target: {fileID: 8794211279622767171, guid: f0b8cab37c0a4544e95fbe147016a152, type: 3}
       propertyPath: m_Pivot.x

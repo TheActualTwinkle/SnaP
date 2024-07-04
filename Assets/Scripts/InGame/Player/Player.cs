@@ -16,8 +16,8 @@ public class Player : NetworkBehaviour
     public string NickName => _nickName.Value.ToString();
     private readonly NetworkVariable<FixedString32Bytes> _nickName = new();
 
-    public PlayerAvatarData AvatarData => _avatarData.Value;
-    private readonly NetworkVariable<PlayerAvatarData> _avatarData = new();
+    public PlayerAvatarDto AvatarDto => _avatarData.Value;
+    private readonly NetworkVariable<PlayerAvatarDto> _avatarData = new();
 
     public BetAction BetAction => _selectedBetAction.Value;
     private readonly NetworkVariable<BetAction> _selectedBetAction = new();
@@ -123,20 +123,20 @@ public class Player : NetworkBehaviour
 
         SetIsImageReadyServerRpc(false);
         
-        PlayerData playerData = SaveLoadSystemFactory.Instance.Get().Load<PlayerData>();
-        PlayerAvatarData avatarData = SaveLoadSystemFactory.Instance.Get().Load<PlayerAvatarData>();
+        PlayerDto playerDto = SaveLoadSystemFactory.Instance.Get().Load<PlayerDto>();
+        PlayerAvatarDto avatarDto = SaveLoadSystemFactory.Instance.Get().Load<PlayerAvatarDto>();
         
         try
         {
-            SetPlayerDataServerRpc(playerData);
-            StartCoroutine(SetAvatar(avatarData.CodedValue));
+            SetPlayerDataServerRpc(playerDto);
+            StartCoroutine(SetAvatar(avatarDto.CodedValue));
         }
         catch
         {
-            playerData.SetDefaultValues();
-            avatarData.SetDefaultValues();
-            SetPlayerDataServerRpc(playerData);
-            StartCoroutine(SetAvatar(avatarData.CodedValue));
+            playerDto.SetDefaultValues();
+            avatarDto.SetDefaultValues();
+            SetPlayerDataServerRpc(playerDto);
+            StartCoroutine(SetAvatar(avatarDto.CodedValue));
         }
     }
     
@@ -315,7 +315,7 @@ public class Player : NetworkBehaviour
         _betAmount.Value = 0;
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         if (IsOwner == true)
         {
@@ -329,8 +329,8 @@ public class Player : NetworkBehaviour
         
         if (winnerInfo.Select(x => x.WinnerId).Contains(OwnerClientId) == true)
         {        
-            WinnerInfo info = winnerInfo.FirstOrDefault(x => x.WinnerId == OwnerClientId);
-            _stack.Value += info.Chips;
+            WinnerDto dto = winnerInfo.FirstOrDefault(x => x.WinnerId == OwnerClientId);
+            _stack.Value += dto.Chips;
         }
         
         _betAmount.Value = 0;
@@ -359,7 +359,7 @@ public class Player : NetworkBehaviour
         
         yield return new WaitUntil(() => _avatarData.Value.CodedValue.Length == 0);
         
-        const int maxBytesPerRpc = PlayerAvatarData.MaxBytesPerRpc;
+        const int maxBytesPerRpc = PlayerAvatarDto.MaxBytesPerRpc;
         int packageAmount = Mathf.CeilToInt((float)allBytes.Length / maxBytesPerRpc);
 
         List<byte[]> packages = new();
@@ -424,16 +424,16 @@ public class Player : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void SetPlayerDataServerRpc(PlayerData data)
+    private void SetPlayerDataServerRpc(PlayerDto dto)
     {            
-        _nickName.Value = data.NickName;
-        _stack.Value = data.Stack;
+        _nickName.Value = dto.NickName;
+        _stack.Value = dto.Stack;
     }
 
     [ServerRpc]
     private void ClearAvatarDataServerRpc()
     {
-        _avatarData.Value = new PlayerAvatarData(Array.Empty<byte>());
+        _avatarData.Value = new PlayerAvatarDto(Array.Empty<byte>());
     }
     
     [ServerRpc]
@@ -442,7 +442,7 @@ public class Player : NetworkBehaviour
         List<byte> allBytes = new(_avatarData.Value.CodedValue);
         allBytes.AddRange(data);
 
-        _avatarData.Value = new PlayerAvatarData(allBytes.ToArray());
+        _avatarData.Value = new PlayerAvatarDto(allBytes.ToArray());
     }
 
     [ServerRpc]

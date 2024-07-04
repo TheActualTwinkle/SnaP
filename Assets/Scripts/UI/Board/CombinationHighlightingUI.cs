@@ -66,7 +66,7 @@ public class CombinationHighlightingUI : MonoBehaviour
         }
     }
 
-    private void OnEndDeal(WinnerInfo[] winnerInfo)
+    private void OnEndDeal(WinnerDto[] winnerInfo)
     {
         _cards.Clear();
         foreach (CombinationCard combinationCard in _combinationCards)

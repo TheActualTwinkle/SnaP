@@ -176,7 +176,7 @@ public class PlayerSeatsUI : MonoBehaviour
         var imageWidth = (int)seatImage.rectTransform.rect.width;
         var imageHeight = (int)seatImage.rectTransform.rect.height;
         
-        _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(player.AvatarData.CodedValue, imageWidth, imageHeight);
+        _seatsUI[seatNumber].PlayerImage.sprite = TextureConverter.GetSprite(player.AvatarDto.CodedValue, imageWidth, imageHeight);
         return true;
     }
     

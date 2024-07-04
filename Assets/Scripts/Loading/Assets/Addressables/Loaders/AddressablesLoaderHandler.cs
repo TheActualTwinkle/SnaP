@@ -35,8 +35,7 @@ public class AddressablesLoaderHandler : ILoadingOperation
             onProgress?.Invoke(loadedCount/(float)assetsCount);
         }
         
-        // TODO: Issue #42
-        // https://github.com/TheActualTwinkle/SnaP/issues/42
+        // TODO: https://github.com/TheActualTwinkle/SnaP/issues/42
         if (loadedCount < assetsCount)
         {
             while (true) await Task.Delay(1000);

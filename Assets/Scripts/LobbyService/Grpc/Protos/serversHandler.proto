@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "LobbyService.Grpc";
+
+import "google/protobuf/empty.proto";
+
+service ServersHandler {
+  rpc PostLobbyInfo (PostLobbyInfoRequest) returns (google.protobuf.Empty);
+  rpc DropLobby (google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message PostLobbyInfoRequest {
+  string public_ip_address = 1;
+  int32 port = 2;
+
+  int32 max_seats = 3;
+  int32 players_count = 4;
+
+  string lobby_name = 5;
+}
