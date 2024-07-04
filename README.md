@@ -12,20 +12,20 @@ The [rules](https://en.wikipedia.org/wiki/Texas_hold_%27em#Rules) of **Texas Hol
 ## Want to just Play? Here you go!
 Visit GitHub [releases page](https://github.com/Twinkllle/PokerMultiplayer/releases) and download version for your OS.
 
-## [SDT](https://github.com/TheActualTwinkle/SDT)/UPnP
-What the hell is **SDT**?
+## [SLS](https://github.com/TheActualTwinkle/SLS)/UPnP
+What the hell is **SLS**?
 
-**SDT** is a SnaP Data Transfer system that allows us to communicate between the game *Host* and all users.
+**SLS** is a SnaP Data Transfer system that allows us to communicate between the game *Host* and all users.
 
 Example is simple: 
 You click *host* ->
 UPnP makes magic ->
-Your ~~bank account~~ data was sent to to SDT Server ->
+Your ~~bank account~~ data was sent to to SLS Server ->
 Other player can see your server in *Browse menu*
 
-You can see status of **SDT** in the top-right corner
+You can see status of **SLS** in the top-right corner
 
-![SDT](GitImages/SDT.png)
+![SLS](GitImages/SLS.png)
 ## UPnP or Relay?
 * ### Universal Plug and Play: 
 	In **SnaP** we have implemented [UPnP](https://ru.wikipedia.org/wiki/UPnP)  system witch allows us to handle clients connection without the Port Forwarding.
@@ -35,7 +35,7 @@ You can see status of **SDT** in the top-right corner
 </p>
 
 * ### Unity Relay
-	In case if something went wrong with SDT/UPnP you can always use **Unity Relay**
+	In case if something went wrong with SLS/UPnP you can always use **Unity Relay**
 ## Dedicated server Setup Guide
 
 	Annotation: SnaP Server default port is: 47924 (can be changed by -port argument)
